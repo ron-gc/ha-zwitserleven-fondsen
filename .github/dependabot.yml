@@ -9,6 +9,10 @@ updates:
       # lit ships inside the card; plan its major upgrades by hand.
       - dependency-name: "lit"
         update-types: ["version-update:semver-major"]
+      # Keep the Node types at the Node version CI uses, node-version in
+      # .github/workflows/tests.yml; bump both together.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
 
   # The Python test requirements are left out on purpose: requirements_test.txt
   # pins the Home Assistant test package by hand, see the comment there.
