@@ -120,6 +120,7 @@ async def test_retries_setup_when_the_fund_is_not_listed(hass, entry):
         await hass.async_block_till_done()
 
     assert entry.state is ConfigEntryState.SETUP_RETRY
+    assert entry.reason == f"Fund {SYMBOL} is not available on the Zwitserleven page"
     assert hass.data[DATA_COORDINATOR].history(SYMBOL) is None
 
 

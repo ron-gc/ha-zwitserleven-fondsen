@@ -102,7 +102,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ZwitserlevenConfigEntry)
     if not coordinator.last_update_success or symbol not in coordinator.data:
         coordinator.remove_fund(symbol)
         raise ConfigEntryNotReady(
-            f"Fund {symbol} is not available on the Zwitserleven page"
+            translation_domain=DOMAIN,
+            translation_key="fund_not_available",
+            translation_placeholders={"symbol": symbol},
         ) from coordinator.last_exception
     entry.runtime_data = coordinator
     entry.async_on_unload(lambda: coordinator.remove_fund(symbol))

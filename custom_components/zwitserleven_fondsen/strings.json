@@ -32,5 +32,10 @@
         }
       }
     }
+  },
+  "exceptions": {
+    "fund_not_available": {
+      "message": "Fund {symbol} is not available on the Zwitserleven page."
+    }
   }
 }
