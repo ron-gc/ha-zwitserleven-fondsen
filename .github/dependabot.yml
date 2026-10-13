@@ -6,5 +6,13 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 5
     ignore:
-      - dependency-name: "*"
+      # lit ships inside the card; plan its major upgrades by hand.
+      - dependency-name: "lit"
         update-types: ["version-update:semver-major"]
+
+  # The Python test requirements are left out on purpose: requirements_test.txt
+  # pins the Home Assistant test package by hand, see the comment there.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
