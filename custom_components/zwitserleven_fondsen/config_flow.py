@@ -1,5 +1,10 @@
+from __future__ import annotations
+
+from typing import Any
+
 import voluptuous as vol
 from homeassistant import config_entries
+from homeassistant.config_entries import ConfigFlowResult
 from homeassistant.core import callback
 from homeassistant.helpers.selector import (
     SelectOptionDict,
@@ -17,10 +22,14 @@ class ZwitserlevenConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     @staticmethod
     @callback
-    def async_get_options_flow(config_entry):
-        return ZwitserlevenOptionsFlow(config_entry)
+    def async_get_options_flow(
+        config_entry: config_entries.ConfigEntry,
+    ) -> ZwitserlevenOptionsFlow:
+        return ZwitserlevenOptionsFlow()
 
-    async def async_step_user(self, user_input: dict | None = None):
+    async def async_step_user(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
         try:
             funds = await get_page(self.hass).async_get_funds()
         except FondsenPageError:
@@ -62,16 +71,16 @@ class ZwitserlevenConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 class ZwitserlevenOptionsFlow(config_entries.OptionsFlow):
+    # Home Assistant sets self.config_entry on the flow itself.
 
-    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
-        self._config_entry = config_entry
-
-    async def async_step_init(self, user_input: dict | None = None):
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
 
-        current_name = self._config_entry.options.get(
-            CONF_NAME, self._config_entry.data.get(CONF_NAME, "")
+        current_name = self.config_entry.options.get(
+            CONF_NAME, self.config_entry.data.get(CONF_NAME, "")
         )
 
         schema = vol.Schema({vol.Optional(CONF_NAME, default=current_name): str})
