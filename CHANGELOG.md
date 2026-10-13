@@ -13,6 +13,7 @@ All notable changes to this integration are listed here. The format follows
 
 ### Changed
 
+- Requires Home Assistant 2026.10 or newer.
 - Requests for the fund page name this integration and its version in the
   User-Agent, instead of posing as a Chrome browser.
 
