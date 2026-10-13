@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import aiohttp
 import pytest
+from homeassistant.const import __version__ as HA_VERSION
 
 from custom_components.zwitserleven_fondsen.const import ZWITSERLEVEN_FONDSEN_URL
 from custom_components.zwitserleven_fondsen.fondsen_page import (
@@ -144,6 +145,19 @@ async def test_fetches_the_fund_page(hass):
 
     assert session.get.call_args[0][0] == ZWITSERLEVEN_FONDSEN_URL
     assert "LTAAF" in funds
+
+
+async def test_names_the_integration_in_the_user_agent(hass):
+    patcher, session = _session(FONDSEN_HTML)
+
+    with patcher:
+        await FondsenPage(hass).async_get_funds()
+
+    assert session.get.call_args.kwargs["headers"]["User-Agent"] == (
+        "ZwitserlevenFondsen/0.0.1 "
+        "(+https://github.com/ron-gc/ha-zwitserleven-fondsen) "
+        f"HomeAssistant/{HA_VERSION}"
+    )
 
 
 async def test_one_request_serves_every_fund(hass):
