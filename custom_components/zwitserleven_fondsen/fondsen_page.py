@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 import aiohttp
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from homeassistant.const import __version__ as HA_VERSION
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -69,7 +69,7 @@ def parse_funds(html: str) -> dict[str, FundQuote]:
     """
     soup = BeautifulSoup(html, "html.parser")
     table = soup.find("table", class_="fundoverview")
-    if table is None:
+    if not isinstance(table, Tag):
         raise FondsenPageError("Could not find the fund table on the page")
 
     funds: dict[str, FundQuote] = {}
