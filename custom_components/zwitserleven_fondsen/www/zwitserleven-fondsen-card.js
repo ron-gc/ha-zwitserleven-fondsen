@@ -1,1097 +1,1168 @@
+//#region node_modules/@lit/reactive-element/css-tag.js
 /**
- * @license
- * Copyright 2019 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-var _a;
-const t$2 = globalThis, e$2 = t$2.ShadowRoot && (void 0 === t$2.ShadyCSS || t$2.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, s$2 = Symbol(), o$4 = /* @__PURE__ */ new WeakMap();
-let n$3 = class n {
-  constructor(t2, e2, o2) {
-    if (this._$cssResult$ = true, o2 !== s$2) throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
-    this.cssText = t2, this.t = e2;
-  }
-  get styleSheet() {
-    let t2 = this.o;
-    const s2 = this.t;
-    if (e$2 && void 0 === t2) {
-      const e2 = void 0 !== s2 && 1 === s2.length;
-      e2 && (t2 = o$4.get(s2)), void 0 === t2 && ((this.o = t2 = new CSSStyleSheet()).replaceSync(this.cssText), e2 && o$4.set(s2, t2));
-    }
-    return t2;
-  }
-  toString() {
-    return this.cssText;
-  }
+* @license
+* Copyright 2019 Google LLC
+* SPDX-License-Identifier: BSD-3-Clause
+*/
+var t$2 = globalThis;
+var e$2 = t$2.ShadowRoot && (void 0 === t$2.ShadyCSS || t$2.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype;
+var s$2 = Symbol();
+var o$4 = /* @__PURE__ */ new WeakMap();
+var n$3 = class {
+	constructor(t, e, o) {
+		if (this._$cssResult$ = !0, o !== s$2) throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
+		this.cssText = t, this.t = e;
+	}
+	get styleSheet() {
+		let t = this.o;
+		const s = this.t;
+		if (e$2 && void 0 === t) {
+			const e = void 0 !== s && 1 === s.length;
+			e && (t = o$4.get(s)), void 0 === t && ((this.o = t = new CSSStyleSheet()).replaceSync(this.cssText), e && o$4.set(s, t));
+		}
+		return t;
+	}
+	toString() {
+		return this.cssText;
+	}
 };
-const r$4 = (t2) => new n$3("string" == typeof t2 ? t2 : t2 + "", void 0, s$2), i$3 = (t2, ...e2) => {
-  const o2 = 1 === t2.length ? t2[0] : e2.reduce((e3, s2, o3) => e3 + ((t3) => {
-    if (true === t3._$cssResult$) return t3.cssText;
-    if ("number" == typeof t3) return t3;
-    throw Error("Value passed to 'css' function must be a 'css' function result: " + t3 + ". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.");
-  })(s2) + t2[o3 + 1], t2[0]);
-  return new n$3(o2, t2, s$2);
-}, S$1 = (s2, o2) => {
-  if (e$2) s2.adoptedStyleSheets = o2.map((t2) => t2 instanceof CSSStyleSheet ? t2 : t2.styleSheet);
-  else for (const e2 of o2) {
-    const o3 = document.createElement("style"), n3 = t$2.litNonce;
-    void 0 !== n3 && o3.setAttribute("nonce", n3), o3.textContent = e2.cssText, s2.appendChild(o3);
-  }
-}, c$2 = e$2 ? (t2) => t2 : (t2) => t2 instanceof CSSStyleSheet ? ((t3) => {
-  let e2 = "";
-  for (const s2 of t3.cssRules) e2 += s2.cssText;
-  return r$4(e2);
-})(t2) : t2;
-/**
- * @license
- * Copyright 2017 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-const { is: i$2, defineProperty: e$1, getOwnPropertyDescriptor: h$1, getOwnPropertyNames: r$3, getOwnPropertySymbols: o$3, getPrototypeOf: n$2 } = Object, a$1 = globalThis, c$1 = a$1.trustedTypes, l$1 = c$1 ? c$1.emptyScript : "", p$1 = a$1.reactiveElementPolyfillSupport, d$1 = (t2, s2) => t2, u$1 = { toAttribute(t2, s2) {
-  switch (s2) {
-    case Boolean:
-      t2 = t2 ? l$1 : null;
-      break;
-    case Object:
-    case Array:
-      t2 = null == t2 ? t2 : JSON.stringify(t2);
-  }
-  return t2;
-}, fromAttribute(t2, s2) {
-  let i2 = t2;
-  switch (s2) {
-    case Boolean:
-      i2 = null !== t2;
-      break;
-    case Number:
-      i2 = null === t2 ? null : Number(t2);
-      break;
-    case Object:
-    case Array:
-      try {
-        i2 = JSON.parse(t2);
-      } catch (t3) {
-        i2 = null;
-      }
-  }
-  return i2;
-} }, f$1 = (t2, s2) => !i$2(t2, s2), b$1 = { attribute: true, type: String, converter: u$1, reflect: false, useDefault: false, hasChanged: f$1 };
-Symbol.metadata ?? (Symbol.metadata = Symbol("metadata")), a$1.litPropertyMetadata ?? (a$1.litPropertyMetadata = /* @__PURE__ */ new WeakMap());
-let y$1 = class y extends HTMLElement {
-  static addInitializer(t2) {
-    this._$Ei(), (this.l ?? (this.l = [])).push(t2);
-  }
-  static get observedAttributes() {
-    return this.finalize(), this._$Eh && [...this._$Eh.keys()];
-  }
-  static createProperty(t2, s2 = b$1) {
-    if (s2.state && (s2.attribute = false), this._$Ei(), this.prototype.hasOwnProperty(t2) && ((s2 = Object.create(s2)).wrapped = true), this.elementProperties.set(t2, s2), !s2.noAccessor) {
-      const i2 = Symbol(), h2 = this.getPropertyDescriptor(t2, i2, s2);
-      void 0 !== h2 && e$1(this.prototype, t2, h2);
-    }
-  }
-  static getPropertyDescriptor(t2, s2, i2) {
-    const { get: e2, set: r2 } = h$1(this.prototype, t2) ?? { get() {
-      return this[s2];
-    }, set(t3) {
-      this[s2] = t3;
-    } };
-    return { get: e2, set(s3) {
-      const h2 = e2 == null ? void 0 : e2.call(this);
-      r2 == null ? void 0 : r2.call(this, s3), this.requestUpdate(t2, h2, i2);
-    }, configurable: true, enumerable: true };
-  }
-  static getPropertyOptions(t2) {
-    return this.elementProperties.get(t2) ?? b$1;
-  }
-  static _$Ei() {
-    if (this.hasOwnProperty(d$1("elementProperties"))) return;
-    const t2 = n$2(this);
-    t2.finalize(), void 0 !== t2.l && (this.l = [...t2.l]), this.elementProperties = new Map(t2.elementProperties);
-  }
-  static finalize() {
-    if (this.hasOwnProperty(d$1("finalized"))) return;
-    if (this.finalized = true, this._$Ei(), this.hasOwnProperty(d$1("properties"))) {
-      const t3 = this.properties, s2 = [...r$3(t3), ...o$3(t3)];
-      for (const i2 of s2) this.createProperty(i2, t3[i2]);
-    }
-    const t2 = this[Symbol.metadata];
-    if (null !== t2) {
-      const s2 = litPropertyMetadata.get(t2);
-      if (void 0 !== s2) for (const [t3, i2] of s2) this.elementProperties.set(t3, i2);
-    }
-    this._$Eh = /* @__PURE__ */ new Map();
-    for (const [t3, s2] of this.elementProperties) {
-      const i2 = this._$Eu(t3, s2);
-      void 0 !== i2 && this._$Eh.set(i2, t3);
-    }
-    this.elementStyles = this.finalizeStyles(this.styles);
-  }
-  static finalizeStyles(s2) {
-    const i2 = [];
-    if (Array.isArray(s2)) {
-      const e2 = new Set(s2.flat(1 / 0).reverse());
-      for (const s3 of e2) i2.unshift(c$2(s3));
-    } else void 0 !== s2 && i2.push(c$2(s2));
-    return i2;
-  }
-  static _$Eu(t2, s2) {
-    const i2 = s2.attribute;
-    return false === i2 ? void 0 : "string" == typeof i2 ? i2 : "string" == typeof t2 ? t2.toLowerCase() : void 0;
-  }
-  constructor() {
-    super(), this._$Ep = void 0, this.isUpdatePending = false, this.hasUpdated = false, this._$Em = null, this._$Ev();
-  }
-  _$Ev() {
-    var _a2;
-    this._$ES = new Promise((t2) => this.enableUpdating = t2), this._$AL = /* @__PURE__ */ new Map(), this._$E_(), this.requestUpdate(), (_a2 = this.constructor.l) == null ? void 0 : _a2.forEach((t2) => t2(this));
-  }
-  addController(t2) {
-    var _a2;
-    (this._$EO ?? (this._$EO = /* @__PURE__ */ new Set())).add(t2), void 0 !== this.renderRoot && this.isConnected && ((_a2 = t2.hostConnected) == null ? void 0 : _a2.call(t2));
-  }
-  removeController(t2) {
-    var _a2;
-    (_a2 = this._$EO) == null ? void 0 : _a2.delete(t2);
-  }
-  _$E_() {
-    const t2 = /* @__PURE__ */ new Map(), s2 = this.constructor.elementProperties;
-    for (const i2 of s2.keys()) this.hasOwnProperty(i2) && (t2.set(i2, this[i2]), delete this[i2]);
-    t2.size > 0 && (this._$Ep = t2);
-  }
-  createRenderRoot() {
-    const t2 = this.shadowRoot ?? this.attachShadow(this.constructor.shadowRootOptions);
-    return S$1(t2, this.constructor.elementStyles), t2;
-  }
-  connectedCallback() {
-    var _a2;
-    this.renderRoot ?? (this.renderRoot = this.createRenderRoot()), this.enableUpdating(true), (_a2 = this._$EO) == null ? void 0 : _a2.forEach((t2) => {
-      var _a3;
-      return (_a3 = t2.hostConnected) == null ? void 0 : _a3.call(t2);
-    });
-  }
-  enableUpdating(t2) {
-  }
-  disconnectedCallback() {
-    var _a2;
-    (_a2 = this._$EO) == null ? void 0 : _a2.forEach((t2) => {
-      var _a3;
-      return (_a3 = t2.hostDisconnected) == null ? void 0 : _a3.call(t2);
-    });
-  }
-  attributeChangedCallback(t2, s2, i2) {
-    this._$AK(t2, i2);
-  }
-  _$ET(t2, s2) {
-    var _a2;
-    const i2 = this.constructor.elementProperties.get(t2), e2 = this.constructor._$Eu(t2, i2);
-    if (void 0 !== e2 && true === i2.reflect) {
-      const h2 = (void 0 !== ((_a2 = i2.converter) == null ? void 0 : _a2.toAttribute) ? i2.converter : u$1).toAttribute(s2, i2.type);
-      this._$Em = t2, null == h2 ? this.removeAttribute(e2) : this.setAttribute(e2, h2), this._$Em = null;
-    }
-  }
-  _$AK(t2, s2) {
-    var _a2, _b;
-    const i2 = this.constructor, e2 = i2._$Eh.get(t2);
-    if (void 0 !== e2 && this._$Em !== e2) {
-      const t3 = i2.getPropertyOptions(e2), h2 = "function" == typeof t3.converter ? { fromAttribute: t3.converter } : void 0 !== ((_a2 = t3.converter) == null ? void 0 : _a2.fromAttribute) ? t3.converter : u$1;
-      this._$Em = e2;
-      const r2 = h2.fromAttribute(s2, t3.type);
-      this[e2] = r2 ?? ((_b = this._$Ej) == null ? void 0 : _b.get(e2)) ?? r2, this._$Em = null;
-    }
-  }
-  requestUpdate(t2, s2, i2, e2 = false, h2) {
-    var _a2;
-    if (void 0 !== t2) {
-      const r2 = this.constructor;
-      if (false === e2 && (h2 = this[t2]), i2 ?? (i2 = r2.getPropertyOptions(t2)), !((i2.hasChanged ?? f$1)(h2, s2) || i2.useDefault && i2.reflect && h2 === ((_a2 = this._$Ej) == null ? void 0 : _a2.get(t2)) && !this.hasAttribute(r2._$Eu(t2, i2)))) return;
-      this.C(t2, s2, i2);
-    }
-    false === this.isUpdatePending && (this._$ES = this._$EP());
-  }
-  C(t2, s2, { useDefault: i2, reflect: e2, wrapped: h2 }, r2) {
-    i2 && !(this._$Ej ?? (this._$Ej = /* @__PURE__ */ new Map())).has(t2) && (this._$Ej.set(t2, r2 ?? s2 ?? this[t2]), true !== h2 || void 0 !== r2) || (this._$AL.has(t2) || (this.hasUpdated || i2 || (s2 = void 0), this._$AL.set(t2, s2)), true === e2 && this._$Em !== t2 && (this._$Eq ?? (this._$Eq = /* @__PURE__ */ new Set())).add(t2));
-  }
-  async _$EP() {
-    this.isUpdatePending = true;
-    try {
-      await this._$ES;
-    } catch (t3) {
-      Promise.reject(t3);
-    }
-    const t2 = this.scheduleUpdate();
-    return null != t2 && await t2, !this.isUpdatePending;
-  }
-  scheduleUpdate() {
-    return this.performUpdate();
-  }
-  performUpdate() {
-    var _a2;
-    if (!this.isUpdatePending) return;
-    if (!this.hasUpdated) {
-      if (this.renderRoot ?? (this.renderRoot = this.createRenderRoot()), this._$Ep) {
-        for (const [t4, s3] of this._$Ep) this[t4] = s3;
-        this._$Ep = void 0;
-      }
-      const t3 = this.constructor.elementProperties;
-      if (t3.size > 0) for (const [s3, i2] of t3) {
-        const { wrapped: t4 } = i2, e2 = this[s3];
-        true !== t4 || this._$AL.has(s3) || void 0 === e2 || this.C(s3, void 0, i2, e2);
-      }
-    }
-    let t2 = false;
-    const s2 = this._$AL;
-    try {
-      t2 = this.shouldUpdate(s2), t2 ? (this.willUpdate(s2), (_a2 = this._$EO) == null ? void 0 : _a2.forEach((t3) => {
-        var _a3;
-        return (_a3 = t3.hostUpdate) == null ? void 0 : _a3.call(t3);
-      }), this.update(s2)) : this._$EM();
-    } catch (s3) {
-      throw t2 = false, this._$EM(), s3;
-    }
-    t2 && this._$AE(s2);
-  }
-  willUpdate(t2) {
-  }
-  _$AE(t2) {
-    var _a2;
-    (_a2 = this._$EO) == null ? void 0 : _a2.forEach((t3) => {
-      var _a3;
-      return (_a3 = t3.hostUpdated) == null ? void 0 : _a3.call(t3);
-    }), this.hasUpdated || (this.hasUpdated = true, this.firstUpdated(t2)), this.updated(t2);
-  }
-  _$EM() {
-    this._$AL = /* @__PURE__ */ new Map(), this.isUpdatePending = false;
-  }
-  get updateComplete() {
-    return this.getUpdateComplete();
-  }
-  getUpdateComplete() {
-    return this._$ES;
-  }
-  shouldUpdate(t2) {
-    return true;
-  }
-  update(t2) {
-    this._$Eq && (this._$Eq = this._$Eq.forEach((t3) => this._$ET(t3, this[t3]))), this._$EM();
-  }
-  updated(t2) {
-  }
-  firstUpdated(t2) {
-  }
+var r$4 = (t) => new n$3("string" == typeof t ? t : t + "", void 0, s$2);
+var i$3 = (t, ...e) => {
+	return new n$3(1 === t.length ? t[0] : e.reduce((e, s, o) => e + ((t) => {
+		if (!0 === t._$cssResult$) return t.cssText;
+		if ("number" == typeof t) return t;
+		throw Error("Value passed to 'css' function must be a 'css' function result: " + t + ". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.");
+	})(s) + t[o + 1], t[0]), t, s$2);
 };
-y$1.elementStyles = [], y$1.shadowRootOptions = { mode: "open" }, y$1[d$1("elementProperties")] = /* @__PURE__ */ new Map(), y$1[d$1("finalized")] = /* @__PURE__ */ new Map(), p$1 == null ? void 0 : p$1({ ReactiveElement: y$1 }), (a$1.reactiveElementVersions ?? (a$1.reactiveElementVersions = [])).push("2.1.2");
-/**
- * @license
- * Copyright 2017 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-const t$1 = globalThis, i$1 = (t2) => t2, s$1 = t$1.trustedTypes, e = s$1 ? s$1.createPolicy("lit-html", { createHTML: (t2) => t2 }) : void 0, h = "$lit$", o$2 = `lit$${Math.random().toFixed(9).slice(2)}$`, n$1 = "?" + o$2, r$2 = `<${n$1}>`, l = document, c = () => l.createComment(""), a = (t2) => null === t2 || "object" != typeof t2 && "function" != typeof t2, u = Array.isArray, d = (t2) => u(t2) || "function" == typeof (t2 == null ? void 0 : t2[Symbol.iterator]), f = "[ 	\n\f\r]", v = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, _ = /-->/g, m = />/g, p = RegExp(`>|${f}(?:([^\\s"'>=/]+)(${f}*=${f}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`, "g"), g = /'/g, $ = /"/g, y2 = /^(?:script|style|textarea|title)$/i, x = (t2) => (i2, ...s2) => ({ _$litType$: t2, strings: i2, values: s2 }), b = x(1), w = x(2), E = Symbol.for("lit-noChange"), A = Symbol.for("lit-nothing"), C = /* @__PURE__ */ new WeakMap(), P = l.createTreeWalker(l, 129);
-function V(t2, i2) {
-  if (!u(t2) || !t2.hasOwnProperty("raw")) throw Error("invalid template strings array");
-  return void 0 !== e ? e.createHTML(i2) : i2;
-}
-const N = (t2, i2) => {
-  const s2 = t2.length - 1, e2 = [];
-  let n3, l2 = 2 === i2 ? "<svg>" : 3 === i2 ? "<math>" : "", c2 = v;
-  for (let i3 = 0; i3 < s2; i3++) {
-    const s3 = t2[i3];
-    let a2, u2, d2 = -1, f2 = 0;
-    for (; f2 < s3.length && (c2.lastIndex = f2, u2 = c2.exec(s3), null !== u2); ) f2 = c2.lastIndex, c2 === v ? "!--" === u2[1] ? c2 = _ : void 0 !== u2[1] ? c2 = m : void 0 !== u2[2] ? (y2.test(u2[2]) && (n3 = RegExp("</" + u2[2], "g")), c2 = p) : void 0 !== u2[3] && (c2 = p) : c2 === p ? ">" === u2[0] ? (c2 = n3 ?? v, d2 = -1) : void 0 === u2[1] ? d2 = -2 : (d2 = c2.lastIndex - u2[2].length, a2 = u2[1], c2 = void 0 === u2[3] ? p : '"' === u2[3] ? $ : g) : c2 === $ || c2 === g ? c2 = p : c2 === _ || c2 === m ? c2 = v : (c2 = p, n3 = void 0);
-    const x2 = c2 === p && t2[i3 + 1].startsWith("/>") ? " " : "";
-    l2 += c2 === v ? s3 + r$2 : d2 >= 0 ? (e2.push(a2), s3.slice(0, d2) + h + s3.slice(d2) + o$2 + x2) : s3 + o$2 + (-2 === d2 ? i3 : x2);
-  }
-  return [V(t2, l2 + (t2[s2] || "<?>") + (2 === i2 ? "</svg>" : 3 === i2 ? "</math>" : "")), e2];
+var S$1 = (s, o) => {
+	if (e$2) s.adoptedStyleSheets = o.map((t) => t instanceof CSSStyleSheet ? t : t.styleSheet);
+	else for (const e of o) {
+		const o = document.createElement("style"), n = t$2.litNonce;
+		void 0 !== n && o.setAttribute("nonce", n), o.textContent = e.cssText, s.appendChild(o);
+	}
 };
-class S {
-  constructor({ strings: t2, _$litType$: i2 }, e2) {
-    let r2;
-    this.parts = [];
-    let l2 = 0, a2 = 0;
-    const u2 = t2.length - 1, d2 = this.parts, [f2, v2] = N(t2, i2);
-    if (this.el = S.createElement(f2, e2), P.currentNode = this.el.content, 2 === i2 || 3 === i2) {
-      const t3 = this.el.content.firstChild;
-      t3.replaceWith(...t3.childNodes);
-    }
-    for (; null !== (r2 = P.nextNode()) && d2.length < u2; ) {
-      if (1 === r2.nodeType) {
-        if (r2.hasAttributes()) for (const t3 of r2.getAttributeNames()) if (t3.endsWith(h)) {
-          const i3 = v2[a2++], s2 = r2.getAttribute(t3).split(o$2), e3 = /([.?@])?(.*)/.exec(i3);
-          d2.push({ type: 1, index: l2, name: e3[2], strings: s2, ctor: "." === e3[1] ? I : "?" === e3[1] ? L : "@" === e3[1] ? z : H }), r2.removeAttribute(t3);
-        } else t3.startsWith(o$2) && (d2.push({ type: 6, index: l2 }), r2.removeAttribute(t3));
-        if (y2.test(r2.tagName)) {
-          const t3 = r2.textContent.split(o$2), i3 = t3.length - 1;
-          if (i3 > 0) {
-            r2.textContent = s$1 ? s$1.emptyScript : "";
-            for (let s2 = 0; s2 < i3; s2++) r2.append(t3[s2], c()), P.nextNode(), d2.push({ type: 2, index: ++l2 });
-            r2.append(t3[i3], c());
-          }
-        }
-      } else if (8 === r2.nodeType) if (r2.data === n$1) d2.push({ type: 2, index: l2 });
-      else {
-        let t3 = -1;
-        for (; -1 !== (t3 = r2.data.indexOf(o$2, t3 + 1)); ) d2.push({ type: 7, index: l2 }), t3 += o$2.length - 1;
-      }
-      l2++;
-    }
-  }
-  static createElement(t2, i2) {
-    const s2 = l.createElement("template");
-    return s2.innerHTML = t2, s2;
-  }
-}
-function M(t2, i2, s2 = t2, e2) {
-  var _a2, _b;
-  if (i2 === E) return i2;
-  let h2 = void 0 !== e2 ? (_a2 = s2._$Co) == null ? void 0 : _a2[e2] : s2._$Cl;
-  const o2 = a(i2) ? void 0 : i2._$litDirective$;
-  return (h2 == null ? void 0 : h2.constructor) !== o2 && ((_b = h2 == null ? void 0 : h2._$AO) == null ? void 0 : _b.call(h2, false), void 0 === o2 ? h2 = void 0 : (h2 = new o2(t2), h2._$AT(t2, s2, e2)), void 0 !== e2 ? (s2._$Co ?? (s2._$Co = []))[e2] = h2 : s2._$Cl = h2), void 0 !== h2 && (i2 = M(t2, h2._$AS(t2, i2.values), h2, e2)), i2;
-}
-class R {
-  constructor(t2, i2) {
-    this._$AV = [], this._$AN = void 0, this._$AD = t2, this._$AM = i2;
-  }
-  get parentNode() {
-    return this._$AM.parentNode;
-  }
-  get _$AU() {
-    return this._$AM._$AU;
-  }
-  u(t2) {
-    const { el: { content: i2 }, parts: s2 } = this._$AD, e2 = ((t2 == null ? void 0 : t2.creationScope) ?? l).importNode(i2, true);
-    P.currentNode = e2;
-    let h2 = P.nextNode(), o2 = 0, n3 = 0, r2 = s2[0];
-    for (; void 0 !== r2; ) {
-      if (o2 === r2.index) {
-        let i3;
-        2 === r2.type ? i3 = new k(h2, h2.nextSibling, this, t2) : 1 === r2.type ? i3 = new r2.ctor(h2, r2.name, r2.strings, this, t2) : 6 === r2.type && (i3 = new Z(h2, this, t2)), this._$AV.push(i3), r2 = s2[++n3];
-      }
-      o2 !== (r2 == null ? void 0 : r2.index) && (h2 = P.nextNode(), o2++);
-    }
-    return P.currentNode = l, e2;
-  }
-  p(t2) {
-    let i2 = 0;
-    for (const s2 of this._$AV) void 0 !== s2 && (void 0 !== s2.strings ? (s2._$AI(t2, s2, i2), i2 += s2.strings.length - 2) : s2._$AI(t2[i2])), i2++;
-  }
-}
-class k {
-  get _$AU() {
-    var _a2;
-    return ((_a2 = this._$AM) == null ? void 0 : _a2._$AU) ?? this._$Cv;
-  }
-  constructor(t2, i2, s2, e2) {
-    this.type = 2, this._$AH = A, this._$AN = void 0, this._$AA = t2, this._$AB = i2, this._$AM = s2, this.options = e2, this._$Cv = (e2 == null ? void 0 : e2.isConnected) ?? true;
-  }
-  get parentNode() {
-    let t2 = this._$AA.parentNode;
-    const i2 = this._$AM;
-    return void 0 !== i2 && 11 === (t2 == null ? void 0 : t2.nodeType) && (t2 = i2.parentNode), t2;
-  }
-  get startNode() {
-    return this._$AA;
-  }
-  get endNode() {
-    return this._$AB;
-  }
-  _$AI(t2, i2 = this) {
-    t2 = M(this, t2, i2), a(t2) ? t2 === A || null == t2 || "" === t2 ? (this._$AH !== A && this._$AR(), this._$AH = A) : t2 !== this._$AH && t2 !== E && this._(t2) : void 0 !== t2._$litType$ ? this.$(t2) : void 0 !== t2.nodeType ? this.T(t2) : d(t2) ? this.k(t2) : this._(t2);
-  }
-  O(t2) {
-    return this._$AA.parentNode.insertBefore(t2, this._$AB);
-  }
-  T(t2) {
-    this._$AH !== t2 && (this._$AR(), this._$AH = this.O(t2));
-  }
-  _(t2) {
-    this._$AH !== A && a(this._$AH) ? this._$AA.nextSibling.data = t2 : this.T(l.createTextNode(t2)), this._$AH = t2;
-  }
-  $(t2) {
-    var _a2;
-    const { values: i2, _$litType$: s2 } = t2, e2 = "number" == typeof s2 ? this._$AC(t2) : (void 0 === s2.el && (s2.el = S.createElement(V(s2.h, s2.h[0]), this.options)), s2);
-    if (((_a2 = this._$AH) == null ? void 0 : _a2._$AD) === e2) this._$AH.p(i2);
-    else {
-      const t3 = new R(e2, this), s3 = t3.u(this.options);
-      t3.p(i2), this.T(s3), this._$AH = t3;
-    }
-  }
-  _$AC(t2) {
-    let i2 = C.get(t2.strings);
-    return void 0 === i2 && C.set(t2.strings, i2 = new S(t2)), i2;
-  }
-  k(t2) {
-    u(this._$AH) || (this._$AH = [], this._$AR());
-    const i2 = this._$AH;
-    let s2, e2 = 0;
-    for (const h2 of t2) e2 === i2.length ? i2.push(s2 = new k(this.O(c()), this.O(c()), this, this.options)) : s2 = i2[e2], s2._$AI(h2), e2++;
-    e2 < i2.length && (this._$AR(s2 && s2._$AB.nextSibling, e2), i2.length = e2);
-  }
-  _$AR(t2 = this._$AA.nextSibling, s2) {
-    var _a2;
-    for ((_a2 = this._$AP) == null ? void 0 : _a2.call(this, false, true, s2); t2 !== this._$AB; ) {
-      const s3 = i$1(t2).nextSibling;
-      i$1(t2).remove(), t2 = s3;
-    }
-  }
-  setConnected(t2) {
-    var _a2;
-    void 0 === this._$AM && (this._$Cv = t2, (_a2 = this._$AP) == null ? void 0 : _a2.call(this, t2));
-  }
-}
-class H {
-  get tagName() {
-    return this.element.tagName;
-  }
-  get _$AU() {
-    return this._$AM._$AU;
-  }
-  constructor(t2, i2, s2, e2, h2) {
-    this.type = 1, this._$AH = A, this._$AN = void 0, this.element = t2, this.name = i2, this._$AM = e2, this.options = h2, s2.length > 2 || "" !== s2[0] || "" !== s2[1] ? (this._$AH = Array(s2.length - 1).fill(new String()), this.strings = s2) : this._$AH = A;
-  }
-  _$AI(t2, i2 = this, s2, e2) {
-    const h2 = this.strings;
-    let o2 = false;
-    if (void 0 === h2) t2 = M(this, t2, i2, 0), o2 = !a(t2) || t2 !== this._$AH && t2 !== E, o2 && (this._$AH = t2);
-    else {
-      const e3 = t2;
-      let n3, r2;
-      for (t2 = h2[0], n3 = 0; n3 < h2.length - 1; n3++) r2 = M(this, e3[s2 + n3], i2, n3), r2 === E && (r2 = this._$AH[n3]), o2 || (o2 = !a(r2) || r2 !== this._$AH[n3]), r2 === A ? t2 = A : t2 !== A && (t2 += (r2 ?? "") + h2[n3 + 1]), this._$AH[n3] = r2;
-    }
-    o2 && !e2 && this.j(t2);
-  }
-  j(t2) {
-    t2 === A ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, t2 ?? "");
-  }
-}
-class I extends H {
-  constructor() {
-    super(...arguments), this.type = 3;
-  }
-  j(t2) {
-    this.element[this.name] = t2 === A ? void 0 : t2;
-  }
-}
-class L extends H {
-  constructor() {
-    super(...arguments), this.type = 4;
-  }
-  j(t2) {
-    this.element.toggleAttribute(this.name, !!t2 && t2 !== A);
-  }
-}
-class z extends H {
-  constructor(t2, i2, s2, e2, h2) {
-    super(t2, i2, s2, e2, h2), this.type = 5;
-  }
-  _$AI(t2, i2 = this) {
-    if ((t2 = M(this, t2, i2, 0) ?? A) === E) return;
-    const s2 = this._$AH, e2 = t2 === A && s2 !== A || t2.capture !== s2.capture || t2.once !== s2.once || t2.passive !== s2.passive, h2 = t2 !== A && (s2 === A || e2);
-    e2 && this.element.removeEventListener(this.name, this, s2), h2 && this.element.addEventListener(this.name, this, t2), this._$AH = t2;
-  }
-  handleEvent(t2) {
-    var _a2;
-    "function" == typeof this._$AH ? this._$AH.call(((_a2 = this.options) == null ? void 0 : _a2.host) ?? this.element, t2) : this._$AH.handleEvent(t2);
-  }
-}
-class Z {
-  constructor(t2, i2, s2) {
-    this.element = t2, this.type = 6, this._$AN = void 0, this._$AM = i2, this.options = s2;
-  }
-  get _$AU() {
-    return this._$AM._$AU;
-  }
-  _$AI(t2) {
-    M(this, t2);
-  }
-}
-const B = t$1.litHtmlPolyfillSupport;
-B == null ? void 0 : B(S, k), (t$1.litHtmlVersions ?? (t$1.litHtmlVersions = [])).push("3.3.2");
-const D = (t2, i2, s2) => {
-  const e2 = (s2 == null ? void 0 : s2.renderBefore) ?? i2;
-  let h2 = e2._$litPart$;
-  if (void 0 === h2) {
-    const t3 = (s2 == null ? void 0 : s2.renderBefore) ?? null;
-    e2._$litPart$ = h2 = new k(i2.insertBefore(c(), t3), t3, void 0, s2 ?? {});
-  }
-  return h2._$AI(t2), h2;
+var c$2 = e$2 ? (t) => t : (t) => t instanceof CSSStyleSheet ? ((t) => {
+	let e = "";
+	for (const s of t.cssRules) e += s.cssText;
+	return r$4(e);
+})(t) : t;
+//#endregion
+//#region node_modules/@lit/reactive-element/reactive-element.js
+/**
+* @license
+* Copyright 2017 Google LLC
+* SPDX-License-Identifier: BSD-3-Clause
+*/ var { is: i$2, defineProperty: e$1, getOwnPropertyDescriptor: h$1, getOwnPropertyNames: r$3, getOwnPropertySymbols: o$3, getPrototypeOf: n$2 } = Object, a$1 = globalThis, c$1 = a$1.trustedTypes, l$1 = c$1 ? c$1.emptyScript : "", p$1 = a$1.reactiveElementPolyfillSupport, d$1 = (t, s) => t, u$1 = {
+	toAttribute(t, s) {
+		switch (s) {
+			case Boolean:
+				t = t ? l$1 : null;
+				break;
+			case Object:
+			case Array: t = null == t ? t : JSON.stringify(t);
+		}
+		return t;
+	},
+	fromAttribute(t, s) {
+		let i = t;
+		switch (s) {
+			case Boolean:
+				i = null !== t;
+				break;
+			case Number:
+				i = null === t ? null : Number(t);
+				break;
+			case Object:
+			case Array: try {
+				i = JSON.parse(t);
+			} catch (t) {
+				i = null;
+			}
+		}
+		return i;
+	}
+}, f$1 = (t, s) => !i$2(t, s), b$1 = {
+	attribute: !0,
+	type: String,
+	converter: u$1,
+	reflect: !1,
+	useDefault: !1,
+	hasChanged: f$1
 };
-/**
- * @license
- * Copyright 2017 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-const s = globalThis;
-class i extends y$1 {
-  constructor() {
-    super(...arguments), this.renderOptions = { host: this }, this._$Do = void 0;
-  }
-  createRenderRoot() {
-    var _a2;
-    const t2 = super.createRenderRoot();
-    return (_a2 = this.renderOptions).renderBefore ?? (_a2.renderBefore = t2.firstChild), t2;
-  }
-  update(t2) {
-    const r2 = this.render();
-    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(t2), this._$Do = D(r2, this.renderRoot, this.renderOptions);
-  }
-  connectedCallback() {
-    var _a2;
-    super.connectedCallback(), (_a2 = this._$Do) == null ? void 0 : _a2.setConnected(true);
-  }
-  disconnectedCallback() {
-    var _a2;
-    super.disconnectedCallback(), (_a2 = this._$Do) == null ? void 0 : _a2.setConnected(false);
-  }
-  render() {
-    return E;
-  }
-}
-i._$litElement$ = true, i["finalized"] = true, (_a = s.litElementHydrateSupport) == null ? void 0 : _a.call(s, { LitElement: i });
-const o$1 = s.litElementPolyfillSupport;
-o$1 == null ? void 0 : o$1({ LitElement: i });
-(s.litElementVersions ?? (s.litElementVersions = [])).push("4.2.2");
-/**
- * @license
- * Copyright 2017 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-const o = { attribute: true, type: String, converter: u$1, reflect: false, hasChanged: f$1 }, r$1 = (t2 = o, e2, r2) => {
-  const { kind: n3, metadata: i2 } = r2;
-  let s2 = globalThis.litPropertyMetadata.get(i2);
-  if (void 0 === s2 && globalThis.litPropertyMetadata.set(i2, s2 = /* @__PURE__ */ new Map()), "setter" === n3 && ((t2 = Object.create(t2)).wrapped = true), s2.set(r2.name, t2), "accessor" === n3) {
-    const { name: o2 } = r2;
-    return { set(r3) {
-      const n4 = e2.get.call(this);
-      e2.set.call(this, r3), this.requestUpdate(o2, n4, t2, true, r3);
-    }, init(e3) {
-      return void 0 !== e3 && this.C(o2, void 0, t2, e3), e3;
-    } };
-  }
-  if ("setter" === n3) {
-    const { name: o2 } = r2;
-    return function(r3) {
-      const n4 = this[o2];
-      e2.call(this, r3), this.requestUpdate(o2, n4, t2, true, r3);
-    };
-  }
-  throw Error("Unsupported decorator location: " + n3);
+Symbol.metadata ??= Symbol("metadata"), a$1.litPropertyMetadata ??= /* @__PURE__ */ new WeakMap();
+var y$1 = class extends HTMLElement {
+	static addInitializer(t) {
+		this._$Ei(), (this.l ??= []).push(t);
+	}
+	static get observedAttributes() {
+		return this.finalize(), this._$Eh && [...this._$Eh.keys()];
+	}
+	static createProperty(t, s = b$1) {
+		if (s.state && (s.attribute = !1), this._$Ei(), this.prototype.hasOwnProperty(t) && ((s = Object.create(s)).wrapped = !0), this.elementProperties.set(t, s), !s.noAccessor) {
+			const i = Symbol(), h = this.getPropertyDescriptor(t, i, s);
+			void 0 !== h && e$1(this.prototype, t, h);
+		}
+	}
+	static getPropertyDescriptor(t, s, i) {
+		const { get: e, set: r } = h$1(this.prototype, t) ?? {
+			get() {
+				return this[s];
+			},
+			set(t) {
+				this[s] = t;
+			}
+		};
+		return {
+			get: e,
+			set(s) {
+				const h = e?.call(this);
+				r?.call(this, s), this.requestUpdate(t, h, i);
+			},
+			configurable: !0,
+			enumerable: !0
+		};
+	}
+	static getPropertyOptions(t) {
+		return this.elementProperties.get(t) ?? b$1;
+	}
+	static _$Ei() {
+		if (this.hasOwnProperty(d$1("elementProperties"))) return;
+		const t = n$2(this);
+		t.finalize(), void 0 !== t.l && (this.l = [...t.l]), this.elementProperties = new Map(t.elementProperties);
+	}
+	static finalize() {
+		if (this.hasOwnProperty(d$1("finalized"))) return;
+		if (this.finalized = !0, this._$Ei(), this.hasOwnProperty(d$1("properties"))) {
+			const t = this.properties, s = [...r$3(t), ...o$3(t)];
+			for (const i of s) this.createProperty(i, t[i]);
+		}
+		const t = this[Symbol.metadata];
+		if (null !== t) {
+			const s = litPropertyMetadata.get(t);
+			if (void 0 !== s) for (const [t, i] of s) this.elementProperties.set(t, i);
+		}
+		this._$Eh = /* @__PURE__ */ new Map();
+		for (const [t, s] of this.elementProperties) {
+			const i = this._$Eu(t, s);
+			void 0 !== i && this._$Eh.set(i, t);
+		}
+		this.elementStyles = this.finalizeStyles(this.styles);
+	}
+	static finalizeStyles(s) {
+		const i = [];
+		if (Array.isArray(s)) {
+			const e = new Set(s.flat(1 / 0).reverse());
+			for (const s of e) i.unshift(c$2(s));
+		} else void 0 !== s && i.push(c$2(s));
+		return i;
+	}
+	static _$Eu(t, s) {
+		const i = s.attribute;
+		return !1 === i ? void 0 : "string" == typeof i ? i : "string" == typeof t ? t.toLowerCase() : void 0;
+	}
+	constructor() {
+		super(), this._$Ep = void 0, this.isUpdatePending = !1, this.hasUpdated = !1, this._$Em = null, this._$Ev();
+	}
+	_$Ev() {
+		this._$ES = new Promise((t) => this.enableUpdating = t), this._$AL = /* @__PURE__ */ new Map(), this._$E_(), this.requestUpdate(), this.constructor.l?.forEach((t) => t(this));
+	}
+	addController(t) {
+		(this._$EO ??= /* @__PURE__ */ new Set()).add(t), void 0 !== this.renderRoot && this.isConnected && t.hostConnected?.();
+	}
+	removeController(t) {
+		this._$EO?.delete(t);
+	}
+	_$E_() {
+		const t = /* @__PURE__ */ new Map(), s = this.constructor.elementProperties;
+		for (const i of s.keys()) this.hasOwnProperty(i) && (t.set(i, this[i]), delete this[i]);
+		t.size > 0 && (this._$Ep = t);
+	}
+	createRenderRoot() {
+		const t = this.shadowRoot ?? this.attachShadow(this.constructor.shadowRootOptions);
+		return S$1(t, this.constructor.elementStyles), t;
+	}
+	connectedCallback() {
+		this.renderRoot ??= this.createRenderRoot(), this.enableUpdating(!0), this._$EO?.forEach((t) => t.hostConnected?.());
+	}
+	enableUpdating(t) {}
+	disconnectedCallback() {
+		this._$EO?.forEach((t) => t.hostDisconnected?.());
+	}
+	attributeChangedCallback(t, s, i) {
+		this._$AK(t, i);
+	}
+	_$ET(t, s) {
+		const i = this.constructor.elementProperties.get(t), e = this.constructor._$Eu(t, i);
+		if (void 0 !== e && !0 === i.reflect) {
+			const h = (void 0 !== i.converter?.toAttribute ? i.converter : u$1).toAttribute(s, i.type);
+			this._$Em = t, null == h ? this.removeAttribute(e) : this.setAttribute(e, h), this._$Em = null;
+		}
+	}
+	_$AK(t, s) {
+		const i = this.constructor, e = i._$Eh.get(t);
+		if (void 0 !== e && this._$Em !== e) {
+			const t = i.getPropertyOptions(e), h = "function" == typeof t.converter ? { fromAttribute: t.converter } : void 0 !== t.converter?.fromAttribute ? t.converter : u$1;
+			this._$Em = e;
+			const r = h.fromAttribute(s, t.type);
+			this[e] = r ?? this._$Ej?.get(e) ?? r, this._$Em = null;
+		}
+	}
+	requestUpdate(t, s, i, e = !1, h) {
+		if (void 0 !== t) {
+			const r = this.constructor;
+			if (!1 === e && (h = this[t]), i ??= r.getPropertyOptions(t), !((i.hasChanged ?? f$1)(h, s) || i.useDefault && i.reflect && h === this._$Ej?.get(t) && !this.hasAttribute(r._$Eu(t, i)))) return;
+			this.C(t, s, i);
+		}
+		!1 === this.isUpdatePending && (this._$ES = this._$EP());
+	}
+	C(t, s, { useDefault: i, reflect: e, wrapped: h }, r) {
+		i && !(this._$Ej ??= /* @__PURE__ */ new Map()).has(t) && (this._$Ej.set(t, r ?? s ?? this[t]), !0 !== h || void 0 !== r) || (this._$AL.has(t) || (this.hasUpdated || i || (s = void 0), this._$AL.set(t, s)), !0 === e && this._$Em !== t && (this._$Eq ??= /* @__PURE__ */ new Set()).add(t));
+	}
+	async _$EP() {
+		this.isUpdatePending = !0;
+		try {
+			await this._$ES;
+		} catch (t) {
+			Promise.reject(t);
+		}
+		const t = this.scheduleUpdate();
+		return null != t && await t, !this.isUpdatePending;
+	}
+	scheduleUpdate() {
+		return this.performUpdate();
+	}
+	performUpdate() {
+		if (!this.isUpdatePending) return;
+		if (!this.hasUpdated) {
+			if (this.renderRoot ??= this.createRenderRoot(), this._$Ep) {
+				for (const [t, s] of this._$Ep) this[t] = s;
+				this._$Ep = void 0;
+			}
+			const t = this.constructor.elementProperties;
+			if (t.size > 0) for (const [s, i] of t) {
+				const { wrapped: t } = i, e = this[s];
+				!0 !== t || this._$AL.has(s) || void 0 === e || this.C(s, void 0, i, e);
+			}
+		}
+		let t = !1;
+		const s = this._$AL;
+		try {
+			t = this.shouldUpdate(s), t ? (this.willUpdate(s), this._$EO?.forEach((t) => t.hostUpdate?.()), this.update(s)) : this._$EM();
+		} catch (s) {
+			throw t = !1, this._$EM(), s;
+		}
+		t && this._$AE(s);
+	}
+	willUpdate(t) {}
+	_$AE(t) {
+		this._$EO?.forEach((t) => t.hostUpdated?.()), this.hasUpdated || (this.hasUpdated = !0, this.firstUpdated(t)), this.updated(t);
+	}
+	_$EM() {
+		this._$AL = /* @__PURE__ */ new Map(), this.isUpdatePending = !1;
+	}
+	get updateComplete() {
+		return this.getUpdateComplete();
+	}
+	getUpdateComplete() {
+		return this._$ES;
+	}
+	shouldUpdate(t) {
+		return !0;
+	}
+	update(t) {
+		this._$Eq &&= this._$Eq.forEach((t) => this._$ET(t, this[t])), this._$EM();
+	}
+	updated(t) {}
+	firstUpdated(t) {}
 };
-function n2(t2) {
-  return (e2, o2) => "object" == typeof o2 ? r$1(t2, e2, o2) : ((t3, e3, o3) => {
-    const r2 = e3.hasOwnProperty(o3);
-    return e3.constructor.createProperty(o3, t3), r2 ? Object.getOwnPropertyDescriptor(e3, o3) : void 0;
-  })(t2, e2, o2);
-}
+y$1.elementStyles = [], y$1.shadowRootOptions = { mode: "open" }, y$1[d$1("elementProperties")] = /* @__PURE__ */ new Map(), y$1[d$1("finalized")] = /* @__PURE__ */ new Map(), p$1?.({ ReactiveElement: y$1 }), (a$1.reactiveElementVersions ??= []).push("2.1.2");
+//#endregion
+//#region node_modules/lit-html/lit-html.js
 /**
- * @license
- * Copyright 2017 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-function r(r2) {
-  return n2({ ...r2, state: true, attribute: false });
+* @license
+* Copyright 2017 Google LLC
+* SPDX-License-Identifier: BSD-3-Clause
+*/
+var t$1 = globalThis;
+var i$1 = (t) => t;
+var s$1 = t$1.trustedTypes;
+var e = s$1 ? s$1.createPolicy("lit-html", { createHTML: (t) => t }) : void 0;
+var h = "$lit$";
+var o$2 = `lit$${Math.random().toFixed(9).slice(2)}$`;
+var n$1 = "?" + o$2;
+var r$2 = `<${n$1}>`;
+var l = document;
+var c = () => l.createComment("");
+var a = (t) => null === t || "object" != typeof t && "function" != typeof t;
+var u = Array.isArray;
+var d = (t) => u(t) || "function" == typeof t?.[Symbol.iterator];
+var f = "[ 	\n\f\r]";
+var v = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g;
+var _ = /-->/g;
+var m = />/g;
+var p = RegExp(`>|${f}(?:([^\\s"'>=/]+)(${f}*=${f}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`, "g");
+var g = /'/g;
+var $ = /"/g;
+var y = /^(?:script|style|textarea|title)$/i;
+var x = (t) => (i, ...s) => ({
+	_$litType$: t,
+	strings: i,
+	values: s
+});
+var b = x(1);
+var w = x(2);
+var E = Symbol.for("lit-noChange");
+var A = Symbol.for("lit-nothing");
+var C = /* @__PURE__ */ new WeakMap();
+var P = l.createTreeWalker(l, 129);
+function V(t, i) {
+	if (!u(t) || !t.hasOwnProperty("raw")) throw Error("invalid template strings array");
+	return void 0 !== e ? e.createHTML(i) : i;
 }
-const translations = {
-  en: {
-    editor: {
-      title_label: "Title (optional)",
-      default_range: "Default time range",
-      tile_size: "Tile size",
-      selected: "Selected",
-      drag_hint: "drag to reorder",
-      add: "Add",
-      no_sensors: "No Zwitserleven Fondsen sensors found.",
-      setup_hint: "Set up under Settings → Integrations → Zwitserleven Fondsen."
-    },
-    card: { not_found: "Not found" }
-  },
-  de: {
-    editor: {
-      title_label: "Titel (optional)",
-      default_range: "Standard Zeitraum",
-      tile_size: "Kachelgröße",
-      selected: "Ausgewählt",
-      drag_hint: "ziehen zum Sortieren",
-      add: "Hinzufügen",
-      no_sensors: "Keine Zwitserleven Fondsen Sensoren gefunden.",
-      setup_hint: "Integration einrichten unter Einstellungen → Integrationen → Zwitserleven Fondsen."
-    },
-    card: { not_found: "Nicht gefunden" }
-  },
-  fr: {
-    editor: {
-      title_label: "Titre (optionnel)",
-      default_range: "Période par défaut",
-      tile_size: "Taille des tuiles",
-      selected: "Sélectionnés",
-      drag_hint: "glisser pour réorganiser",
-      add: "Ajouter",
-      no_sensors: "Aucun capteur Zwitserleven Fondsen trouvé.",
-      setup_hint: "Configurer sous Paramètres → Intégrations → Zwitserleven Fondsen."
-    },
-    card: { not_found: "Introuvable" }
-  },
-  nl: {
-    editor: {
-      title_label: "Titel (optioneel)",
-      default_range: "Standaard tijdsbereik",
-      tile_size: "Tegelgrootte",
-      selected: "Geselecteerd",
-      drag_hint: "slepen om te sorteren",
-      add: "Toevoegen",
-      no_sensors: "Geen Zwitserleven Fondsen-sensoren gevonden.",
-      setup_hint: "Instellen via Instellingen → Integraties → Zwitserleven Fondsen."
-    },
-    card: { not_found: "Niet gevonden" }
-  },
-  es: {
-    editor: {
-      title_label: "Título (opcional)",
-      default_range: "Rango de tiempo predeterminado",
-      tile_size: "Tamaño de ficha",
-      selected: "Seleccionados",
-      drag_hint: "arrastrar para ordenar",
-      add: "Añadir",
-      no_sensors: "No se encontraron sensores Zwitserleven Fondsen.",
-      setup_hint: "Configurar en Ajustes → Integraciones → Zwitserleven Fondsen."
-    },
-    card: { not_found: "No encontrado" }
-  },
-  it: {
-    editor: {
-      title_label: "Titolo (opzionale)",
-      default_range: "Intervallo predefinito",
-      tile_size: "Dimensione tessera",
-      selected: "Selezionati",
-      drag_hint: "trascina per riordinare",
-      add: "Aggiungi",
-      no_sensors: "Nessun sensore Zwitserleven Fondsen trovato.",
-      setup_hint: "Configurare in Impostazioni → Integrazioni → Zwitserleven Fondsen."
-    },
-    card: { not_found: "Non trovato" }
-  },
-  pt: {
-    editor: {
-      title_label: "Título (opcional)",
-      default_range: "Intervalo padrão",
-      tile_size: "Tamanho do bloco",
-      selected: "Selecionados",
-      drag_hint: "arrastar para reordenar",
-      add: "Adicionar",
-      no_sensors: "Nenhum sensor Zwitserleven Fondsen encontrado.",
-      setup_hint: "Configurar em Definições → Integrações → Zwitserleven Fondsen."
-    },
-    card: { not_found: "Não encontrado" }
-  },
-  pl: {
-    editor: {
-      title_label: "Tytuł (opcjonalny)",
-      default_range: "Domyślny zakres czasu",
-      tile_size: "Rozmiar kafelka",
-      selected: "Wybrane",
-      drag_hint: "przeciągnij, aby zmienić kolejność",
-      add: "Dodaj",
-      no_sensors: "Nie znaleziono czujników Zwitserleven Fondsen.",
-      setup_hint: "Skonfiguruj w Ustawienia → Integracje → Zwitserleven Fondsen."
-    },
-    card: { not_found: "Nie znaleziono" }
-  },
-  sv: {
-    editor: {
-      title_label: "Titel (valfritt)",
-      default_range: "Standardtidsintervall",
-      tile_size: "Kakelstorlek",
-      selected: "Valda",
-      drag_hint: "dra för att sortera",
-      add: "Lägg till",
-      no_sensors: "Inga Zwitserleven Fondsen-sensorer hittades.",
-      setup_hint: "Konfigurera under Inställningar → Integrationer → Zwitserleven Fondsen."
-    },
-    card: { not_found: "Hittades inte" }
-  },
-  da: {
-    editor: {
-      title_label: "Titel (valgfrit)",
-      default_range: "Standard tidsinterval",
-      tile_size: "Flisestørrelse",
-      selected: "Valgte",
-      drag_hint: "træk for at sortere",
-      add: "Tilføj",
-      no_sensors: "Ingen Zwitserleven Fondsen-sensorer fundet.",
-      setup_hint: "Opsæt under Indstillinger → Integrationer → Zwitserleven Fondsen."
-    },
-    card: { not_found: "Ikke fundet" }
-  },
-  nb: {
-    editor: {
-      title_label: "Tittel (valgfritt)",
-      default_range: "Standard tidsintervall",
-      tile_size: "Flisestørrelse",
-      selected: "Valgte",
-      drag_hint: "dra for å sortere",
-      add: "Legg til",
-      no_sensors: "Ingen Zwitserleven Fondsen-sensorer funnet.",
-      setup_hint: "Konfigurer under Innstillinger → Integrasjoner → Zwitserleven Fondsen."
-    },
-    card: { not_found: "Ikke funnet" }
-  },
-  fi: {
-    editor: {
-      title_label: "Otsikko (valinnainen)",
-      default_range: "Oletusjaksovali",
-      tile_size: "Ruudun koko",
-      selected: "Valitut",
-      drag_hint: "vedä järjestääksesi",
-      add: "Lisää",
-      no_sensors: "Zwitserleven Fondsen -antureita ei löydy.",
-      setup_hint: "Määritä kohdassa Asetukset → Integraatiot → Zwitserleven Fondsen."
-    },
-    card: { not_found: "Ei löydy" }
-  },
-  cs: {
-    editor: {
-      title_label: "Název (volitelný)",
-      default_range: "Výchozí časový rozsah",
-      tile_size: "Velikost dlaždice",
-      selected: "Vybrané",
-      drag_hint: "přetáhněte pro seřazení",
-      add: "Přidat",
-      no_sensors: "Nebyly nalezeny žádné senzory Zwitserleven Fondsen.",
-      setup_hint: "Nastavte v Nastavení → Integrace → Zwitserleven Fondsen."
-    },
-    card: { not_found: "Nenalezeno" }
-  },
-  hu: {
-    editor: {
-      title_label: "Cím (opcionális)",
-      default_range: "Alapértelmezett időtartomány",
-      tile_size: "Csempe mérete",
-      selected: "Kiválasztottak",
-      drag_hint: "húzza a rendezéshez",
-      add: "Hozzáadás",
-      no_sensors: "Nem találhatók Zwitserleven Fondsen érzékelők.",
-      setup_hint: "Állítsa be a Beállítások → Integrációk → Zwitserleven Fondsen menüpontban."
-    },
-    card: { not_found: "Nem található" }
-  },
-  ru: {
-    editor: {
-      title_label: "Заголовок (необязательно)",
-      default_range: "Временной диапазон по умолчанию",
-      tile_size: "Размер плитки",
-      selected: "Выбранные",
-      drag_hint: "перетащите для сортировки",
-      add: "Добавить",
-      no_sensors: "Датчики Zwitserleven Fondsen не найдены.",
-      setup_hint: "Настройте в Настройки → Интеграции → Zwitserleven Fondsen."
-    },
-    card: { not_found: "Не найдено" }
-  },
-  zh: {
-    editor: {
-      title_label: "标题（可选）",
-      default_range: "默认时间范围",
-      tile_size: "磁贴大小",
-      selected: "已选择",
-      drag_hint: "拖动以排序",
-      add: "添加",
-      no_sensors: "未找到 Zwitserleven Fondsen 传感器。",
-      setup_hint: "在设置 → 集成 → Zwitserleven Fondsen 中进行配置。"
-    },
-    card: { not_found: "未找到" }
-  },
-  ja: {
-    editor: {
-      title_label: "タイトル（省略可）",
-      default_range: "デフォルト期間",
-      tile_size: "タイルサイズ",
-      selected: "選択済み",
-      drag_hint: "ドラッグして並び替え",
-      add: "追加",
-      no_sensors: "Zwitserleven Fondsen センサーが見つかりません。",
-      setup_hint: "設定 → インテグレーション → Zwitserleven Fondsen で設定してください。"
-    },
-    card: { not_found: "見つかりません" }
-  },
-  ko: {
-    editor: {
-      title_label: "제목 (선택사항)",
-      default_range: "기본 기간",
-      tile_size: "타일 크기",
-      selected: "선택됨",
-      drag_hint: "드래그하여 정렬",
-      add: "추가",
-      no_sensors: "Zwitserleven Fondsen 센서를 찾을 수 없습니다.",
-      setup_hint: "설정 → 통합 → Zwitserleven Fondsen에서 설정하세요."
-    },
-    card: { not_found: "찾을 수 없음" }
-  },
-  tr: {
-    editor: {
-      title_label: "Başlık (isteğe bağlı)",
-      default_range: "Varsayılan zaman aralığı",
-      tile_size: "Kutucuk boyutu",
-      selected: "Seçilenler",
-      drag_hint: "sıralamak için sürükle",
-      add: "Ekle",
-      no_sensors: "Zwitserleven Fondsen sensörü bulunamadı.",
-      setup_hint: "Ayarlar → Entegrasyonlar → Zwitserleven Fondsen altında yapılandırın."
-    },
-    card: { not_found: "Bulunamadı" }
-  },
-  ar: {
-    editor: {
-      title_label: "العنوان (اختياري)",
-      default_range: "النطاق الزمني الافتراضي",
-      tile_size: "حجم البلاطة",
-      selected: "المحددة",
-      drag_hint: "اسحب للترتيب",
-      add: "إضافة",
-      no_sensors: "لم يتم العثور على أجهزة استشعار Zwitserleven Fondsen.",
-      setup_hint: "الإعداد في الإعدادات ← التكاملات ← Zwitserleven Fondsen."
-    },
-    card: { not_found: "غير موجود" }
-  }
+var N = (t, i) => {
+	const s = t.length - 1, e = [];
+	let n, l = 2 === i ? "<svg>" : 3 === i ? "<math>" : "", c = v;
+	for (let i = 0; i < s; i++) {
+		const s = t[i];
+		let a, u, d = -1, f = 0;
+		for (; f < s.length && (c.lastIndex = f, u = c.exec(s), null !== u);) f = c.lastIndex, c === v ? "!--" === u[1] ? c = _ : void 0 !== u[1] ? c = m : void 0 !== u[2] ? (y.test(u[2]) && (n = RegExp("</" + u[2], "g")), c = p) : void 0 !== u[3] && (c = p) : c === p ? ">" === u[0] ? (c = n ?? v, d = -1) : void 0 === u[1] ? d = -2 : (d = c.lastIndex - u[2].length, a = u[1], c = void 0 === u[3] ? p : "\"" === u[3] ? $ : g) : c === $ || c === g ? c = p : c === _ || c === m ? c = v : (c = p, n = void 0);
+		const x = c === p && t[i + 1].startsWith("/>") ? " " : "";
+		l += c === v ? s + r$2 : d >= 0 ? (e.push(a), s.slice(0, d) + h + s.slice(d) + o$2 + x) : s + o$2 + (-2 === d ? i : x);
+	}
+	return [V(t, l + (t[s] || "<?>") + (2 === i ? "</svg>" : 3 === i ? "</math>" : "")), e];
+};
+var S = class S {
+	constructor({ strings: t, _$litType$: i }, e) {
+		let r;
+		this.parts = [];
+		let l = 0, a = 0;
+		const u = t.length - 1, d = this.parts, [f, v] = N(t, i);
+		if (this.el = S.createElement(f, e), P.currentNode = this.el.content, 2 === i || 3 === i) {
+			const t = this.el.content.firstChild;
+			t.replaceWith(...t.childNodes);
+		}
+		for (; null !== (r = P.nextNode()) && d.length < u;) {
+			if (1 === r.nodeType) {
+				if (r.hasAttributes()) for (const t of r.getAttributeNames()) if (t.endsWith(h)) {
+					const i = v[a++], s = r.getAttribute(t).split(o$2), e = /([.?@])?(.*)/.exec(i);
+					d.push({
+						type: 1,
+						index: l,
+						name: e[2],
+						strings: s,
+						ctor: "." === e[1] ? I : "?" === e[1] ? L : "@" === e[1] ? z : H
+					}), r.removeAttribute(t);
+				} else t.startsWith(o$2) && (d.push({
+					type: 6,
+					index: l
+				}), r.removeAttribute(t));
+				if (y.test(r.tagName)) {
+					const t = r.textContent.split(o$2), i = t.length - 1;
+					if (i > 0) {
+						r.textContent = s$1 ? s$1.emptyScript : "";
+						for (let s = 0; s < i; s++) r.append(t[s], c()), P.nextNode(), d.push({
+							type: 2,
+							index: ++l
+						});
+						r.append(t[i], c());
+					}
+				}
+			} else if (8 === r.nodeType) if (r.data === n$1) d.push({
+				type: 2,
+				index: l
+			});
+			else {
+				let t = -1;
+				for (; -1 !== (t = r.data.indexOf(o$2, t + 1));) d.push({
+					type: 7,
+					index: l
+				}), t += o$2.length - 1;
+			}
+			l++;
+		}
+	}
+	static createElement(t, i) {
+		const s = l.createElement("template");
+		return s.innerHTML = t, s;
+	}
+};
+function M(t, i, s = t, e) {
+	if (i === E) return i;
+	let h = void 0 !== e ? s._$Co?.[e] : s._$Cl;
+	const o = a(i) ? void 0 : i._$litDirective$;
+	return h?.constructor !== o && (h?._$AO?.(!1), void 0 === o ? h = void 0 : (h = new o(t), h._$AT(t, s, e)), void 0 !== e ? (s._$Co ??= [])[e] = h : s._$Cl = h), void 0 !== h && (i = M(t, h._$AS(t, i.values), h, e)), i;
+}
+var R = class {
+	constructor(t, i) {
+		this._$AV = [], this._$AN = void 0, this._$AD = t, this._$AM = i;
+	}
+	get parentNode() {
+		return this._$AM.parentNode;
+	}
+	get _$AU() {
+		return this._$AM._$AU;
+	}
+	u(t) {
+		const { el: { content: i }, parts: s } = this._$AD, e = (t?.creationScope ?? l).importNode(i, !0);
+		P.currentNode = e;
+		let h = P.nextNode(), o = 0, n = 0, r = s[0];
+		for (; void 0 !== r;) {
+			if (o === r.index) {
+				let i;
+				2 === r.type ? i = new k(h, h.nextSibling, this, t) : 1 === r.type ? i = new r.ctor(h, r.name, r.strings, this, t) : 6 === r.type && (i = new Z(h, this, t)), this._$AV.push(i), r = s[++n];
+			}
+			o !== r?.index && (h = P.nextNode(), o++);
+		}
+		return P.currentNode = l, e;
+	}
+	p(t) {
+		let i = 0;
+		for (const s of this._$AV) void 0 !== s && (void 0 !== s.strings ? (s._$AI(t, s, i), i += s.strings.length - 2) : s._$AI(t[i])), i++;
+	}
+};
+var k = class k {
+	get _$AU() {
+		return this._$AM?._$AU ?? this._$Cv;
+	}
+	constructor(t, i, s, e) {
+		this.type = 2, this._$AH = A, this._$AN = void 0, this._$AA = t, this._$AB = i, this._$AM = s, this.options = e, this._$Cv = e?.isConnected ?? !0;
+	}
+	get parentNode() {
+		let t = this._$AA.parentNode;
+		const i = this._$AM;
+		return void 0 !== i && 11 === t?.nodeType && (t = i.parentNode), t;
+	}
+	get startNode() {
+		return this._$AA;
+	}
+	get endNode() {
+		return this._$AB;
+	}
+	_$AI(t, i = this) {
+		t = M(this, t, i), a(t) ? t === A || null == t || "" === t ? (this._$AH !== A && this._$AR(), this._$AH = A) : t !== this._$AH && t !== E && this._(t) : void 0 !== t._$litType$ ? this.$(t) : void 0 !== t.nodeType ? this.T(t) : d(t) ? this.k(t) : this._(t);
+	}
+	O(t) {
+		return this._$AA.parentNode.insertBefore(t, this._$AB);
+	}
+	T(t) {
+		this._$AH !== t && (this._$AR(), this._$AH = this.O(t));
+	}
+	_(t) {
+		this._$AH !== A && a(this._$AH) ? this._$AA.nextSibling.data = t : this.T(l.createTextNode(t)), this._$AH = t;
+	}
+	$(t) {
+		const { values: i, _$litType$: s } = t, e = "number" == typeof s ? this._$AC(t) : (void 0 === s.el && (s.el = S.createElement(V(s.h, s.h[0]), this.options)), s);
+		if (this._$AH?._$AD === e) this._$AH.p(i);
+		else {
+			const t = new R(e, this), s = t.u(this.options);
+			t.p(i), this.T(s), this._$AH = t;
+		}
+	}
+	_$AC(t) {
+		let i = C.get(t.strings);
+		return void 0 === i && C.set(t.strings, i = new S(t)), i;
+	}
+	k(t) {
+		u(this._$AH) || (this._$AH = [], this._$AR());
+		const i = this._$AH;
+		let s, e = 0;
+		for (const h of t) e === i.length ? i.push(s = new k(this.O(c()), this.O(c()), this, this.options)) : s = i[e], s._$AI(h), e++;
+		e < i.length && (this._$AR(s && s._$AB.nextSibling, e), i.length = e);
+	}
+	_$AR(t = this._$AA.nextSibling, s) {
+		for (this._$AP?.(!1, !0, s); t !== this._$AB;) {
+			const s = i$1(t).nextSibling;
+			i$1(t).remove(), t = s;
+		}
+	}
+	setConnected(t) {
+		void 0 === this._$AM && (this._$Cv = t, this._$AP?.(t));
+	}
+};
+var H = class {
+	get tagName() {
+		return this.element.tagName;
+	}
+	get _$AU() {
+		return this._$AM._$AU;
+	}
+	constructor(t, i, s, e, h) {
+		this.type = 1, this._$AH = A, this._$AN = void 0, this.element = t, this.name = i, this._$AM = e, this.options = h, s.length > 2 || "" !== s[0] || "" !== s[1] ? (this._$AH = Array(s.length - 1).fill(/* @__PURE__ */ new String()), this.strings = s) : this._$AH = A;
+	}
+	_$AI(t, i = this, s, e) {
+		const h = this.strings;
+		let o = !1;
+		if (void 0 === h) t = M(this, t, i, 0), o = !a(t) || t !== this._$AH && t !== E, o && (this._$AH = t);
+		else {
+			const e = t;
+			let n, r;
+			for (t = h[0], n = 0; n < h.length - 1; n++) r = M(this, e[s + n], i, n), r === E && (r = this._$AH[n]), o ||= !a(r) || r !== this._$AH[n], r === A ? t = A : t !== A && (t += (r ?? "") + h[n + 1]), this._$AH[n] = r;
+		}
+		o && !e && this.j(t);
+	}
+	j(t) {
+		t === A ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, t ?? "");
+	}
+};
+var I = class extends H {
+	constructor() {
+		super(...arguments), this.type = 3;
+	}
+	j(t) {
+		this.element[this.name] = t === A ? void 0 : t;
+	}
+};
+var L = class extends H {
+	constructor() {
+		super(...arguments), this.type = 4;
+	}
+	j(t) {
+		this.element.toggleAttribute(this.name, !!t && t !== A);
+	}
+};
+var z = class extends H {
+	constructor(t, i, s, e, h) {
+		super(t, i, s, e, h), this.type = 5;
+	}
+	_$AI(t, i = this) {
+		if ((t = M(this, t, i, 0) ?? A) === E) return;
+		const s = this._$AH, e = t === A && s !== A || t.capture !== s.capture || t.once !== s.once || t.passive !== s.passive, h = t !== A && (s === A || e);
+		e && this.element.removeEventListener(this.name, this, s), h && this.element.addEventListener(this.name, this, t), this._$AH = t;
+	}
+	handleEvent(t) {
+		"function" == typeof this._$AH ? this._$AH.call(this.options?.host ?? this.element, t) : this._$AH.handleEvent(t);
+	}
+};
+var Z = class {
+	constructor(t, i, s) {
+		this.element = t, this.type = 6, this._$AN = void 0, this._$AM = i, this.options = s;
+	}
+	get _$AU() {
+		return this._$AM._$AU;
+	}
+	_$AI(t) {
+		M(this, t);
+	}
+};
+var B = t$1.litHtmlPolyfillSupport;
+B?.(S, k), (t$1.litHtmlVersions ??= []).push("3.3.3");
+var D = (t, i, s) => {
+	const e = s?.renderBefore ?? i;
+	let h = e._$litPart$;
+	if (void 0 === h) {
+		const t = s?.renderBefore ?? null;
+		e._$litPart$ = h = new k(i.insertBefore(c(), t), t, void 0, s ?? {});
+	}
+	return h._$AI(t), h;
+};
+//#endregion
+//#region node_modules/lit-element/lit-element.js
+/**
+* @license
+* Copyright 2017 Google LLC
+* SPDX-License-Identifier: BSD-3-Clause
+*/ var s = globalThis;
+var i = class extends y$1 {
+	constructor() {
+		super(...arguments), this.renderOptions = { host: this }, this._$Do = void 0;
+	}
+	createRenderRoot() {
+		const t = super.createRenderRoot();
+		return this.renderOptions.renderBefore ??= t.firstChild, t;
+	}
+	update(t) {
+		const r = this.render();
+		this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(t), this._$Do = D(r, this.renderRoot, this.renderOptions);
+	}
+	connectedCallback() {
+		super.connectedCallback(), this._$Do?.setConnected(!0);
+	}
+	disconnectedCallback() {
+		super.disconnectedCallback(), this._$Do?.setConnected(!1);
+	}
+	render() {
+		return E;
+	}
+};
+i._$litElement$ = !0, i["finalized"] = !0, s.litElementHydrateSupport?.({ LitElement: i });
+var o$1 = s.litElementPolyfillSupport;
+o$1?.({ LitElement: i });
+(s.litElementVersions ??= []).push("4.2.2");
+//#endregion
+//#region node_modules/@lit/reactive-element/decorators/property.js
+/**
+* @license
+* Copyright 2017 Google LLC
+* SPDX-License-Identifier: BSD-3-Clause
+*/ var o = {
+	attribute: !0,
+	type: String,
+	converter: u$1,
+	reflect: !1,
+	hasChanged: f$1
+};
+var r$1 = (t = o, e, r) => {
+	const { kind: n, metadata: i } = r;
+	let s = globalThis.litPropertyMetadata.get(i);
+	if (void 0 === s && globalThis.litPropertyMetadata.set(i, s = /* @__PURE__ */ new Map()), "setter" === n && ((t = Object.create(t)).wrapped = !0), s.set(r.name, t), "accessor" === n) {
+		const { name: o } = r;
+		return {
+			set(r) {
+				const n = e.get.call(this);
+				e.set.call(this, r), this.requestUpdate(o, n, t, !0, r);
+			},
+			init(e) {
+				return void 0 !== e && this.C(o, void 0, t, e), e;
+			}
+		};
+	}
+	if ("setter" === n) {
+		const { name: o } = r;
+		return function(r) {
+			const n = this[o];
+			e.call(this, r), this.requestUpdate(o, n, t, !0, r);
+		};
+	}
+	throw Error("Unsupported decorator location: " + n);
+};
+function n(t) {
+	return (e, o) => "object" == typeof o ? r$1(t, e, o) : ((t, e, o) => {
+		const r = e.hasOwnProperty(o);
+		return e.constructor.createProperty(o, t), r ? Object.getOwnPropertyDescriptor(e, o) : void 0;
+	})(t, e, o);
+}
+//#endregion
+//#region node_modules/@lit/reactive-element/decorators/state.js
+/**
+* @license
+* Copyright 2017 Google LLC
+* SPDX-License-Identifier: BSD-3-Clause
+*/ function r(r) {
+	return n({
+		...r,
+		state: !0,
+		attribute: !1
+	});
+}
+//#endregion
+//#region src/translations.ts
+var translations = {
+	en: {
+		editor: {
+			title_label: "Title (optional)",
+			default_range: "Default time range",
+			tile_size: "Tile size",
+			selected: "Selected",
+			drag_hint: "drag to reorder",
+			add: "Add",
+			no_sensors: "No Zwitserleven Fondsen sensors found.",
+			setup_hint: "Set up under Settings → Integrations → Zwitserleven Fondsen."
+		},
+		card: { not_found: "Not found" }
+	},
+	de: {
+		editor: {
+			title_label: "Titel (optional)",
+			default_range: "Standard Zeitraum",
+			tile_size: "Kachelgröße",
+			selected: "Ausgewählt",
+			drag_hint: "ziehen zum Sortieren",
+			add: "Hinzufügen",
+			no_sensors: "Keine Zwitserleven Fondsen Sensoren gefunden.",
+			setup_hint: "Integration einrichten unter Einstellungen → Integrationen → Zwitserleven Fondsen."
+		},
+		card: { not_found: "Nicht gefunden" }
+	},
+	fr: {
+		editor: {
+			title_label: "Titre (optionnel)",
+			default_range: "Période par défaut",
+			tile_size: "Taille des tuiles",
+			selected: "Sélectionnés",
+			drag_hint: "glisser pour réorganiser",
+			add: "Ajouter",
+			no_sensors: "Aucun capteur Zwitserleven Fondsen trouvé.",
+			setup_hint: "Configurer sous Paramètres → Intégrations → Zwitserleven Fondsen."
+		},
+		card: { not_found: "Introuvable" }
+	},
+	nl: {
+		editor: {
+			title_label: "Titel (optioneel)",
+			default_range: "Standaard tijdsbereik",
+			tile_size: "Tegelgrootte",
+			selected: "Geselecteerd",
+			drag_hint: "slepen om te sorteren",
+			add: "Toevoegen",
+			no_sensors: "Geen Zwitserleven Fondsen-sensoren gevonden.",
+			setup_hint: "Instellen via Instellingen → Integraties → Zwitserleven Fondsen."
+		},
+		card: { not_found: "Niet gevonden" }
+	},
+	es: {
+		editor: {
+			title_label: "Título (opcional)",
+			default_range: "Rango de tiempo predeterminado",
+			tile_size: "Tamaño de ficha",
+			selected: "Seleccionados",
+			drag_hint: "arrastrar para ordenar",
+			add: "Añadir",
+			no_sensors: "No se encontraron sensores Zwitserleven Fondsen.",
+			setup_hint: "Configurar en Ajustes → Integraciones → Zwitserleven Fondsen."
+		},
+		card: { not_found: "No encontrado" }
+	},
+	it: {
+		editor: {
+			title_label: "Titolo (opzionale)",
+			default_range: "Intervallo predefinito",
+			tile_size: "Dimensione tessera",
+			selected: "Selezionati",
+			drag_hint: "trascina per riordinare",
+			add: "Aggiungi",
+			no_sensors: "Nessun sensore Zwitserleven Fondsen trovato.",
+			setup_hint: "Configurare in Impostazioni → Integrazioni → Zwitserleven Fondsen."
+		},
+		card: { not_found: "Non trovato" }
+	},
+	pt: {
+		editor: {
+			title_label: "Título (opcional)",
+			default_range: "Intervalo padrão",
+			tile_size: "Tamanho do bloco",
+			selected: "Selecionados",
+			drag_hint: "arrastar para reordenar",
+			add: "Adicionar",
+			no_sensors: "Nenhum sensor Zwitserleven Fondsen encontrado.",
+			setup_hint: "Configurar em Definições → Integrações → Zwitserleven Fondsen."
+		},
+		card: { not_found: "Não encontrado" }
+	},
+	pl: {
+		editor: {
+			title_label: "Tytuł (opcjonalny)",
+			default_range: "Domyślny zakres czasu",
+			tile_size: "Rozmiar kafelka",
+			selected: "Wybrane",
+			drag_hint: "przeciągnij, aby zmienić kolejność",
+			add: "Dodaj",
+			no_sensors: "Nie znaleziono czujników Zwitserleven Fondsen.",
+			setup_hint: "Skonfiguruj w Ustawienia → Integracje → Zwitserleven Fondsen."
+		},
+		card: { not_found: "Nie znaleziono" }
+	},
+	sv: {
+		editor: {
+			title_label: "Titel (valfritt)",
+			default_range: "Standardtidsintervall",
+			tile_size: "Kakelstorlek",
+			selected: "Valda",
+			drag_hint: "dra för att sortera",
+			add: "Lägg till",
+			no_sensors: "Inga Zwitserleven Fondsen-sensorer hittades.",
+			setup_hint: "Konfigurera under Inställningar → Integrationer → Zwitserleven Fondsen."
+		},
+		card: { not_found: "Hittades inte" }
+	},
+	da: {
+		editor: {
+			title_label: "Titel (valgfrit)",
+			default_range: "Standard tidsinterval",
+			tile_size: "Flisestørrelse",
+			selected: "Valgte",
+			drag_hint: "træk for at sortere",
+			add: "Tilføj",
+			no_sensors: "Ingen Zwitserleven Fondsen-sensorer fundet.",
+			setup_hint: "Opsæt under Indstillinger → Integrationer → Zwitserleven Fondsen."
+		},
+		card: { not_found: "Ikke fundet" }
+	},
+	nb: {
+		editor: {
+			title_label: "Tittel (valgfritt)",
+			default_range: "Standard tidsintervall",
+			tile_size: "Flisestørrelse",
+			selected: "Valgte",
+			drag_hint: "dra for å sortere",
+			add: "Legg til",
+			no_sensors: "Ingen Zwitserleven Fondsen-sensorer funnet.",
+			setup_hint: "Konfigurer under Innstillinger → Integrasjoner → Zwitserleven Fondsen."
+		},
+		card: { not_found: "Ikke funnet" }
+	},
+	fi: {
+		editor: {
+			title_label: "Otsikko (valinnainen)",
+			default_range: "Oletusjaksovali",
+			tile_size: "Ruudun koko",
+			selected: "Valitut",
+			drag_hint: "vedä järjestääksesi",
+			add: "Lisää",
+			no_sensors: "Zwitserleven Fondsen -antureita ei löydy.",
+			setup_hint: "Määritä kohdassa Asetukset → Integraatiot → Zwitserleven Fondsen."
+		},
+		card: { not_found: "Ei löydy" }
+	},
+	cs: {
+		editor: {
+			title_label: "Název (volitelný)",
+			default_range: "Výchozí časový rozsah",
+			tile_size: "Velikost dlaždice",
+			selected: "Vybrané",
+			drag_hint: "přetáhněte pro seřazení",
+			add: "Přidat",
+			no_sensors: "Nebyly nalezeny žádné senzory Zwitserleven Fondsen.",
+			setup_hint: "Nastavte v Nastavení → Integrace → Zwitserleven Fondsen."
+		},
+		card: { not_found: "Nenalezeno" }
+	},
+	hu: {
+		editor: {
+			title_label: "Cím (opcionális)",
+			default_range: "Alapértelmezett időtartomány",
+			tile_size: "Csempe mérete",
+			selected: "Kiválasztottak",
+			drag_hint: "húzza a rendezéshez",
+			add: "Hozzáadás",
+			no_sensors: "Nem találhatók Zwitserleven Fondsen érzékelők.",
+			setup_hint: "Állítsa be a Beállítások → Integrációk → Zwitserleven Fondsen menüpontban."
+		},
+		card: { not_found: "Nem található" }
+	},
+	ru: {
+		editor: {
+			title_label: "Заголовок (необязательно)",
+			default_range: "Временной диапазон по умолчанию",
+			tile_size: "Размер плитки",
+			selected: "Выбранные",
+			drag_hint: "перетащите для сортировки",
+			add: "Добавить",
+			no_sensors: "Датчики Zwitserleven Fondsen не найдены.",
+			setup_hint: "Настройте в Настройки → Интеграции → Zwitserleven Fondsen."
+		},
+		card: { not_found: "Не найдено" }
+	},
+	zh: {
+		editor: {
+			title_label: "标题（可选）",
+			default_range: "默认时间范围",
+			tile_size: "磁贴大小",
+			selected: "已选择",
+			drag_hint: "拖动以排序",
+			add: "添加",
+			no_sensors: "未找到 Zwitserleven Fondsen 传感器。",
+			setup_hint: "在设置 → 集成 → Zwitserleven Fondsen 中进行配置。"
+		},
+		card: { not_found: "未找到" }
+	},
+	ja: {
+		editor: {
+			title_label: "タイトル（省略可）",
+			default_range: "デフォルト期間",
+			tile_size: "タイルサイズ",
+			selected: "選択済み",
+			drag_hint: "ドラッグして並び替え",
+			add: "追加",
+			no_sensors: "Zwitserleven Fondsen センサーが見つかりません。",
+			setup_hint: "設定 → インテグレーション → Zwitserleven Fondsen で設定してください。"
+		},
+		card: { not_found: "見つかりません" }
+	},
+	ko: {
+		editor: {
+			title_label: "제목 (선택사항)",
+			default_range: "기본 기간",
+			tile_size: "타일 크기",
+			selected: "선택됨",
+			drag_hint: "드래그하여 정렬",
+			add: "추가",
+			no_sensors: "Zwitserleven Fondsen 센서를 찾을 수 없습니다.",
+			setup_hint: "설정 → 통합 → Zwitserleven Fondsen에서 설정하세요."
+		},
+		card: { not_found: "찾을 수 없음" }
+	},
+	tr: {
+		editor: {
+			title_label: "Başlık (isteğe bağlı)",
+			default_range: "Varsayılan zaman aralığı",
+			tile_size: "Kutucuk boyutu",
+			selected: "Seçilenler",
+			drag_hint: "sıralamak için sürükle",
+			add: "Ekle",
+			no_sensors: "Zwitserleven Fondsen sensörü bulunamadı.",
+			setup_hint: "Ayarlar → Entegrasyonlar → Zwitserleven Fondsen altında yapılandırın."
+		},
+		card: { not_found: "Bulunamadı" }
+	},
+	ar: {
+		editor: {
+			title_label: "العنوان (اختياري)",
+			default_range: "النطاق الزمني الافتراضي",
+			tile_size: "حجم البلاطة",
+			selected: "المحددة",
+			drag_hint: "اسحب للترتيب",
+			add: "إضافة",
+			no_sensors: "لم يتم العثور على أجهزة استشعار Zwitserleven Fondsen.",
+			setup_hint: "الإعداد في الإعدادات ← التكاملات ← Zwitserleven Fondsen."
+		},
+		card: { not_found: "غير موجود" }
+	}
 };
 function t(lang) {
-  const base = lang.split("-")[0].toLowerCase();
-  return translations[base] ?? translations["en"];
+	return translations[lang.split("-")[0].toLowerCase()] ?? translations["en"];
 }
-const CURRENCY = "EUR";
-const PRICE_DECIMALS = 4;
+/** Format a euro price in the user's locale, e.g. "€ 225,87". */
 function formatPrice(price, locale) {
-  if (isNaN(price)) return "–";
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: CURRENCY,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: PRICE_DECIMALS
-  }).format(price);
+	if (isNaN(price)) return "–";
+	return new Intl.NumberFormat(locale, {
+		style: "currency",
+		currency: "EUR",
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 4
+	}).format(price);
 }
+/** Local Date for a "YYYY-MM-DD" day, or null if it doesn't parse. */
 function parseDay(day) {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(day);
-  if (!match) return null;
-  return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+	const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(day);
+	if (!match) return null;
+	return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
 }
+/**
+* Short label for the date a price was published for, e.g. "9 Oct" or
+* "9 okt"; the year is added when it is not the current one. Empty when the
+* date is missing or malformed.
+*/
 function formatPriceDate(day, locale, now = /* @__PURE__ */ new Date()) {
-  const date = day ? parseDay(day) : null;
-  if (!date) return "";
-  return new Intl.DateTimeFormat(locale, {
-    day: "numeric",
-    month: "short",
-    ...date.getFullYear() === now.getFullYear() ? {} : { year: "numeric" }
-  }).format(date);
+	const date = day ? parseDay(day) : null;
+	if (!date) return "";
+	return new Intl.DateTimeFormat(locale, {
+		day: "numeric",
+		month: "short",
+		...date.getFullYear() === now.getFullYear() ? {} : { year: "numeric" }
+	}).format(date);
 }
+/** Full form of the same date for a tooltip, e.g. "9 October 2026". */
 function formatPriceDateLong(day, locale) {
-  const date = day ? parseDay(day) : null;
-  if (!date) return "";
-  return new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(date);
+	const date = day ? parseDay(day) : null;
+	if (!date) return "";
+	return new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(date);
 }
-const SPARKLINE_WIDTH = 200;
-const SPARKLINE_HEIGHT = 48;
-const SPARKLINE_PAD = 2;
-const MIN_RELATIVE_SPAN = 1e-3;
+/**
+* Chart coordinates for a price series, one evenly spaced step per price.
+* A single price is drawn as a flat line across the full width.
+*/
 function sparklinePoints(history) {
-  if (history.length === 1) history = [history[0], history[0]];
-  const prices = history.map(([, p2]) => p2);
-  const min = Math.min(...prices);
-  const max = Math.max(...prices);
-  const mid = (min + max) / 2;
-  const span = Math.max(max - min, Math.abs(mid) * MIN_RELATIVE_SPAN) || 1;
-  const low = mid - span / 2;
-  const innerW = SPARKLINE_WIDTH - SPARKLINE_PAD * 2;
-  const innerH = SPARKLINE_HEIGHT - SPARKLINE_PAD * 2;
-  return history.map(([, p2], i2) => {
-    const xFrac = i2 / (history.length - 1);
-    return {
-      x: SPARKLINE_PAD + xFrac * innerW,
-      y: SPARKLINE_PAD + (1 - (p2 - low) / span) * innerH
-    };
-  });
+	if (history.length === 1) history = [history[0], history[0]];
+	const prices = history.map(([, p]) => p);
+	const min = Math.min(...prices);
+	const max = Math.max(...prices);
+	const mid = (min + max) / 2;
+	const span = Math.max(max - min, Math.abs(mid) * .001) || 1;
+	const low = mid - span / 2;
+	const innerW = 196;
+	const innerH = 44;
+	return history.map(([, p], i) => {
+		return {
+			x: 2 + i / (history.length - 1) * innerW,
+			y: 2 + (1 - (p - low) / span) * innerH
+		};
+	});
 }
-function dayStr(d2) {
-  return `${d2.getFullYear()}-${String(d2.getMonth() + 1).padStart(2, "0")}-${String(d2.getDate()).padStart(2, "0")}`;
+//#endregion
+//#region src/chart-data.ts
+/** Local "YYYY-MM-DD" for `d`. */
+function dayStr(d) {
+	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
+/** The day `days` days, or `years` years, before the "YYYY-MM-DD" day `day`. */
 function daysBefore(day, days, years = 0) {
-  const [y3, m2, d2] = day.split("-").map(Number);
-  return dayStr(new Date(y3 - years, m2 - 1, d2 - days));
+	const [y, m, d] = day.split("-").map(Number);
+	return dayStr(new Date(y - years, m - 1, d - days));
 }
+/**
+* The daily prices with the sensor's current price merged in under its own
+* price date. The stored history normally already holds it; merging covers
+* the moment between a new price arriving and the card refetching the history.
+*/
 function withLivePrice(input) {
-  const { dailyHistory, livePrice, priceDate } = input;
-  if (!priceDate || !Number.isFinite(livePrice)) return dailyHistory;
-  const last = dailyHistory[dailyHistory.length - 1];
-  if (!last || last[0] < priceDate) return [...dailyHistory, [priceDate, livePrice]];
-  if (last[0] === priceDate) return [...dailyHistory.slice(0, -1), [priceDate, livePrice]];
-  return dailyHistory;
+	const { dailyHistory, livePrice, priceDate } = input;
+	if (!priceDate || !Number.isFinite(livePrice)) return dailyHistory;
+	const last = dailyHistory[dailyHistory.length - 1];
+	if (!last || last[0] < priceDate) return [...dailyHistory, [priceDate, livePrice]];
+	if (last[0] === priceDate) return [...dailyHistory.slice(0, -1), [priceDate, livePrice]];
+	return dailyHistory;
 }
+/**
+* Build the chart series for the selected range from the daily prices, dated
+* by the day each price was published for, never by when it was fetched.
+*
+* Ranges count back from the latest price date rather than from today, so the
+* day or two Zwitserleven takes to publish a price doesn't shorten them.
+* 1T is the latest price against the one before it.
+*/
 function buildChartData(input) {
-  const prices = withLivePrice(input);
-  if (prices.length <= 2) return prices;
-  const latest = prices[prices.length - 1][0];
-  const lastTwo = prices.slice(-2);
-  const since = (from) => {
-    const inRange = prices.filter(([d2]) => d2 >= from);
-    return inRange.length >= 2 ? inRange : lastTwo;
-  };
-  switch (input.range) {
-    case "1T":
-      return lastTwo;
-    case "1W":
-      return since(daysBefore(latest, 7));
-    case "1M":
-      return since(daysBefore(latest, 30));
-    case "YTD": {
-      const jan1 = `${latest.slice(0, 4)}-01-01`;
-      const before = prices.filter(([d2]) => d2 < jan1);
-      const thisYear = prices.filter(([d2]) => d2 >= jan1);
-      const series = before.length > 0 ? [before[before.length - 1], ...thisYear] : thisYear;
-      return series.length >= 2 ? series : lastTwo;
-    }
-    case "1J":
-      return since(daysBefore(latest, 0, 1));
-  }
+	const prices = withLivePrice(input);
+	if (prices.length <= 2) return prices;
+	const latest = prices[prices.length - 1][0];
+	const lastTwo = prices.slice(-2);
+	const since = (from) => {
+		const inRange = prices.filter(([d]) => d >= from);
+		return inRange.length >= 2 ? inRange : lastTwo;
+	};
+	switch (input.range) {
+		case "1T": return lastTwo;
+		case "1W": return since(daysBefore(latest, 7));
+		case "1M": return since(daysBefore(latest, 30));
+		case "YTD": {
+			const jan1 = `${latest.slice(0, 4)}-01-01`;
+			const before = prices.filter(([d]) => d < jan1);
+			const thisYear = prices.filter(([d]) => d >= jan1);
+			const series = before.length > 0 ? [before[before.length - 1], ...thisYear] : thisYear;
+			return series.length >= 2 ? series : lastTwo;
+		}
+		case "1J": return since(daysBefore(latest, 0, 1));
+	}
 }
-var __defProp = Object.defineProperty;
-var __decorateClass = (decorators, target, key, kind) => {
-  var result = void 0;
-  for (var i2 = decorators.length - 1, decorator; i2 >= 0; i2--)
-    if (decorator = decorators[i2])
-      result = decorator(target, key, result) || result;
-  if (result) __defProp(target, key, result);
-  return result;
-};
-const DOMAIN = "zwitserleven_fondsen";
-const CARD_TAG = "zwitserleven-fondsen-card";
-const EDITOR_TAG = "zwitserleven-fondsen-card-editor";
-const LOG_PREFIX = `[${CARD_TAG}]`;
-console.info(
-  `${LOG_PREFIX} v${"0.0.2-dev"} loaded from ${import.meta.url}`
-);
+//#endregion
+//#region \0@oxc-project+runtime@0.153.0/helpers/esm/decorate.js
+function __decorate(decorators, target, key, desc) {
+	var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+//#endregion
+//#region src/zwitserleven-fondsen-card.ts
+var DOMAIN = "zwitserleven_fondsen";
+var CARD_TAG = "zwitserleven-fondsen-card";
+var EDITOR_TAG = "zwitserleven-fondsen-card-editor";
+var LOG_PREFIX = `[${CARD_TAG}]`;
+console.info(`${LOG_PREFIX} v0.0.2-dev loaded from ${import.meta.url}`);
 window.customCards = window.customCards || [];
-if (!window.customCards.some((c2) => c2.type === CARD_TAG)) {
-  window.customCards.push({
-    type: CARD_TAG,
-    name: "Zwitserleven Fondsen Card",
-    description: "Displays Zwitserleven fund prices with sparkline charts.",
-    preview: true
-  });
-}
-const TILE_MIN_WIDTHS = {
-  small: "170px",
-  medium: "220px",
-  large: "280px"
+if (!window.customCards.some((c) => c.type === CARD_TAG)) window.customCards.push({
+	type: CARD_TAG,
+	name: "Zwitserleven Fondsen Card",
+	description: "Displays Zwitserleven fund prices with sparkline charts.",
+	preview: true
+});
+var TILE_MIN_WIDTHS = {
+	small: "170px",
+	medium: "220px",
+	large: "280px"
 };
-const RANGES = [
-  { value: "1T", label: "1D" },
-  { value: "1W", label: "1W" },
-  { value: "1M", label: "1M" },
-  { value: "YTD", label: "YTD" },
-  { value: "1J", label: "1Y" }
+var RANGES = [
+	{
+		value: "1T",
+		label: "1D"
+	},
+	{
+		value: "1W",
+		label: "1W"
+	},
+	{
+		value: "1M",
+		label: "1M"
+	},
+	{
+		value: "YTD",
+		label: "YTD"
+	},
+	{
+		value: "1J",
+		label: "1Y"
+	}
 ];
-const _ZwitserlevenFondsenCardEditor = class _ZwitserlevenFondsenCardEditor extends i {
-  constructor() {
-    super(...arguments);
-    this._dragIndex = null;
-  }
-  setConfig(config) {
-    this._config = config;
-  }
-  /** Sensors of this integration only, even if another one also exposes a `symbol`. */
-  _detectFundSensors() {
-    if (!this.hass) return [];
-    const registry = this.hass.entities ?? {};
-    return Object.values(this.hass.states).filter(
-      (e2) => {
-        var _a2;
-        return ((_a2 = registry[e2.entity_id]) == null ? void 0 : _a2.platform) === DOMAIN && typeof e2.attributes["symbol"] === "string";
-      }
-    ).sort(
-      (a2, b2) => a2.attributes["symbol"].localeCompare(
-        b2.attributes["symbol"]
-      )
-    );
-  }
-  _sensorName(sensor) {
-    return sensor.attributes.long_name || sensor.attributes.symbol;
-  }
-  // ---- Drag & Drop --------------------------------------------------------
-  _onDragStart(e2, index) {
-    this._dragIndex = index;
-    e2.dataTransfer.effectAllowed = "move";
-  }
-  _onDragOver(e2, index) {
-    var _a2;
-    e2.preventDefault();
-    if (this._dragIndex === null || this._dragIndex === index) return;
-    const entities = [...((_a2 = this._config) == null ? void 0 : _a2.entities) ?? []];
-    const [moved] = entities.splice(this._dragIndex, 1);
-    entities.splice(index, 0, moved);
-    this._dragIndex = index;
-    this._set("entities", entities);
-  }
-  _onDragEnd() {
-    this._dragIndex = null;
-  }
-  // ---- Render -------------------------------------------------------------
-  render() {
-    var _a2, _b;
-    if (!this._config) return A;
-    const { title, default_range, entities = [] } = this._config;
-    const all = this._detectFundSensors();
-    const selectedIds = entities;
-    const available = all.filter((s22) => !selectedIds.includes(s22.entity_id));
-    const s2 = t(((_b = (_a2 = this.hass) == null ? void 0 : _a2.locale) == null ? void 0 : _b.language) ?? "en").editor;
-    return b`
+var ZwitserlevenFondsenCardEditor = class extends i {
+	constructor(..._args) {
+		super(..._args);
+		this._dragIndex = null;
+	}
+	setConfig(config) {
+		this._config = config;
+	}
+	/** Sensors of this integration only, even if another one also exposes a `symbol`. */
+	_detectFundSensors() {
+		if (!this.hass) return [];
+		const registry = this.hass.entities ?? {};
+		return Object.values(this.hass.states).filter((e) => registry[e.entity_id]?.platform === DOMAIN && typeof e.attributes["symbol"] === "string").sort((a, b) => a.attributes["symbol"].localeCompare(b.attributes["symbol"]));
+	}
+	_sensorName(sensor) {
+		return sensor.attributes.long_name || sensor.attributes.symbol;
+	}
+	_onDragStart(e, index) {
+		this._dragIndex = index;
+		e.dataTransfer.effectAllowed = "move";
+	}
+	_onDragOver(e, index) {
+		e.preventDefault();
+		if (this._dragIndex === null || this._dragIndex === index) return;
+		const entities = [...this._config?.entities ?? []];
+		const [moved] = entities.splice(this._dragIndex, 1);
+		entities.splice(index, 0, moved);
+		this._dragIndex = index;
+		this._set("entities", entities);
+	}
+	_onDragEnd() {
+		this._dragIndex = null;
+	}
+	render() {
+		if (!this._config) return A;
+		const { title, default_range, entities = [] } = this._config;
+		const all = this._detectFundSensors();
+		const selectedIds = entities;
+		const available = all.filter((s) => !selectedIds.includes(s.entity_id));
+		const s = t(this.hass?.locale?.language ?? "en").editor;
+		return b`
       <div class="editor">
         <ha-textfield
-          label=${s2.title_label}
+          label=${s.title_label}
           .value=${title ?? ""}
-          @change=${(e2) => {
-      const v2 = e2.target.value.trim();
-      this._set("title", v2 || void 0);
-    }}
+          @change=${(e) => {
+			const v = e.target.value.trim();
+			this._set("title", v || void 0);
+		}}
         ></ha-textfield>
 
-        <div class="field-label">${s2.default_range}</div>
+        <div class="field-label">${s.default_range}</div>
         <div class="range-picker">
-          ${RANGES.map(
-      ({ value, label }) => b`
+          ${RANGES.map(({ value, label }) => b`
               <button
                 class="range-opt ${(default_range ?? "1T") === value ? "active" : ""}"
                 @click=${() => this._set("default_range", value)}
               >${label}</button>
-            `
-    )}
+            `)}
         </div>
 
-        <div class="field-label">${s2.tile_size}</div>
+        <div class="field-label">${s.tile_size}</div>
         <div class="range-picker">
-          ${["small", "medium", "large"].map((size) => {
-      var _a3;
-      return b`
+          ${[
+			"small",
+			"medium",
+			"large"
+		].map((size) => b`
             <button
-              class="range-opt ${(((_a3 = this._config) == null ? void 0 : _a3.tile_size) ?? "small") === size ? "active" : ""}"
+              class="range-opt ${(this._config?.tile_size ?? "small") === size ? "active" : ""}"
               @click=${() => this._set("tile_size", size)}
             >${size === "small" ? "S" : size === "medium" ? "M" : "L"}</button>
-          `;
-    })}
+          `)}
         </div>
 
         ${entities.length > 0 ? b`
-          <div class="section-label">${s2.selected} <span class="hint-inline">— ${s2.drag_hint}</span></div>
+          <div class="section-label">${s.selected} <span class="hint-inline">— ${s.drag_hint}</span></div>
           <div class="selected-list">
             ${entities.map((entityId, index) => {
-      const sensor = all.find((s22) => s22.entity_id === entityId);
-      const name = sensor ? this._sensorName(sensor) : entityId;
-      const symbol = (sensor == null ? void 0 : sensor.attributes.symbol) ?? "";
-      return b`
+			const sensor = all.find((s) => s.entity_id === entityId);
+			const name = sensor ? this._sensorName(sensor) : entityId;
+			const symbol = sensor?.attributes.symbol ?? "";
+			return b`
                 <div
                   class="selected-row ${this._dragIndex === index ? "dragging" : ""}"
-                  @dragover=${(e2) => this._onDragOver(e2, index)}
+                  @dragover=${(e) => this._onDragOver(e, index)}
                 >
                   <span
                     class="drag-handle"
                     draggable="true"
-                    @dragstart=${(e2) => this._onDragStart(e2, index)}
+                    @dragstart=${(e) => this._onDragStart(e, index)}
                     @dragend=${() => this._onDragEnd()}
                   >⠿</span>
                   <span class="sensor-name">${name}</span>
@@ -1099,12 +1170,12 @@ const _ZwitserlevenFondsenCardEditor = class _ZwitserlevenFondsenCardEditor exte
                   <button class="remove-btn" @click=${() => this._removeEntity(entityId)}>✕</button>
                 </div>
               `;
-    })}
+		})}
           </div>
         ` : A}
 
-        ${all.length === 0 ? b`<p class="hint">${s2.no_sensors}<br />${s2.setup_hint}</p>` : available.length > 0 ? b`
-              <div class="section-label">${s2.add}</div>
+        ${all.length === 0 ? b`<p class="hint">${s.no_sensors}<br />${s.setup_hint}</p>` : available.length > 0 ? b`
+              <div class="section-label">${s.add}</div>
               ${available.map((sensor) => b`
                 <label class="sensor-row">
                   <input type="checkbox" .checked=${false} @change=${() => this._addEntity(sensor.entity_id)} />
@@ -1115,24 +1186,25 @@ const _ZwitserlevenFondsenCardEditor = class _ZwitserlevenFondsenCardEditor exte
             ` : A}
       </div>
     `;
-  }
-  _set(key, value) {
-    const config = { ...this._config, [key]: value };
-    if (value === void 0) delete config[key];
-    this.dispatchEvent(new CustomEvent("config-changed", { detail: { config } }));
-  }
-  _addEntity(entityId) {
-    var _a2;
-    const current = ((_a2 = this._config) == null ? void 0 : _a2.entities) ?? [];
-    this._set("entities", [...current, entityId]);
-  }
-  _removeEntity(entityId) {
-    var _a2;
-    const current = ((_a2 = this._config) == null ? void 0 : _a2.entities) ?? [];
-    this._set("entities", current.filter((e2) => e2 !== entityId));
-  }
-};
-_ZwitserlevenFondsenCardEditor.styles = i$3`
+	}
+	_set(key, value) {
+		const config = {
+			...this._config,
+			[key]: value
+		};
+		if (value === void 0) delete config[key];
+		this.dispatchEvent(new CustomEvent("config-changed", { detail: { config } }));
+	}
+	_addEntity(entityId) {
+		const current = this._config?.entities ?? [];
+		this._set("entities", [...current, entityId]);
+	}
+	_removeEntity(entityId) {
+		const current = this._config?.entities ?? [];
+		this._set("entities", current.filter((e) => e !== entityId));
+	}
+	static {
+		this.styles = i$3`
     .editor {
       display: flex;
       flex-direction: column;
@@ -1253,156 +1325,131 @@ _ZwitserlevenFondsenCardEditor.styles = i$3`
       margin: 4px 0;
     }
   `;
-let ZwitserlevenFondsenCardEditor = _ZwitserlevenFondsenCardEditor;
-__decorateClass([
-  n2({ attribute: false })
-], ZwitserlevenFondsenCardEditor.prototype, "hass");
-__decorateClass([
-  r()
-], ZwitserlevenFondsenCardEditor.prototype, "_config");
-__decorateClass([
-  r()
-], ZwitserlevenFondsenCardEditor.prototype, "_dragIndex");
-const DAILY_HISTORY_TTL = 60 * 60 * 1e3;
-const _ZwitserlevenFondsenCard = class _ZwitserlevenFondsenCard extends i {
-  constructor() {
-    super(...arguments);
-    this._timeRange = "1T";
-    this._dailyHistoryCache = /* @__PURE__ */ new Map();
-    this._fetchingDaily = /* @__PURE__ */ new Set();
-  }
-  set hass(hass) {
-    this._hass = hass;
-    this.requestUpdate();
-  }
-  get hass() {
-    return this._hass;
-  }
-  setConfig(config) {
-    if (!Array.isArray(config.entities) || config.entities.length === 0) {
-      throw new Error(`${CARD_TAG}: 'entities' must be a non-empty list.`);
-    }
-    this._config = config;
-    this._timeRange = config.default_range ?? "1T";
-  }
-  getCardSize() {
-    var _a2;
-    const rows = Math.ceil((((_a2 = this._config) == null ? void 0 : _a2.entities.length) ?? 1) / 3);
-    return rows * 3 + 1;
-  }
-  static getStubConfig() {
-    return {
-      type: `custom:${CARD_TAG}`,
-      title: "Zwitserleven",
-      entities: [],
-      default_range: "1T"
-    };
-  }
-  static getConfigElement() {
-    return document.createElement(EDITOR_TAG);
-  }
-  // -------------------------------------------------------------------------
-  // Daily price cache (fetched from /api/zwitserleven_fondsen/history)
-  // -------------------------------------------------------------------------
-  _cachedDailyHistory(symbol) {
-    const entry = this._dailyHistoryCache.get(symbol);
-    if (!entry || Date.now() - entry.ts > DAILY_HISTORY_TTL) return null;
-    return entry.data;
-  }
-  async _fetchDailyHistory(symbol) {
-    if (this._fetchingDaily.has(symbol)) return;
-    if (this._cachedDailyHistory(symbol) !== null) return;
-    this._fetchingDaily.add(symbol);
-    try {
-      const result = await this._hass.callApi(
-        "GET",
-        `${DOMAIN}/history?symbol=${encodeURIComponent(symbol)}`
-      );
-      this._dailyHistoryCache.set(symbol, { data: result.history, ts: Date.now() });
-      this.requestUpdate();
-    } catch (err) {
-      console.warn(`${LOG_PREFIX} daily history fetch failed for ${symbol}:`, err);
-    } finally {
-      this._fetchingDaily.delete(symbol);
-    }
-  }
-  // -------------------------------------------------------------------------
-  // Chart data helpers
-  // -------------------------------------------------------------------------
-  _calcPeriodChange(chartData) {
-    if (chartData.length < 2) return 0;
-    const oldest = chartData[0][1];
-    const newest = chartData[chartData.length - 1][1];
-    return oldest !== 0 ? (newest - oldest) / oldest * 100 : 0;
-  }
-  // -------------------------------------------------------------------------
-  // Render
-  // -------------------------------------------------------------------------
-  render() {
-    if (!this._config || !this._hass) return A;
-    const tileMinWidth = TILE_MIN_WIDTHS[this._config.tile_size ?? "small"] ?? "170px";
-    return b`
+	}
+};
+__decorate([n({ attribute: false })], ZwitserlevenFondsenCardEditor.prototype, "hass", void 0);
+__decorate([r()], ZwitserlevenFondsenCardEditor.prototype, "_config", void 0);
+__decorate([r()], ZwitserlevenFondsenCardEditor.prototype, "_dragIndex", void 0);
+var DAILY_HISTORY_TTL = 36e5;
+var ZwitserlevenFondsenCard = class extends i {
+	constructor(..._args2) {
+		super(..._args2);
+		this._timeRange = "1T";
+		this._dailyHistoryCache = /* @__PURE__ */ new Map();
+		this._fetchingDaily = /* @__PURE__ */ new Set();
+	}
+	set hass(hass) {
+		this._hass = hass;
+		this.requestUpdate();
+	}
+	get hass() {
+		return this._hass;
+	}
+	setConfig(config) {
+		if (!Array.isArray(config.entities) || config.entities.length === 0) throw new Error(`${CARD_TAG}: 'entities' must be a non-empty list.`);
+		this._config = config;
+		this._timeRange = config.default_range ?? "1T";
+	}
+	getCardSize() {
+		return Math.ceil((this._config?.entities.length ?? 1) / 3) * 3 + 1;
+	}
+	static getStubConfig() {
+		return {
+			type: `custom:${CARD_TAG}`,
+			title: "Zwitserleven",
+			entities: [],
+			default_range: "1T"
+		};
+	}
+	static getConfigElement() {
+		return document.createElement(EDITOR_TAG);
+	}
+	_cachedDailyHistory(symbol) {
+		const entry = this._dailyHistoryCache.get(symbol);
+		if (!entry || Date.now() - entry.ts > DAILY_HISTORY_TTL) return null;
+		return entry.data;
+	}
+	async _fetchDailyHistory(symbol) {
+		if (this._fetchingDaily.has(symbol)) return;
+		if (this._cachedDailyHistory(symbol) !== null) return;
+		this._fetchingDaily.add(symbol);
+		try {
+			const result = await this._hass.callApi("GET", `${DOMAIN}/history?symbol=${encodeURIComponent(symbol)}`);
+			this._dailyHistoryCache.set(symbol, {
+				data: result.history,
+				ts: Date.now()
+			});
+			this.requestUpdate();
+		} catch (err) {
+			console.warn(`${LOG_PREFIX} daily history fetch failed for ${symbol}:`, err);
+		} finally {
+			this._fetchingDaily.delete(symbol);
+		}
+	}
+	_calcPeriodChange(chartData) {
+		if (chartData.length < 2) return 0;
+		const oldest = chartData[0][1];
+		const newest = chartData[chartData.length - 1][1];
+		return oldest !== 0 ? (newest - oldest) / oldest * 100 : 0;
+	}
+	render() {
+		if (!this._config || !this._hass) return A;
+		const tileMinWidth = TILE_MIN_WIDTHS[this._config.tile_size ?? "small"] ?? "170px";
+		return b`
       <ha-card>
         <div class="card-top">
           ${this._config.title ? b`<h1 class="card-header">${this._config.title}</h1>` : A}
           <div class="range-selector">
-            ${RANGES.map(
-      ({ value, label }) => b`
+            ${RANGES.map(({ value, label }) => b`
                 <button
                   class="range-btn ${this._timeRange === value ? "active" : ""}"
                   @click=${() => {
-        this._timeRange = value;
-      }}
+			this._timeRange = value;
+		}}
                 >
                   ${label}
                 </button>
-              `
-    )}
+              `)}
           </div>
         </div>
         <div class="card-content">
           <div class="asset-grid" style="grid-template-columns: repeat(auto-fill, minmax(${tileMinWidth}, 1fr))">
-            ${this._config.entities.map(
-      (entry) => this._renderEntity(entry)
-    )}
+            ${this._config.entities.map((entry) => this._renderEntity(entry))}
           </div>
         </div>
       </ha-card>
     `;
-  }
-  _renderEntity(entityId) {
-    var _a2, _b, _c, _d, _e;
-    const raw = (_a2 = this._hass) == null ? void 0 : _a2.states[entityId];
-    if (!raw) {
-      return b`
+	}
+	_renderEntity(entityId) {
+		const raw = this._hass?.states[entityId];
+		if (!raw) return b`
         <div class="asset-tile">
           <div class="asset-header">
             <span class="asset-name">${entityId}</span>
           </div>
-          <div class="status error">${t(((_c = (_b = this._hass) == null ? void 0 : _b.locale) == null ? void 0 : _c.language) ?? "en").card.not_found}</div>
+          <div class="status error">${t(this._hass?.locale?.language ?? "en").card.not_found}</div>
         </div>
       `;
-    }
-    const entity = raw;
-    const attr = entity.attributes;
-    const displayName = raw.attributes["friendly_name"] || attr.long_name || attr.symbol;
-    const locale = (_e = (_d = this._hass) == null ? void 0 : _d.locale) == null ? void 0 : _e.language;
-    const price = parseFloat(entity.state);
-    void this._fetchDailyHistory(attr.symbol);
-    const chartData = buildChartData({
-      dailyHistory: this._cachedDailyHistory(attr.symbol) ?? [],
-      range: this._timeRange,
-      livePrice: price,
-      priceDate: attr.price_date
-    });
-    const periodChange = this._calcPeriodChange(chartData);
-    const priceDate = formatPriceDate(attr.price_date, locale);
-    const isPositive = periodChange >= 0;
-    const trendColor = isPositive ? "var(--success-color, #4caf50)" : "var(--error-color, #f44336)";
-    const arrow = isPositive ? "▲" : "▼";
-    const refPrice = chartData.length > 0 ? chartData[0][1] : null;
-    const showRef = refPrice !== null && Math.abs(refPrice - price) > 1e-4;
-    return b`
+		const entity = raw;
+		const attr = entity.attributes;
+		const displayName = raw.attributes["friendly_name"] || attr.long_name || attr.symbol;
+		const locale = this._hass?.locale?.language;
+		const price = parseFloat(entity.state);
+		this._fetchDailyHistory(attr.symbol);
+		const chartData = buildChartData({
+			dailyHistory: this._cachedDailyHistory(attr.symbol) ?? [],
+			range: this._timeRange,
+			livePrice: price,
+			priceDate: attr.price_date
+		});
+		const periodChange = this._calcPeriodChange(chartData);
+		const priceDate = formatPriceDate(attr.price_date, locale);
+		const isPositive = periodChange >= 0;
+		const trendColor = isPositive ? "var(--success-color, #4caf50)" : "var(--error-color, #f44336)";
+		const arrow = isPositive ? "▲" : "▼";
+		const refPrice = chartData.length > 0 ? chartData[0][1] : null;
+		const showRef = refPrice !== null && Math.abs(refPrice - price) > 1e-4;
+		return b`
       <div class="asset-tile" @click=${() => this._openMoreInfo(entityId)}>
         <div class="asset-header">
           <span class="asset-name" title="${displayName}">${displayName}</span>
@@ -1425,21 +1472,20 @@ const _ZwitserlevenFondsenCard = class _ZwitserlevenFondsenCard extends i {
         </div>
       </div>
     `;
-  }
-  _openMoreInfo(entityId) {
-    this.dispatchEvent(new CustomEvent("hass-more-info", {
-      detail: { entityId },
-      bubbles: true,
-      composed: true
-    }));
-  }
-  _renderSparkline(history, color) {
-    if (history.length === 0) return A;
-    const points = sparklinePoints(history).map(({ x: x2, y: y3 }) => `${x2.toFixed(1)},${y3.toFixed(1)}`).join(" ");
-    return w`
-      <svg viewBox="0 0 ${SPARKLINE_WIDTH} ${SPARKLINE_HEIGHT}" preserveAspectRatio="none" class="sparkline-svg" aria-hidden="true">
+	}
+	_openMoreInfo(entityId) {
+		this.dispatchEvent(new CustomEvent("hass-more-info", {
+			detail: { entityId },
+			bubbles: true,
+			composed: true
+		}));
+	}
+	_renderSparkline(history, color) {
+		if (history.length === 0) return A;
+		return w`
+      <svg viewBox="0 0 ${200} ${48}" preserveAspectRatio="none" class="sparkline-svg" aria-hidden="true">
         <polyline
-          points="${points}"
+          points="${sparklinePoints(history).map(({ x, y }) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ")}"
           fill="none"
           stroke="${color}"
           stroke-width="1.5"
@@ -1448,9 +1494,9 @@ const _ZwitserlevenFondsenCard = class _ZwitserlevenFondsenCard extends i {
         />
       </svg>
     `;
-  }
-};
-_ZwitserlevenFondsenCard.styles = i$3`
+	}
+	static {
+		this.styles = i$3`
     ha-card { height: 100%; }
 
     .card-top {
@@ -1576,26 +1622,30 @@ _ZwitserlevenFondsenCard.styles = i$3`
     }
     .error { color: var(--error-color, #f44336); }
   `;
-let ZwitserlevenFondsenCard = _ZwitserlevenFondsenCard;
-__decorateClass([
-  r()
-], ZwitserlevenFondsenCard.prototype, "_config");
-__decorateClass([
-  r()
-], ZwitserlevenFondsenCard.prototype, "_timeRange");
+	}
+};
+__decorate([r()], ZwitserlevenFondsenCard.prototype, "_config", void 0);
+__decorate([r()], ZwitserlevenFondsenCard.prototype, "_timeRange", void 0);
+/**
+* Define `tag` unless something else already claimed it.
+*
+* A bare customElements.define() throws NotSupportedError on the second
+* evaluation, which breaks the rest of this module. Swallowing that silently
+* is worse though: the *first* copy loaded wins, so a user with a stale
+* duplicate resource (e.g. a leftover /local/zwitserleven-fondsen-card.js from a manual
+* install) keeps running the old card after upgrading, with nothing anywhere
+* to explain it. The warning names the copy that lost.
+*/
 function defineOnce(tag, ctor) {
-  if (customElements.get(tag)) {
-    console.warn(
-      `${LOG_PREFIX} <${tag}> is already registered by another copy of this card, so this copy was ignored: ${import.meta.url}. The copy that loaded first wins, which may be an older build. Check Settings > Dashboards > three-dot menu > Resources for a duplicate entry (a leftover /local/${CARD_TAG}.js is the usual cause) and remove it.`
-    );
-    return;
-  }
-  customElements.define(tag, ctor);
+	if (customElements.get(tag)) {
+		console.warn(`${LOG_PREFIX} <${tag}> is already registered by another copy of this card, so this copy was ignored: ${import.meta.url}. The copy that loaded first wins, which may be an older build. Check Settings > Dashboards > three-dot menu > Resources for a duplicate entry (a leftover /local/${CARD_TAG}.js is the usual cause) and remove it.`);
+		return;
+	}
+	customElements.define(tag, ctor);
 }
 defineOnce(EDITOR_TAG, ZwitserlevenFondsenCardEditor);
 defineOnce(CARD_TAG, ZwitserlevenFondsenCard);
-export {
-  ZwitserlevenFondsenCard,
-  ZwitserlevenFondsenCardEditor
-};
+//#endregion
+export { ZwitserlevenFondsenCard, ZwitserlevenFondsenCardEditor };
+
 //# sourceMappingURL=zwitserleven-fondsen-card.js.map
