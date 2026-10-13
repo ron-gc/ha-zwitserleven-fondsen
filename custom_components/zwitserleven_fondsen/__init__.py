@@ -1,9 +1,11 @@
 import logging
 
+from aiohttp import web
 from homeassistant.components.http import HomeAssistantView
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers.http import KEY_HASS
 from homeassistant.helpers.storage import Store
 
 from .const import CONF_SYMBOL, DATA_COORDINATOR, DOMAIN
@@ -29,8 +31,8 @@ class ZwitserlevenHistoryView(HomeAssistantView):
     name = "api:zwitserleven_fondsen:history"
     requires_auth = True
 
-    async def get(self, request):
-        hass = request.app["hass"]
+    async def get(self, request: web.Request) -> web.Response:
+        hass = request.app[KEY_HASS]
         symbol = request.query.get("symbol", "").upper().strip()
         if not symbol:
             return self.json_message("symbol parameter required", status_code=400)
@@ -100,7 +102,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ZwitserlevenConfigEntry)
     if not coordinator.last_update_success or symbol not in coordinator.data:
         coordinator.remove_fund(symbol)
         raise ConfigEntryNotReady(
-            f"Fund {symbol} is not available on the Zwitserleven page"
+            translation_domain=DOMAIN,
+            translation_key="fund_not_available",
+            translation_placeholders={"symbol": symbol},
         ) from coordinator.last_exception
     entry.runtime_data = coordinator
     entry.async_on_unload(lambda: coordinator.remove_fund(symbol))

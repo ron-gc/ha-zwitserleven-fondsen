@@ -143,6 +143,16 @@ class ZwitserlevenDataCoordinator(DataUpdateCoordinator[dict[str, dict]]):
                 self.hass, RETRY_INTERVAL, self._async_scheduled_refresh
             )
 
+    @property
+    def funds(self) -> list[str]:
+        """IDs of the configured funds."""
+        return sorted(self._funds)
+
+    @property
+    def missing_funds(self) -> list[str]:
+        """IDs of the configured funds that the last fetched page did not list."""
+        return sorted(self._missing)
+
     def history(self, symbol: str) -> list | None:
         """Stored daily prices of a configured fund, or None if it is not configured."""
         fund = self._funds.get(symbol)

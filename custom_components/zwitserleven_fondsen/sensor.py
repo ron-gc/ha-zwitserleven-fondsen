@@ -1,17 +1,18 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.sensor import SensorEntity, SensorStateClass
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN, CONF_SYMBOL, CONF_NAME
 from .coordinator import ZwitserlevenDataCoordinator
 
 if TYPE_CHECKING:
+    from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+
     from . import ZwitserlevenConfigEntry
 
 # Every update comes from the coordinator, so entities never poll on their own.
@@ -21,14 +22,15 @@ PARALLEL_UPDATES = 0
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ZwitserlevenConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     async_add_entities([ZwitserlevenSensor(entry.runtime_data, entry)])
 
 
-class ZwitserlevenSensor(CoordinatorEntity, SensorEntity):
+class ZwitserlevenSensor(CoordinatorEntity[ZwitserlevenDataCoordinator], SensorEntity):
     _attr_state_class = SensorStateClass.MEASUREMENT
-    _attr_icon = "mdi:chart-line"
+    # Its icon is in icons.json.
+    _attr_translation_key = "price"
     _attr_native_unit_of_measurement = "EUR"
     # The fund is the device and the price its only sensor, so the sensor
     # takes the device's name.
@@ -56,7 +58,7 @@ class ZwitserlevenSensor(CoordinatorEntity, SensorEntity):
         )
 
     @property
-    def _fund(self) -> dict | None:
+    def _fund(self) -> dict[str, Any] | None:
         return (self.coordinator.data or {}).get(self._symbol)
 
     @property
@@ -68,7 +70,7 @@ class ZwitserlevenSensor(CoordinatorEntity, SensorEntity):
         return self._fund["current_price"] if self._fund else None
 
     @property
-    def extra_state_attributes(self) -> dict:
+    def extra_state_attributes(self) -> dict[str, Any]:
         d = self._fund
         if not d:
             return {}

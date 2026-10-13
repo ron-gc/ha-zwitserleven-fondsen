@@ -1,6 +1,5 @@
 """Unit tests for the frontend registration module."""
 import logging
-from types import SimpleNamespace
 from unittest.mock import patch
 
 from homeassistant.components.lovelace.const import LOVELACE_DATA
@@ -122,7 +121,7 @@ async def test_yaml_resource_mode_falls_back_to_extra_js(hass, caplog):
     assert mock_add.call_count == 1
     assert mock_add.call_args.args[1].startswith(f"{CARD_URL_BASE}?v=")
     # The log has to say *why* this branch was taken, so a log export tells
-    # "YAML resource mode" apart from "core too old" and "Lovelace missing".
+    # "YAML resource mode" apart from "Lovelace missing".
     assert "yaml" in _our_log(caplog).lower()
 
 
@@ -148,68 +147,6 @@ async def test_storage_mode_logs_the_registered_resource(hass, caplog):
 
     assert "dashboard resource" in _our_log(caplog)
     assert hass.data[DATA_FRONTEND]["url"] in _our_log(caplog)
-
-
-async def test_legacy_mode_attribute_is_honoured(hass, caplog):
-    """Cores before 2026.2 have no `resource_mode`, only `mode`.
-
-    Reading `resource_mode` alone yields None there, which used to send the
-    card down the add_extra_js_url path -- exactly the behaviour this module
-    exists to replace.
-    """
-    resources = await _setup_storage_mode(hass)
-    hass.data[LOVELACE_DATA] = SimpleNamespace(mode="storage", resources=resources)
-
-    with caplog.at_level(logging.INFO), patch(
-        "custom_components.zwitserleven_fondsen.frontend.add_extra_js_url"
-    ) as mock_add:
-        await async_register_card(hass)
-
-    assert mock_add.call_count == 0
-    await resources.async_get_info()
-    assert len(_card_items(resources)) == 1
-
-
-async def test_legacy_yaml_mode_falls_back_to_extra_js(hass):
-    """The legacy `mode` attribute is respected when it says yaml."""
-    resources = await _setup_storage_mode(hass)
-    hass.data[LOVELACE_DATA] = SimpleNamespace(mode="yaml", resources=resources)
-
-    with patch(
-        "custom_components.zwitserleven_fondsen.frontend.add_extra_js_url"
-    ) as mock_add:
-        await async_register_card(hass)
-
-    assert mock_add.call_count == 1
-
-
-async def test_legacy_dict_lovelace_data_is_honoured(hass):
-    """Cores before 2025.2 stored a plain dict rather than a dataclass."""
-    resources = await _setup_storage_mode(hass)
-    hass.data[LOVELACE_DATA] = {"mode": "storage", "resources": resources}
-
-    with patch(
-        "custom_components.zwitserleven_fondsen.frontend.add_extra_js_url"
-    ) as mock_add:
-        await async_register_card(hass)
-
-    assert mock_add.call_count == 0
-    await resources.async_get_info()
-    assert len(_card_items(resources)) == 1
-
-
-async def test_unknown_resource_mode_warns_and_falls_back(hass, caplog):
-    """No mode at all is a distinct, loud case -- not silently the same branch."""
-    resources = await _setup_storage_mode(hass)
-    hass.data[LOVELACE_DATA] = SimpleNamespace(resources=resources)
-
-    with caplog.at_level(logging.WARNING), patch(
-        "custom_components.zwitserleven_fondsen.frontend.add_extra_js_url"
-    ) as mock_add:
-        await async_register_card(hass)
-
-    assert mock_add.call_count == 1
-    assert "resource mode" in _our_log(caplog)
 
 
 async def test_missing_frontend_does_not_raise(hass):

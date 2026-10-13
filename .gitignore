@@ -9,10 +9,13 @@ node_modules/
 *.pyc
 __pycache__/
 .venv/
+.coverage
+.mypy_cache/
 
 # Editor / OS
 .env
 .DS_Store
+*.code-workspace
 
 # Local notes
 BACKLOG.md

@@ -1,8 +1,11 @@
 """Tests for fetching and parsing the Zwitserleven fund overview page."""
+import json
+from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import aiohttp
 import pytest
+from homeassistant.const import __version__ as HA_VERSION
 
 from custom_components.zwitserleven_fondsen.const import ZWITSERLEVEN_FONDSEN_URL
 from custom_components.zwitserleven_fondsen.fondsen_page import (
@@ -14,6 +17,13 @@ from custom_components.zwitserleven_fondsen.fondsen_page import (
 )
 
 from .conftest import FONDSEN_HTML
+
+MANIFEST = (
+    Path(__file__).parent.parent
+    / "custom_components"
+    / "zwitserleven_fondsen"
+    / "manifest.json"
+)
 
 # ---------------------------------------------------------------------------
 # Parsing
@@ -144,6 +154,19 @@ async def test_fetches_the_fund_page(hass):
 
     assert session.get.call_args[0][0] == ZWITSERLEVEN_FONDSEN_URL
     assert "LTAAF" in funds
+
+
+async def test_names_the_integration_in_the_user_agent(hass):
+    patcher, session = _session(FONDSEN_HTML)
+
+    with patcher:
+        await FondsenPage(hass).async_get_funds()
+
+    assert session.get.call_args.kwargs["headers"]["User-Agent"] == (
+        f"ZwitserlevenFondsen/{json.loads(MANIFEST.read_text())['version']} "
+        "(+https://github.com/ron-gc/ha-zwitserleven-fondsen) "
+        f"HomeAssistant/{HA_VERSION}"
+    )
 
 
 async def test_one_request_serves_every_fund(hass):

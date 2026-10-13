@@ -5,6 +5,7 @@ from unittest.mock import patch
 import pytest
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.helpers import device_registry as dr, entity_registry as er
+from homeassistant.helpers.icon import async_get_icons
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.zwitserleven_fondsen.const import (
@@ -12,6 +13,9 @@ from custom_components.zwitserleven_fondsen.const import (
     CONF_SYMBOL,
     DATA_COORDINATOR,
     DOMAIN,
+)
+from custom_components.zwitserleven_fondsen.diagnostics import (
+    async_get_config_entry_diagnostics,
 )
 from custom_components.zwitserleven_fondsen.fondsen_page import FondsenPageError
 
@@ -69,11 +73,21 @@ async def test_sets_up_a_price_sensor(hass, entry, hass_storage):
 async def test_each_fund_is_a_device(hass, entry, hass_storage):
     await _set_up(hass, entry, hass_storage)
 
-    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, SYMBOL)})
+    device = dr.async_get(hass).async_get_device_by_identifier(
+        (DOMAIN, SYMBOL), entry.entry_id
+    )
     assert device is not None
     assert device.name == "ASN Duurzaam Aandelenfonds"
     assert device.manufacturer == "Zwitserleven"
     assert er.async_get(hass).async_get(_entity_id(hass)).device_id == device.id
+
+
+async def test_the_sensor_icon_comes_from_icons_json(hass, entry, hass_storage):
+    await _set_up(hass, entry, hass_storage)
+
+    assert er.async_get(hass).async_get(_entity_id(hass)).translation_key == "price"
+    icons = await async_get_icons(hass, "entity", integrations={DOMAIN})
+    assert icons[DOMAIN]["sensor"]["price"]["default"] == "mdi:chart-line"
 
 
 async def test_retries_setup_when_the_site_is_down(hass, entry):
@@ -93,7 +107,9 @@ async def test_renaming_in_the_options_renames_the_device(hass, entry, hass_stor
         )
         await hass.async_block_till_done()
 
-    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, SYMBOL)})
+    device = dr.async_get(hass).async_get_device_by_identifier(
+        (DOMAIN, SYMBOL), entry.entry_id
+    )
     assert device.name == "Aandelen"
     assert entry.state is ConfigEntryState.LOADED
 
@@ -113,6 +129,7 @@ async def test_retries_setup_when_the_fund_is_not_listed(hass, entry):
         await hass.async_block_till_done()
 
     assert entry.state is ConfigEntryState.SETUP_RETRY
+    assert entry.reason == f"Fund {SYMBOL} is not available on the Zwitserleven page"
     assert hass.data[DATA_COORDINATOR].history(SYMBOL) is None
 
 
@@ -197,3 +214,58 @@ async def test_history_endpoint_needs_a_symbol(hass, entry, hass_storage, hass_c
     resp = await client.get("/api/zwitserleven_fondsen/history")
 
     assert resp.status == HTTPStatus.BAD_REQUEST
+
+
+# ---------------------------------------------------------------------------
+# Diagnostics
+# ---------------------------------------------------------------------------
+
+
+async def test_diagnostics(hass, entry, hass_storage):
+    await _set_up(hass, entry, hass_storage, history=[["2026-10-01", 220.0]])
+
+    assert await async_get_config_entry_diagnostics(hass, entry) == {
+        "entry": {
+            "title": "ASN Duurzaam Aandelenfonds",
+            "data": {CONF_SYMBOL: SYMBOL, CONF_NAME: ""},
+            "options": {},
+        },
+        "coordinator": {
+            "last_update_success": True,
+            "last_exception": None,
+            "funds": [SYMBOL],
+            "missing_funds": [],
+        },
+        "fund": {
+            "symbol": SYMBOL,
+            "long_name": "ASN Duurzaam Aandelenfonds",
+            "price_date": "2026-10-02",
+            "current_price": 225.87,
+            "previous_close": 220.0,
+            "change": 5.87,
+            "change_pct": 2.67,
+        },
+        "history": {"days": 2, "first": "2026-10-01", "last": "2026-10-02"},
+    }
+
+
+async def test_diagnostics_show_a_failed_update(hass, entry, hass_storage):
+    page = await _set_up(hass, entry, hass_storage)
+
+    page.async_get_funds.side_effect = FondsenPageError("Zwitserleven returned HTTP 503")
+    await entry.runtime_data.async_refresh()
+
+    coordinator = (await async_get_config_entry_diagnostics(hass, entry))["coordinator"]
+    assert coordinator["last_update_success"] is False
+    assert "HTTP 503" in coordinator["last_exception"]
+
+
+async def test_diagnostics_show_a_fund_missing_from_the_page(hass, entry, hass_storage):
+    page = await _set_up(hass, entry, hass_storage)
+
+    page.async_get_funds.return_value = {"LTAOB": quote(symbol="LTAOB")}
+    await entry.runtime_data.async_refresh()
+
+    diagnostics = await async_get_config_entry_diagnostics(hass, entry)
+    assert diagnostics["coordinator"]["missing_funds"] == [SYMBOL]
+    assert diagnostics["fund"] is None

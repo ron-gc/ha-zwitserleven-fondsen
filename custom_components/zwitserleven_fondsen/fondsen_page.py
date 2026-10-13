@@ -12,22 +12,17 @@ from dataclasses import dataclass
 from datetime import datetime
 
 import aiohttp
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
+from homeassistant.const import __version__ as HA_VERSION
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.loader import async_get_integration
 
-from .const import DATA_PAGE, ZWITSERLEVEN_FONDSEN_URL
+from .const import DATA_PAGE, DOMAIN, ZWITSERLEVEN_FONDSEN_URL
 
 # Long enough to cover the fund entries setting up together at startup.
 PAGE_CACHE_SECONDS = 60
 
-_HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/120.0.0.0 Safari/537.36"
-    )
-}
 _TIMEOUT = aiohttp.ClientTimeout(total=15)
 
 
@@ -74,7 +69,7 @@ def parse_funds(html: str) -> dict[str, FundQuote]:
     """
     soup = BeautifulSoup(html, "html.parser")
     table = soup.find("table", class_="fundoverview")
-    if table is None:
+    if not isinstance(table, Tag):
         raise FondsenPageError("Could not find the fund table on the page")
 
     funds: dict[str, FundQuote] = {}
@@ -83,11 +78,14 @@ def parse_funds(html: str) -> dict[str, FundQuote]:
         name = row.find("td", class_="fundoverview__fund")
         date = row.find("td", class_="fundoverview__date")
         rate = row.find("td", class_="fundoverview__rate")
-        if not (button and button.get("id") and name and date and rate):
+        # bs4 types attribute values as str or list (for multi-valued ones like
+        # class); an id is always a str.
+        button_id = button.get("id") if button else None
+        if not (isinstance(button_id, str) and button_id and name and date and rate):
             continue
         try:
             quote = FundQuote(
-                symbol=button["id"].strip().upper(),
+                symbol=button_id.strip().upper(),
                 name=name.get_text(strip=True),
                 price_date=parse_date(date.get_text(strip=True)),
                 price=parse_price(rate.get_text(strip=True)),
@@ -106,6 +104,7 @@ class FondsenPage:
         self._lock = asyncio.Lock()
         self._funds: dict[str, FundQuote] | None = None
         self._fetched_at = 0.0
+        self._user_agent: str | None = None
 
     async def async_get_funds(self) -> dict[str, FundQuote]:
         async with self._lock:
@@ -115,15 +114,27 @@ class FondsenPage:
             ):
                 return self._funds
             html = await self._async_fetch()
-            self._funds = parse_funds(html)
+            # BeautifulSoup parses synchronously; keep it off the event loop.
+            self._funds = await self._hass.async_add_executor_job(parse_funds, html)
             self._fetched_at = time.monotonic()
             return self._funds
 
+    async def _async_user_agent(self) -> str:
+        """Name this integration, so Zwitserleven can see who fetches the page."""
+        if self._user_agent is None:
+            integration = await async_get_integration(self._hass, DOMAIN)
+            self._user_agent = (
+                f"ZwitserlevenFondsen/{integration.version} "
+                f"(+{integration.documentation}) HomeAssistant/{HA_VERSION}"
+            )
+        return self._user_agent
+
     async def _async_fetch(self) -> str:
         session = async_get_clientsession(self._hass)
+        headers = {"User-Agent": await self._async_user_agent()}
         try:
             async with session.get(
-                ZWITSERLEVEN_FONDSEN_URL, headers=_HEADERS, timeout=_TIMEOUT
+                ZWITSERLEVEN_FONDSEN_URL, headers=headers, timeout=_TIMEOUT
             ) as resp:
                 if resp.status != 200:
                     raise FondsenPageError(f"Zwitserleven returned HTTP {resp.status}")

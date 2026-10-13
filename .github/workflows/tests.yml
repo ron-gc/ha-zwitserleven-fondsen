@@ -22,8 +22,12 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements_test.txt
 
-      - name: Run pytest
-        run: pytest
+      # Fails when coverage drops below fail_under in pyproject.toml.
+      - name: Run pytest with coverage
+        run: pytest --cov
+
+      - name: Run mypy
+        run: mypy
 
   js:
     runs-on: ubuntu-latest

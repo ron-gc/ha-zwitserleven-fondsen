@@ -4,6 +4,24 @@ All notable changes to this integration are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Diagnostics: download them from a fund's entry under Settings > Devices &
+  services to attach to a bug report.
+
+### Changed
+
+- Requires Home Assistant 2026.10 or newer.
+- Requests for the fund page name this integration and its version in the
+  User-Agent, instead of posing as a Chrome browser.
+
+### Fixed
+
+- The fund page is parsed in the executor instead of on the event loop, so
+  Home Assistant no longer stalls briefly while the page is read.
+
 ## [0.0.1] - 2026-10-10
 
 First release as a standalone integration. It started from

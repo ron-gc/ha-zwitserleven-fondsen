@@ -964,7 +964,7 @@ const CARD_TAG = "zwitserleven-fondsen-card";
 const EDITOR_TAG = "zwitserleven-fondsen-card-editor";
 const LOG_PREFIX = `[${CARD_TAG}]`;
 console.info(
-  `${LOG_PREFIX} v${"0.0.1"} loaded from ${import.meta.url}`
+  `${LOG_PREFIX} v${"0.0.2-dev"} loaded from ${import.meta.url}`
 );
 window.customCards = window.customCards || [];
 if (!window.customCards.some((c2) => c2.type === CARD_TAG)) {

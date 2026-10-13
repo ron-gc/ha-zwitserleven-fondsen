@@ -3,7 +3,7 @@
 [![Tests](https://github.com/ron-gc/ha-zwitserleven-fondsen/actions/workflows/tests.yml/badge.svg)](https://github.com/ron-gc/ha-zwitserleven-fondsen/actions/workflows/tests.yml)
 [![hassfest](https://github.com/ron-gc/ha-zwitserleven-fondsen/actions/workflows/hassfest.yml/badge.svg)](https://github.com/ron-gc/ha-zwitserleven-fondsen/actions/workflows/hassfest.yml)
 [![Release](https://img.shields.io/github/v/release/ron-gc/ha-zwitserleven-fondsen)](https://github.com/ron-gc/ha-zwitserleven-fondsen/releases)
-[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.1%2B-41BDF5?logo=homeassistant&logoColor=white)](https://www.home-assistant.io/)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.10%2B-41BDF5?logo=homeassistant&logoColor=white)](https://www.home-assistant.io/)
 [![License: MIT](https://img.shields.io/github/license/ron-gc/ha-zwitserleven-fondsen)](LICENSE)
 
 > Track Zwitserleven investment funds in Home Assistant, with a built-in Lovelace card featuring sparkline charts.
@@ -43,7 +43,7 @@ a separate integration with its own domain (`zwitserleven_fondsen`), card
 
 ## Requirements
 
-- Home Assistant 2025.1 or newer
+- Home Assistant 2026.10 or newer
 - Internet access (Zwitserleven website)
 
 ## Installation
