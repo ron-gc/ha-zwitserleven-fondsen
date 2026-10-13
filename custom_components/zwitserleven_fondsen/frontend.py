@@ -5,25 +5,14 @@ from __future__ import annotations
 import hashlib
 import logging
 from pathlib import Path
-from typing import Any
 
 from homeassistant.components.frontend import add_extra_js_url, remove_extra_js_url
 from homeassistant.components.http import StaticPathConfig
-from homeassistant.components.lovelace.const import MODE_STORAGE
+from homeassistant.components.lovelace.const import LOVELACE_DATA, MODE_STORAGE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.collection import ItemNotFound
 
 from .const import DOMAIN
-
-try:
-    from homeassistant.components.lovelace.const import LOVELACE_DATA
-except ImportError:  # pragma: no cover - only reachable on cores < 2025.2
-    # LOVELACE_DATA (a HassKey) was introduced together with the LovelaceData
-    # dataclass. Before that hass.data was keyed by the plain domain string and
-    # held a dict. Importing the name unconditionally turns an old core into an
-    # ImportError at module import time, which does not just cost the card --
-    # it stops the whole integration from loading, sensors included.
-    LOVELACE_DATA = "lovelace"  # type: ignore[assignment]
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -40,33 +29,12 @@ def _file_hash() -> str:
     return hashlib.md5((_card_dir() / CARD_FILENAME).read_bytes()).hexdigest()[:8]
 
 
-def _lovelace_field(data: Any, name: str) -> Any:
-    """Read one field of the Lovelace data, dataclass or legacy dict."""
-    if isinstance(data, dict):
-        return data.get(name)
-    return getattr(data, name, None)
-
-
-def _resource_mode(data: Any) -> str | None:
-    """Return the Lovelace *resource* mode across core versions.
-
-    2026.2 split `mode` into a dashboard mode and a `resource_mode`; older
-    cores carry a single `mode` covering both. Reading only `resource_mode`
-    yields None on those cores, which would silently send the card back to
-    add_extra_js_url -- the path this module exists to replace.
-    """
-    mode = _lovelace_field(data, "resource_mode")
-    if mode is not None:
-        return mode
-    return _lovelace_field(data, "mode")
-
-
 def _writable_resources(hass: HomeAssistant):
     """Return the Lovelace resource collection if it can be written to.
 
     Every rejection is logged with its reason, so a user's log export tells
-    "YAML resource mode" apart from "core too old" and "Lovelace missing"
-    instead of leaving all three looking identical.
+    "YAML resource mode" apart from "Lovelace missing" instead of leaving
+    them looking identical.
     """
     data = hass.data.get(LOVELACE_DATA)
     if data is None:
@@ -78,18 +46,7 @@ def _writable_resources(hass: HomeAssistant):
         )
         return None
 
-    mode = _resource_mode(data)
-    if mode is None:
-        _LOGGER.warning(
-            "This Home Assistant version reports no Lovelace resource mode "
-            "(%s), so the Zwitserleven Fondsen card cannot be registered as a dashboard "
-            "resource. Falling back to injecting %s through the frontend "
-            "instead",
-            type(data).__name__,
-            CARD_URL_BASE,
-        )
-        return None
-
+    mode = data.resource_mode
     if mode != MODE_STORAGE:
         _LOGGER.info(
             "Lovelace resources are in '%s' mode, which is read-only, so the "
@@ -100,7 +57,7 @@ def _writable_resources(hass: HomeAssistant):
         )
         return None
 
-    resources = _lovelace_field(data, "resources")
+    resources = data.resources
     if not hasattr(resources, "async_create_item"):
         _LOGGER.warning(
             "Lovelace reports '%s' resource mode but its resource collection "
