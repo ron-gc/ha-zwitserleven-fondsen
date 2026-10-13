@@ -38,6 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # Keep @types/node in package.json at the same major version.
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
