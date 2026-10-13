@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-import voluptuous as vol
+import probatio
 from homeassistant import config_entries
 from homeassistant.config_entries import ConfigFlowResult
 from homeassistant.core import callback
@@ -58,12 +58,12 @@ class ZwitserlevenConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if not options:
             return self.async_abort(reason="no_funds_left")
 
-        schema = vol.Schema(
+        schema = probatio.Schema(
             {
-                vol.Required(CONF_SYMBOL): SelectSelector(
+                probatio.Required(CONF_SYMBOL): SelectSelector(
                     SelectSelectorConfig(options=options, mode=SelectSelectorMode.DROPDOWN)
                 ),
-                vol.Optional(CONF_NAME, default=""): str,
+                probatio.Optional(CONF_NAME, default=""): str,
             }
         )
 
@@ -83,6 +83,6 @@ class ZwitserlevenOptionsFlow(config_entries.OptionsFlow):
             CONF_NAME, self.config_entry.data.get(CONF_NAME, "")
         )
 
-        schema = vol.Schema({vol.Optional(CONF_NAME, default=current_name): str})
+        schema = probatio.Schema({probatio.Optional(CONF_NAME, default=current_name): str})
 
         return self.async_show_form(step_id="init", data_schema=schema)
