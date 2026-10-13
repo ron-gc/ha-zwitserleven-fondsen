@@ -4,6 +4,13 @@ All notable changes to this integration are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- The fund page is parsed in the executor instead of on the event loop, so
+  Home Assistant no longer stalls briefly while the page is read.
+
 ## [0.0.1] - 2026-10-10
 
 First release as a standalone integration. It started from

@@ -115,7 +115,8 @@ class FondsenPage:
             ):
                 return self._funds
             html = await self._async_fetch()
-            self._funds = parse_funds(html)
+            # BeautifulSoup parses synchronously; keep it off the event loop.
+            self._funds = await self._hass.async_add_executor_job(parse_funds, html)
             self._fetched_at = time.monotonic()
             return self._funds
 
