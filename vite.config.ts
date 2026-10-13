@@ -20,10 +20,10 @@ export default defineConfig({
     },
     outDir: "custom_components/zwitserleven_fondsen/www",
     emptyOutDir: false,
-    rollupOptions: {
+    rolldownOptions: {
       external: [],
       output: {
-        inlineDynamicImports: true,
+        codeSplitting: false,
       },
     },
     sourcemap: true,
