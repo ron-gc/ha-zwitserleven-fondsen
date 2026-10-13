@@ -78,11 +78,14 @@ def parse_funds(html: str) -> dict[str, FundQuote]:
         name = row.find("td", class_="fundoverview__fund")
         date = row.find("td", class_="fundoverview__date")
         rate = row.find("td", class_="fundoverview__rate")
-        if not (button and button.get("id") and name and date and rate):
+        # bs4 types attribute values as str or list (for multi-valued ones like
+        # class); an id is always a str.
+        button_id = button.get("id") if button else None
+        if not (isinstance(button_id, str) and button_id and name and date and rate):
             continue
         try:
             quote = FundQuote(
-                symbol=button["id"].strip().upper(),
+                symbol=button_id.strip().upper(),
                 name=name.get_text(strip=True),
                 price_date=parse_date(date.get_text(strip=True)),
                 price=parse_price(rate.get_text(strip=True)),
