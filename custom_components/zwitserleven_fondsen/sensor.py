@@ -28,7 +28,8 @@ async def async_setup_entry(
 
 class ZwitserlevenSensor(CoordinatorEntity[ZwitserlevenDataCoordinator], SensorEntity):
     _attr_state_class = SensorStateClass.MEASUREMENT
-    _attr_icon = "mdi:chart-line"
+    # Its icon is in icons.json.
+    _attr_translation_key = "price"
     _attr_native_unit_of_measurement = "EUR"
     # The fund is the device and the price its only sensor, so the sensor
     # takes the device's name.

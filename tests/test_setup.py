@@ -5,6 +5,7 @@ from unittest.mock import patch
 import pytest
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.helpers import device_registry as dr, entity_registry as er
+from homeassistant.helpers.icon import async_get_icons
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.zwitserleven_fondsen.const import (
@@ -79,6 +80,14 @@ async def test_each_fund_is_a_device(hass, entry, hass_storage):
     assert device.name == "ASN Duurzaam Aandelenfonds"
     assert device.manufacturer == "Zwitserleven"
     assert er.async_get(hass).async_get(_entity_id(hass)).device_id == device.id
+
+
+async def test_the_sensor_icon_comes_from_icons_json(hass, entry, hass_storage):
+    await _set_up(hass, entry, hass_storage)
+
+    assert er.async_get(hass).async_get(_entity_id(hass)).translation_key == "price"
+    icons = await async_get_icons(hass, "entity", integrations={DOMAIN})
+    assert icons[DOMAIN]["sensor"]["price"]["default"] == "mdi:chart-line"
 
 
 async def test_retries_setup_when_the_site_is_down(hass, entry):
