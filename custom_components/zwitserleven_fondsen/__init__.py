@@ -1,9 +1,11 @@
 import logging
 
+from aiohttp import web
 from homeassistant.components.http import HomeAssistantView
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers.http import KEY_HASS
 from homeassistant.helpers.storage import Store
 
 from .const import CONF_SYMBOL, DATA_COORDINATOR, DOMAIN
@@ -29,8 +31,8 @@ class ZwitserlevenHistoryView(HomeAssistantView):
     name = "api:zwitserleven_fondsen:history"
     requires_auth = True
 
-    async def get(self, request):
-        hass = request.app["hass"]
+    async def get(self, request: web.Request) -> web.Response:
+        hass = request.app[KEY_HASS]
         symbol = request.query.get("symbol", "").upper().strip()
         if not symbol:
             return self.json_message("symbol parameter required", status_code=400)
