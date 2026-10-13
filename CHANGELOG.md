@@ -6,6 +6,11 @@ All notable changes to this integration are listed here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Diagnostics: download them from a fund's entry under Settings > Devices &
+  services to attach to a bug report.
+
 ### Fixed
 
 - The fund page is parsed in the executor instead of on the event loop, so

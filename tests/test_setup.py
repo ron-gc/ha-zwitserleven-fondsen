@@ -13,6 +13,9 @@ from custom_components.zwitserleven_fondsen.const import (
     DATA_COORDINATOR,
     DOMAIN,
 )
+from custom_components.zwitserleven_fondsen.diagnostics import (
+    async_get_config_entry_diagnostics,
+)
 from custom_components.zwitserleven_fondsen.fondsen_page import FondsenPageError
 
 from .conftest import SYMBOL, make_page, quote
@@ -201,3 +204,58 @@ async def test_history_endpoint_needs_a_symbol(hass, entry, hass_storage, hass_c
     resp = await client.get("/api/zwitserleven_fondsen/history")
 
     assert resp.status == HTTPStatus.BAD_REQUEST
+
+
+# ---------------------------------------------------------------------------
+# Diagnostics
+# ---------------------------------------------------------------------------
+
+
+async def test_diagnostics(hass, entry, hass_storage):
+    await _set_up(hass, entry, hass_storage, history=[["2026-10-01", 220.0]])
+
+    assert await async_get_config_entry_diagnostics(hass, entry) == {
+        "entry": {
+            "title": "ASN Duurzaam Aandelenfonds",
+            "data": {CONF_SYMBOL: SYMBOL, CONF_NAME: ""},
+            "options": {},
+        },
+        "coordinator": {
+            "last_update_success": True,
+            "last_exception": None,
+            "funds": [SYMBOL],
+            "missing_funds": [],
+        },
+        "fund": {
+            "symbol": SYMBOL,
+            "long_name": "ASN Duurzaam Aandelenfonds",
+            "price_date": "2026-10-02",
+            "current_price": 225.87,
+            "previous_close": 220.0,
+            "change": 5.87,
+            "change_pct": 2.67,
+        },
+        "history": {"days": 2, "first": "2026-10-01", "last": "2026-10-02"},
+    }
+
+
+async def test_diagnostics_show_a_failed_update(hass, entry, hass_storage):
+    page = await _set_up(hass, entry, hass_storage)
+
+    page.async_get_funds.side_effect = FondsenPageError("Zwitserleven returned HTTP 503")
+    await entry.runtime_data.async_refresh()
+
+    coordinator = (await async_get_config_entry_diagnostics(hass, entry))["coordinator"]
+    assert coordinator["last_update_success"] is False
+    assert "HTTP 503" in coordinator["last_exception"]
+
+
+async def test_diagnostics_show_a_fund_missing_from_the_page(hass, entry, hass_storage):
+    page = await _set_up(hass, entry, hass_storage)
+
+    page.async_get_funds.return_value = {"LTAOB": quote(symbol="LTAOB")}
+    await entry.runtime_data.async_refresh()
+
+    diagnostics = await async_get_config_entry_diagnostics(hass, entry)
+    assert diagnostics["coordinator"]["missing_funds"] == [SYMBOL]
+    assert diagnostics["fund"] is None
