@@ -5,13 +5,14 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.components.sensor import SensorEntity, SensorStateClass
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
-from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN, CONF_SYMBOL, CONF_NAME
 from .coordinator import ZwitserlevenDataCoordinator
 
 if TYPE_CHECKING:
+    from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+
     from . import ZwitserlevenConfigEntry
 
 # Every update comes from the coordinator, so entities never poll on their own.
