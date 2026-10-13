@@ -7,7 +7,8 @@ beautifulsoup4>=4.9.0  # the integration's own requirement, see manifest.json
 # `config[DOMAIN].get(CONF_RESOURCE_MODE, mode)` behind a "Remove mode fallback
 # in 2026.8" comment, so dropping that fallback could turn CI red with no code
 # change of ours, at an unpredictable moment.
-# 0.13.348 == Home Assistant 2026.7.4, the newest stable core (0.13.349 and up
-# ship 2026.8 betas). Needs Python >= 3.14 -- keep
+# 0.13.372 == Home Assistant 2026.10.1, the newest stable core. Betas ship
+# under the same version series (0.13.368-0.13.370 were 2026.10.0b*), so check
+# the homeassistant pin on PyPI before bumping. Needs Python >= 3.14 -- keep
 # .github/workflows/tests.yml in step when bumping this.
-pytest-homeassistant-custom-component==0.13.348
+pytest-homeassistant-custom-component==0.13.372

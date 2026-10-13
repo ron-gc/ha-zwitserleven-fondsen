@@ -69,7 +69,9 @@ async def test_sets_up_a_price_sensor(hass, entry, hass_storage):
 async def test_each_fund_is_a_device(hass, entry, hass_storage):
     await _set_up(hass, entry, hass_storage)
 
-    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, SYMBOL)})
+    device = dr.async_get(hass).async_get_device_by_identifier(
+        (DOMAIN, SYMBOL), entry.entry_id
+    )
     assert device is not None
     assert device.name == "ASN Duurzaam Aandelenfonds"
     assert device.manufacturer == "Zwitserleven"
@@ -93,7 +95,9 @@ async def test_renaming_in_the_options_renames_the_device(hass, entry, hass_stor
         )
         await hass.async_block_till_done()
 
-    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, SYMBOL)})
+    device = dr.async_get(hass).async_get_device_by_identifier(
+        (DOMAIN, SYMBOL), entry.entry_id
+    )
     assert device.name == "Aandelen"
     assert entry.state is ConfigEntryState.LOADED
 
