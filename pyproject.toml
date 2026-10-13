@@ -2,3 +2,15 @@
 asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = ["."]
+
+[tool.coverage.run]
+source = ["custom_components/zwitserleven_fondsen"]
+
+[tool.coverage.report]
+# The Silver tier of Home Assistant's integration quality scale asks for more
+# than 95% test coverage.
+fail_under = 95
+show_missing = true
+
+[tool.mypy]
+files = ["custom_components/zwitserleven_fondsen"]
