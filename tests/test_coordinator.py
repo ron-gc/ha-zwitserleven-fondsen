@@ -1,6 +1,7 @@
 """Unit tests for the shared ZwitserlevenDataCoordinator."""
 import logging
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, time, timedelta
+from unittest.mock import patch
 
 import pytest
 from homeassistant.helpers.update_coordinator import UpdateFailed
@@ -8,6 +9,7 @@ from pytest_homeassistant_custom_component.common import async_fire_time_changed
 
 from custom_components.zwitserleven_fondsen.coordinator import (
     ZwitserlevenDataCoordinator,
+    daily_update_time,
     get_coordinator,
 )
 from custom_components.zwitserleven_fondsen.fondsen_page import FondsenPageError
@@ -98,10 +100,41 @@ async def test_every_entry_shares_one_coordinator(hass):
 
 
 # ---------------------------------------------------------------------------
-# Schedule: at startup (entry setup) and every day at 20:00 UTC
+# Schedule: at startup (entry setup) and every day at a time in 20:00-06:00 UTC
 # ---------------------------------------------------------------------------
 
-EVENING = datetime(2026, 10, 4, 20, 0, 0, tzinfo=UTC)
+INSTALLATION_ID = "0123456789abcdef0123456789abcdef"
+EVENING = datetime.combine(date(2026, 10, 4), daily_update_time(INSTALLATION_ID), UTC)
+
+
+@pytest.fixture(autouse=True)
+def installation_id():
+    with patch(
+        "custom_components.zwitserleven_fondsen.coordinator.instance_id.async_get",
+        return_value=INSTALLATION_ID,
+    ):
+        yield
+
+
+def test_update_time_is_in_the_window():
+    for n in range(1000):
+        update_time = daily_update_time(f"installation-{n}")
+        assert update_time >= time(20) or update_time < time(6)
+
+
+def test_update_times_spread_over_every_hour_of_the_window():
+    hours = {daily_update_time(f"installation-{n}").hour for n in range(1000)}
+    assert hours == {20, 21, 22, 23, 0, 1, 2, 3, 4, 5}
+
+
+def test_update_time_is_the_same_for_the_same_installation():
+    assert daily_update_time(INSTALLATION_ID) == daily_update_time(INSTALLATION_ID)
+    assert daily_update_time(INSTALLATION_ID) != daily_update_time("another-installation")
+
+
+async def test_update_time_comes_from_the_installation_id(hass):
+    coord, _ = await _coord(hass, make_page(quote()))
+    assert coord.update_time == daily_update_time(INSTALLATION_ID)
 
 
 async def _fire(hass, freezer, when):
@@ -115,7 +148,7 @@ async def test_does_not_poll_on_an_interval(hass):
     assert coord.update_interval is None
 
 
-async def test_refreshes_every_day_at_20_utc(hass, freezer):
+async def test_refreshes_every_day_at_the_update_time(hass, freezer):
     freezer.move_to(EVENING - timedelta(hours=2))
     page = make_page(quote())
     await _coord(hass, page)

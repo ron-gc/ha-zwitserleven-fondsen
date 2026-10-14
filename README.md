@@ -38,7 +38,9 @@ a separate integration with its own domain (`zwitserleven_fondsen`), card
   - **Tile size** — choose S / M / L in the visual editor to control how many tiles fit per row
   - **Visual card editor** with drag & drop to reorder funds
 - **Daily updates** — prices change at most once a day, so the page is checked when Home Assistant
-  starts and every evening at 20:00 UTC. A failed check is retried every hour until it succeeds.
+  starts and once every night. Each installation checks at its own fixed time between 20:00 and
+  06:00 UTC, so the Zwitserleven website doesn't get every request at once; the time is logged
+  at startup and listed in the diagnostics. A failed check is retried every hour until it succeeds.
   To check right away, call the `homeassistant.update_entity` action on any fund sensor
 
 ## Requirements

@@ -2,32 +2,49 @@
 
 Every fund is on the same Zwitserleven page, so one download updates all
 configured funds, however many there are and whenever they were added. The
-page is fetched when the funds set up and then every day at
-DAILY_UPDATE_HOUR_UTC:00 UTC; a failed daily fetch is retried every
-RETRY_INTERVAL until it succeeds.
+page is fetched when the funds set up and then once a day, at a time in the
+update window that is fixed per installation (see daily_update_time); a failed
+daily fetch is retried every RETRY_INTERVAL until it succeeds.
 """
 from __future__ import annotations
 
+import hashlib
 import logging
 from collections.abc import Callable
-from datetime import datetime
+from datetime import datetime, time
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STOP
 from homeassistant.core import Event, HomeAssistant
+from homeassistant.helpers import instance_id
 from homeassistant.helpers.event import async_call_later, async_track_utc_time_change
 from homeassistant.helpers.storage import Store
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
-    DAILY_UPDATE_HOUR_UTC,
     DATA_COORDINATOR,
     DOMAIN,
     PRICE_DECIMALS,
     RETRY_INTERVAL,
+    UPDATE_WINDOW,
+    UPDATE_WINDOW_START_HOUR_UTC,
 )
 from .fondsen_page import FondsenPage, FondsenPageError, get_page
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def daily_update_time(installation_id: str) -> time:
+    """The UTC time in the update window at which this installation updates.
+
+    It is derived from the Home Assistant installation ID, so it is spread
+    evenly over the window across installations and stays the same across
+    restarts.
+    """
+    digest = hashlib.sha256(f"{DOMAIN}:{installation_id}".encode()).digest()
+    offset = int.from_bytes(digest[:8], "big") % int(UPDATE_WINDOW.total_seconds())
+    hours, rest = divmod(offset, 3600)
+    minutes, seconds = divmod(rest, 60)
+    return time((UPDATE_WINDOW_START_HOUR_UTC + hours) % 24, minutes, seconds)
 
 
 class FundHistory:
@@ -83,6 +100,7 @@ class ZwitserlevenDataCoordinator(DataUpdateCoordinator[dict[str, dict]]):
         self._page = page
         self._funds: dict[str, FundHistory] = {}
         self._missing: set[str] = set()
+        self._update_time: time | None = None
         self._unsub_daily: Callable[[], None] | None = None
         self._unsub_retry: Callable[[], None] | None = None
         self._unsub_stop: Callable[[], None] | None = None
@@ -91,7 +109,12 @@ class ZwitserlevenDataCoordinator(DataUpdateCoordinator[dict[str, dict]]):
         history = FundHistory(store)
         await history.async_load()
         self._funds[symbol] = history
-        self._start_schedule()
+        update_time = self._update_time
+        if update_time is None:
+            update_time = daily_update_time(await instance_id.async_get(self.hass))
+            self._update_time = update_time
+            _LOGGER.info("Daily update at %s UTC", update_time.isoformat())
+        self._start_schedule(update_time)
 
     def remove_fund(self, symbol: str) -> None:
         self._funds.pop(symbol, None)
@@ -99,15 +122,15 @@ class ZwitserlevenDataCoordinator(DataUpdateCoordinator[dict[str, dict]]):
         if not self._funds:
             self._stop_schedule()
 
-    def _start_schedule(self) -> None:
+    def _start_schedule(self, update_time: time) -> None:
         if self._unsub_daily is not None:
             return
         self._unsub_daily = async_track_utc_time_change(
             self.hass,
             self._async_scheduled_refresh,
-            hour=DAILY_UPDATE_HOUR_UTC,
-            minute=0,
-            second=0,
+            hour=update_time.hour,
+            minute=update_time.minute,
+            second=update_time.second,
         )
         self._unsub_stop = self.hass.bus.async_listen_once(
             EVENT_HOMEASSISTANT_STOP, self._async_on_stop
@@ -147,6 +170,11 @@ class ZwitserlevenDataCoordinator(DataUpdateCoordinator[dict[str, dict]]):
     def funds(self) -> list[str]:
         """IDs of the configured funds."""
         return sorted(self._funds)
+
+    @property
+    def update_time(self) -> time | None:
+        """UTC time of the daily update, or None before the first fund is added."""
+        return self._update_time
 
     @property
     def missing_funds(self) -> list[str]:

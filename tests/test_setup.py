@@ -235,6 +235,7 @@ async def test_diagnostics(hass, entry, hass_storage):
             "last_exception": None,
             "funds": [SYMBOL],
             "missing_funds": [],
+            "daily_update_utc": entry.runtime_data.update_time.isoformat(),
         },
         "fund": {
             "symbol": SYMBOL,

@@ -18,6 +18,7 @@ async def async_get_config_entry_diagnostics(
     symbol = entry.data[CONF_SYMBOL]
     history = coordinator.history(symbol) or []
     last_exception = coordinator.last_exception
+    update_time = coordinator.update_time
     return {
         "entry": {
             "title": entry.title,
@@ -30,6 +31,7 @@ async def async_get_config_entry_diagnostics(
             "last_exception": repr(last_exception) if last_exception else None,
             "funds": coordinator.funds,
             "missing_funds": coordinator.missing_funds,
+            "daily_update_utc": update_time.isoformat() if update_time else None,
         },
         "fund": (coordinator.data or {}).get(symbol),
         "history": {
