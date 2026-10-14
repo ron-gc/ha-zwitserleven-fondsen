@@ -1,4 +1,5 @@
 """Unit tests for the shared ZwitserlevenDataCoordinator."""
+import asyncio
 import logging
 from datetime import UTC, date, datetime, time, timedelta
 from unittest.mock import patch
@@ -135,6 +136,24 @@ def test_update_time_is_the_same_for_the_same_installation():
 async def test_update_time_comes_from_the_installation_id(hass):
     coord, _ = await _coord(hass, make_page(quote()))
     assert coord.update_time == daily_update_time(INSTALLATION_ID)
+
+
+async def test_funds_setting_up_together_log_the_update_time_once(hass, caplog):
+    async def slow_installation_id(_hass):
+        await asyncio.sleep(0)
+        return INSTALLATION_ID
+
+    coord = ZwitserlevenDataCoordinator(hass, make_page(quote()))
+    with patch(
+        "custom_components.zwitserleven_fondsen.coordinator.instance_id.async_get",
+        side_effect=slow_installation_id,
+    ), caplog.at_level(logging.INFO):
+        await asyncio.gather(
+            coord.async_add_fund(SYMBOL, make_store()),
+            coord.async_add_fund("LTAOB", make_store()),
+        )
+
+    assert caplog.text.count("Daily update at") == 1
 
 
 async def _fire(hass, freezer, when):

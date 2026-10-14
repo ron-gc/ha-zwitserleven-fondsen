@@ -34,9 +34,6 @@
     }
   },
   "exceptions": {
-    "fund_not_available": {
-      "message": "Fund {symbol} is not available on the Zwitserleven page."
-    },
     "update_failed": {
       "message": "Could not read the fund prices from the Zwitserleven page: {error}"
     }
@@ -44,7 +41,14 @@
   "issues": {
     "fund_missing": {
       "title": "Fund {symbol} is no longer listed by Zwitserleven",
-      "description": "The Zwitserleven fund overview page no longer lists fund {symbol}, so its price sensor is unavailable. If Zwitserleven has closed or renamed the fund, delete the fund under **Settings > Devices & services > Zwitserleven Fondsen**. This issue goes away by itself if the fund is listed again."
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Delete fund {symbol}?",
+            "description": "The Zwitserleven fund overview page no longer lists fund {symbol}, so its price sensor is unavailable.\n\nIf Zwitserleven has closed or renamed the fund, select **Submit** to delete the fund with its device, sensor and stored prices. If you expect the fund to come back, close this dialog instead: the issue goes away by itself when the fund is listed again."
+          }
+        }
+      }
     }
   }
 }

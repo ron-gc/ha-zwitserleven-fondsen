@@ -26,7 +26,14 @@ rules:
   has-entity-name: done
   runtime-data: done
   test-before-configure: done
-  test-before-setup: done
+  test-before-setup:
+    status: exempt
+    comment: >
+      Setup does fetch the page, but an entry sets up even when that fails or
+      its fund is missing, with an unavailable sensor. ConfigEntryNotReady
+      would retry about every 80 seconds for as long as the page is down,
+      each retry a request to Zwitserleven. The coordinator retries hourly
+      instead, and the log or a repair issue says what is wrong.
   unique-config-entry: done
 
   # Silver
@@ -88,8 +95,8 @@ rules:
     status: exempt
     comment: >
       Each device belongs to the config entry of its fund and goes with it. A
-      fund that disappears from the page raises a repair issue that asks the
-      user to delete it.
+      fund that disappears from the page raises a repair issue whose fix flow
+      deletes it.
 
   # Platinum
   async-dependency:

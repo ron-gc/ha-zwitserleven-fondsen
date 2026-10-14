@@ -10,9 +10,10 @@ All notable changes to this integration are listed here. The format follows
 
 - Diagnostics: download them from a fund's entry under Settings > Devices &
   services to attach to a bug report.
-- A repair issue when a fund is no longer listed on the Zwitserleven page,
-  asking to delete the fund. It goes away by itself if the fund is listed
-  again.
+- A repair issue when a fund is no longer listed on the Zwitserleven page.
+  Submitting it deletes the fund. It goes away by itself if the fund is listed
+  again. A page from which no fund can be read at all counts as a failed
+  update instead, so a page layout change does not ask to delete every fund.
 - The integration declares the Platinum tier of the Home Assistant quality
   scale, with every rule recorded in `quality_scale.yaml`.
 
@@ -27,6 +28,11 @@ All notable changes to this integration are listed here. The format follows
 - Requests for the fund page name this integration and its version in the
   User-Agent, instead of posing as a Chrome browser.
 - The error shown when the fund page cannot be read is translatable.
+- A fund now sets up even when the page cannot be read or does not list the
+  fund, with its sensor unavailable. Before, Home Assistant retried the setup
+  about every 80 seconds for as long as that lasted, each retry a request to
+  Zwitserleven. Now a failed page is retried hourly, and a failed request is
+  shared by all funds that set up within a minute.
 - The README has use cases, supported funds, the options, automation examples
   and known limitations.
 - The code passes mypy in strict mode, which CI now enforces.

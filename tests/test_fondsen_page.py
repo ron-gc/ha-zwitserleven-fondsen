@@ -104,6 +104,13 @@ def test_page_without_the_table_raises():
         parse_funds("<html><body></body></html>")
 
 
+def test_table_without_a_single_parsable_fund_raises():
+    """A changed page must not look like every fund was delisted."""
+    html = f'<table class="fundoverview">{_row("BAD", date="n.v.t.")}</table>'
+    with pytest.raises(FondsenPageError, match="Found no funds"):
+        parse_funds(html)
+
+
 def test_unparseable_row_is_skipped():
     html = """
     <table class="fundoverview">
@@ -179,6 +186,32 @@ async def test_one_request_serves_every_fund(hass):
         await page.async_get_funds()
 
     assert session.get.call_count == 1
+
+
+async def test_a_failure_is_remembered_as_long(hass):
+    """Entries setting up together while the page fails cause one request too."""
+    patcher, session = _session(status=404)
+    page = FondsenPage(hass)
+
+    with patcher:
+        for _ in range(2):
+            with pytest.raises(FondsenPageError, match="HTTP 404"):
+                await page.async_get_funds()
+
+    assert session.get.call_count == 1
+
+
+async def test_the_page_is_fetched_again_after_a_remembered_failure(hass):
+    page = FondsenPage(hass)
+    failing, _ = _session(status=404)
+    with failing, pytest.raises(FondsenPageError):
+        await page.async_get_funds()
+
+    working, _ = _session(FONDSEN_HTML)
+    with working, patch(
+        "custom_components.zwitserleven_fondsen.fondsen_page.PAGE_CACHE_SECONDS", 0
+    ):
+        assert "LTAAF" in await page.async_get_funds()
 
 
 async def test_http_error_raises(hass):

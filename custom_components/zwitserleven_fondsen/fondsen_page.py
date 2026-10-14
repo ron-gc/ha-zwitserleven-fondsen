@@ -20,7 +20,8 @@ from homeassistant.loader import async_get_integration
 
 from .const import DATA_PAGE, DOMAIN, ZWITSERLEVEN_FONDSEN_URL
 
-# Long enough to cover the fund entries setting up together at startup.
+# Long enough to cover the fund entries setting up together at startup. A
+# failed fetch is remembered as long, so they cause one request then as well.
 PAGE_CACHE_SECONDS = 60
 
 _TIMEOUT = aiohttp.ClientTimeout(total=15)
@@ -65,7 +66,9 @@ def parse_funds(html: str) -> dict[str, FundQuote]:
     """Return every fund on the page, keyed by its button id (e.g. LTAAF).
 
     Rows that do not parse are skipped rather than failing the whole page, so
-    one odd row cannot take down every fund.
+    one odd row cannot take down every fund. A table without a single fund
+    that parses is an error, though: then the page has changed, and treating
+    it as "every fund was delisted" would ask the user to delete them all.
     """
     soup = BeautifulSoup(html, "html.parser")
     table = soup.find("table", class_="fundoverview")
@@ -93,6 +96,8 @@ def parse_funds(html: str) -> dict[str, FundQuote]:
         except ValueError:
             continue
         funds[quote.symbol] = quote
+    if not funds:
+        raise FondsenPageError("Found no funds in the fund table on the page")
     return funds
 
 
@@ -103,21 +108,28 @@ class FondsenPage:
         self._hass = hass
         self._lock = asyncio.Lock()
         self._funds: dict[str, FundQuote] | None = None
+        self._error: str | None = None
         self._fetched_at = 0.0
         self._user_agent: str | None = None
 
     async def async_get_funds(self) -> dict[str, FundQuote]:
         async with self._lock:
-            if (
-                self._funds is not None
-                and time.monotonic() - self._fetched_at < PAGE_CACHE_SECONDS
-            ):
-                return self._funds
-            html = await self._async_fetch()
-            # BeautifulSoup parses synchronously; keep it off the event loop.
-            self._funds = await self._hass.async_add_executor_job(parse_funds, html)
+            if time.monotonic() - self._fetched_at < PAGE_CACHE_SECONDS:
+                if self._error is not None:
+                    raise FondsenPageError(self._error)
+                if self._funds is not None:
+                    return self._funds
+            try:
+                html = await self._async_fetch()
+                # BeautifulSoup parses synchronously; keep it off the event loop.
+                funds = await self._hass.async_add_executor_job(parse_funds, html)
+            except FondsenPageError as err:
+                self._funds, self._error = None, str(err)
+                self._fetched_at = time.monotonic()
+                raise
+            self._funds, self._error = funds, None
             self._fetched_at = time.monotonic()
-            return self._funds
+            return funds
 
     async def _async_user_agent(self) -> str:
         """Name this integration, so Zwitserleven can see who fetches the page."""

@@ -1,13 +1,20 @@
 """End-to-end tests: set up a config entry the way Home Assistant does."""
+from datetime import timedelta
 from http import HTTPStatus
 from unittest.mock import patch
 
 import pytest
+from homeassistant.components.repairs import repairs_flow_manager
 from homeassistant.config_entries import ConfigEntryState
+from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.icon import async_get_icons
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from homeassistant.setup import async_setup_component
+from pytest_homeassistant_custom_component.common import (
+    MockConfigEntry,
+    async_fire_time_changed,
+)
 
 from custom_components.zwitserleven_fondsen.const import (
     CONF_NAME,
@@ -24,6 +31,7 @@ from .conftest import SYMBOL, make_page, quote
 
 HISTORY_KEY = f"zwitserleven_fondsen.{SYMBOL.lower()}.history"
 UNIQUE_ID = f"zwitserleven_fondsen_{SYMBOL}"
+ISSUE_ID = f"fund_missing_{SYMBOL}"
 
 
 @pytest.fixture
@@ -91,12 +99,35 @@ async def test_the_sensor_icon_comes_from_icons_json(hass, entry, hass_storage):
     assert icons[DOMAIN]["sensor"]["price"]["default"] == "mdi:chart-line"
 
 
-async def test_retries_setup_when_the_site_is_down(hass, entry):
-    with _serve(error=FondsenPageError("Zwitserleven returned HTTP 503")):
-        await hass.config_entries.async_setup(entry.entry_id)
+async def _wait(hass, freezer, delta):
+    freezer.tick(delta)
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
+
+async def test_sets_up_with_an_unavailable_sensor_when_the_site_is_down(
+    hass, entry, freezer, issue_registry
+):
+    """No ConfigEntryNotReady: its retries would request the page every ~80 s."""
+    page = make_page(error=FondsenPageError("Zwitserleven returned HTTP 503"))
+    with patch("custom_components.zwitserleven_fondsen.coordinator.get_page", return_value=page):
+        assert await hass.config_entries.async_setup(entry.entry_id)
         await hass.async_block_till_done()
 
-    assert entry.state is ConfigEntryState.SETUP_RETRY
+    assert entry.state is ConfigEntryState.LOADED
+    assert hass.states.get(_entity_id(hass)).state == "unavailable"
+    assert issue_registry.async_get_issue(DOMAIN, ISSUE_ID) is None
+
+    # Nothing until the hourly retry, which finds the page back.
+    await _wait(hass, freezer, timedelta(minutes=59))
+    assert page.async_get_funds.call_count == 1
+
+    page.async_get_funds.side_effect = None
+    page.async_get_funds.return_value = {SYMBOL: quote()}
+    await _wait(hass, freezer, timedelta(minutes=1))
+
+    assert page.async_get_funds.call_count == 2
+    assert float(hass.states.get(_entity_id(hass)).state) == 225.87
 
 
 async def test_renaming_in_the_options_renames_the_device(hass, entry, hass_storage):
@@ -121,16 +152,6 @@ async def test_unload(hass, entry, hass_storage):
     assert await hass.config_entries.async_unload(entry.entry_id)
     assert entry.state is ConfigEntryState.NOT_LOADED
     # The shared coordinator stops updating the fund.
-    assert hass.data[DATA_COORDINATOR].history(SYMBOL) is None
-
-
-async def test_retries_setup_when_the_fund_is_not_listed(hass, entry):
-    with _serve(quote(symbol="LTAOB")):
-        await hass.config_entries.async_setup(entry.entry_id)
-        await hass.async_block_till_done()
-
-    assert entry.state is ConfigEntryState.SETUP_RETRY
-    assert entry.reason == f"Fund {SYMBOL} is not available on the Zwitserleven page"
     assert hass.data[DATA_COORDINATOR].history(SYMBOL) is None
 
 
@@ -185,9 +206,6 @@ async def test_removing_the_fund_deletes_its_history(hass, entry, hass_storage):
 # Repair issue for a fund that is no longer listed
 # ---------------------------------------------------------------------------
 
-ISSUE_ID = f"fund_missing_{SYMBOL}"
-
-
 async def _drop_the_fund(hass, entry, page):
     page.async_get_funds.return_value = {"LTAOB": quote(symbol="LTAOB")}
     await entry.runtime_data.async_refresh()
@@ -204,7 +222,20 @@ async def test_missing_fund_raises_a_repair_issue(hass, entry, hass_storage, iss
     assert issue.translation_key == "fund_missing"
     assert issue.translation_placeholders == {"symbol": SYMBOL}
     assert issue.severity is ir.IssueSeverity.WARNING
-    assert not issue.is_fixable
+    assert issue.is_fixable
+    assert issue.data == {CONF_SYMBOL: SYMBOL}
+
+
+async def test_a_page_that_fails_raises_no_repair_issue(
+    hass, entry, hass_storage, issue_registry
+):
+    """Only a fund missing from a page that was read is a reason to delete it."""
+    page = await _set_up(hass, entry, hass_storage)
+
+    page.async_get_funds.side_effect = FondsenPageError("Found no funds in the fund table")
+    await entry.runtime_data.async_refresh()
+
+    assert issue_registry.async_get_issue(DOMAIN, ISSUE_ID) is None
 
 
 async def test_repair_issue_goes_when_the_fund_is_listed_again(
@@ -230,14 +261,63 @@ async def test_unloading_the_fund_deletes_its_repair_issue(
     assert issue_registry.async_get_issue(DOMAIN, ISSUE_ID) is None
 
 
-async def test_fund_missing_at_setup_keeps_its_repair_issue_until_it_is_deleted(
+async def _start_fix_flow(hass):
+    assert await async_setup_component(hass, "repairs", {})
+    return await repairs_flow_manager(hass).async_init(
+        DOMAIN, context={"issue_id": ISSUE_ID}
+    )
+
+
+async def test_the_repair_deletes_the_fund(hass, entry, hass_storage, issue_registry):
+    page = await _set_up(hass, entry, hass_storage, history=[["2026-10-01", 220.0]])
+    await _drop_the_fund(hass, entry, page)
+
+    result = await _start_fix_flow(hass)
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "confirm"
+    assert result["description_placeholders"] == {"symbol": SYMBOL}
+
+    result = await repairs_flow_manager(hass).async_configure(result["flow_id"], {})
+    await hass.async_block_till_done()
+
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert hass.config_entries.async_get_entry(entry.entry_id) is None
+    assert HISTORY_KEY not in hass_storage
+    assert _entity_id(hass) is None
+    assert issue_registry.async_get_issue(DOMAIN, ISSUE_ID) is None
+
+
+async def test_the_repair_leaves_other_funds_alone(hass, entry, hass_storage):
+    second = MockConfigEntry(
+        domain=DOMAIN,
+        title="Obligaties",
+        unique_id="zwitserleven_fondsen_LTAOB",
+        data={CONF_SYMBOL: "LTAOB", CONF_NAME: ""},
+    )
+    second.add_to_hass(hass)
+    page = make_page(quote(), quote(symbol="LTAOB"))
+    with patch("custom_components.zwitserleven_fondsen.coordinator.get_page", return_value=page):
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+    await _drop_the_fund(hass, entry, page)
+
+    result = await _start_fix_flow(hass)
+    await repairs_flow_manager(hass).async_configure(result["flow_id"], {})
+    await hass.async_block_till_done()
+
+    assert hass.config_entries.async_get_entry(entry.entry_id) is None
+    assert second.state is ConfigEntryState.LOADED
+
+
+async def test_sets_up_with_a_repair_issue_when_the_fund_is_not_listed(
     hass, entry, issue_registry
 ):
     with _serve(quote(symbol="LTAOB")):
-        await hass.config_entries.async_setup(entry.entry_id)
+        assert await hass.config_entries.async_setup(entry.entry_id)
         await hass.async_block_till_done()
 
-    assert entry.state is ConfigEntryState.SETUP_RETRY
+    assert entry.state is ConfigEntryState.LOADED
+    assert hass.states.get(_entity_id(hass)).state == "unavailable"
     assert issue_registry.async_get_issue(DOMAIN, ISSUE_ID) is not None
 
     await hass.config_entries.async_remove(entry.entry_id)

@@ -23,6 +23,7 @@ from homeassistant.helpers.storage import Store
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
+    CONF_SYMBOL,
     DATA_COORDINATOR,
     DOMAIN,
     PRICE_DECIMALS,
@@ -126,12 +127,14 @@ class ZwitserlevenDataCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]
         history = FundHistory(store)
         await history.async_load()
         self._funds[symbol] = history
-        update_time = self._update_time
-        if update_time is None:
-            update_time = daily_update_time(await instance_id.async_get(self.hass))
-            self._update_time = update_time
-            _LOGGER.info("Daily update at %s UTC", update_time.isoformat())
-        self._start_schedule(update_time)
+        if self._update_time is None:
+            installation_id = await instance_id.async_get(self.hass)
+            # Funds that set up together all get here while the first one
+            # awaits the ID, so check again after it.
+            if self._update_time is None:
+                self._update_time = daily_update_time(installation_id)
+                _LOGGER.info("Daily update at %s UTC", self._update_time.isoformat())
+        self._start_schedule(self._update_time)
 
     def remove_fund(self, symbol: str) -> None:
         self._funds.pop(symbol, None)
@@ -144,7 +147,7 @@ class ZwitserlevenDataCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]
             return
         self._unsub_daily = async_track_utc_time_change(
             self.hass,
-            self._async_scheduled_refresh,
+            self.async_refresh_with_retry,
             hour=update_time.hour,
             minute=update_time.minute,
             second=update_time.second,
@@ -172,15 +175,18 @@ class ZwitserlevenDataCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]
         self._unsub_stop = None
         self._stop_schedule()
 
-    async def _async_scheduled_refresh(self, _now: datetime | None = None) -> None:
-        """The daily refresh, also used for the retries after a failed one."""
+    async def async_refresh_with_retry(self, _now: datetime | None = None) -> None:
+        """Refresh now and retry every RETRY_INTERVAL until a refresh succeeds.
+
+        Used for the daily refresh, for its retries, and when a fund sets up.
+        """
         # A pending retry is superseded by this refresh; cancelling one that
         # has just fired is a no-op.
         self._cancel_retry()
         await self.async_refresh()
         if not self.last_update_success and self._funds:
             self._unsub_retry = async_call_later(
-                self.hass, RETRY_INTERVAL, self._async_scheduled_refresh
+                self.hass, RETRY_INTERVAL, self.async_refresh_with_retry
             )
 
     @property
@@ -225,7 +231,9 @@ class ZwitserlevenDataCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]
                     self.hass,
                     DOMAIN,
                     fund_missing_issue_id(symbol),
-                    is_fixable=False,
+                    # The fix flow in repairs.py deletes the fund.
+                    is_fixable=True,
+                    data={CONF_SYMBOL: symbol},
                     severity=ir.IssueSeverity.WARNING,
                     learn_more_url=ZWITSERLEVEN_FONDSEN_URL,
                     translation_key="fund_missing",
