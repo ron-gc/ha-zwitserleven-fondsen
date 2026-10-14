@@ -12,10 +12,12 @@ import hashlib
 import logging
 from collections.abc import Callable
 from datetime import datetime, time
+from typing import Any
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STOP
 from homeassistant.core import Event, HomeAssistant
 from homeassistant.helpers import instance_id
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.event import async_call_later, async_track_utc_time_change
 from homeassistant.helpers.storage import Store
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
@@ -27,6 +29,7 @@ from .const import (
     RETRY_INTERVAL,
     UPDATE_WINDOW,
     UPDATE_WINDOW_START_HOUR_UTC,
+    ZWITSERLEVEN_FONDSEN_URL,
 )
 from .fondsen_page import FondsenPage, FondsenPageError, get_page
 
@@ -47,12 +50,26 @@ def daily_update_time(installation_id: str) -> time:
     return time((UPDATE_WINDOW_START_HOUR_UTC + hours) % 24, minutes, seconds)
 
 
-class FundHistory:
-    """The stored daily prices of one fund, as [["YYYY-MM-DD", price], ...]."""
+# The stored daily prices of one fund, as [["YYYY-MM-DD", price], ...]. Lists,
+# not tuples, because that is how they come back from the JSON store.
+type History = list[list[Any]]
 
-    def __init__(self, store: Store) -> None:
+
+def fund_missing_issue_id(symbol: str) -> str:
+    """ID of the repair issue raised while `symbol` is missing from the page."""
+    return f"fund_missing_{symbol}"
+
+
+def async_delete_fund_missing_issue(hass: HomeAssistant, symbol: str) -> None:
+    ir.async_delete_issue(hass, DOMAIN, fund_missing_issue_id(symbol))
+
+
+class FundHistory:
+    """The stored daily prices of one fund."""
+
+    def __init__(self, store: Store[History]) -> None:
         self._store = store
-        self.days: list = []
+        self.days: History = []
 
     async def async_load(self) -> None:
         stored = await self._store.async_load()
@@ -76,11 +93,11 @@ class FundHistory:
         """Price of the last stored day before `date`, or `fallback` if there is none."""
         for day, price in reversed(self.days):
             if day < date:
-                return price
+                return float(price)
         return fallback
 
 
-class ZwitserlevenDataCoordinator(DataUpdateCoordinator[dict[str, dict]]):
+class ZwitserlevenDataCoordinator(DataUpdateCoordinator[dict[str, dict[str, Any]]]):
     """Fetches the fund page and keeps the data of every configured fund.
 
     `data` maps each configured fund ID to its sensor data. A fund that is
@@ -105,7 +122,7 @@ class ZwitserlevenDataCoordinator(DataUpdateCoordinator[dict[str, dict]]):
         self._unsub_retry: Callable[[], None] | None = None
         self._unsub_stop: Callable[[], None] | None = None
 
-    async def async_add_fund(self, symbol: str, store: Store) -> None:
+    async def async_add_fund(self, symbol: str, store: Store[History]) -> None:
         history = FundHistory(store)
         await history.async_load()
         self._funds[symbol] = history
@@ -181,28 +198,47 @@ class ZwitserlevenDataCoordinator(DataUpdateCoordinator[dict[str, dict]]):
         """IDs of the configured funds that the last fetched page did not list."""
         return sorted(self._missing)
 
-    def history(self, symbol: str) -> list | None:
+    def history(self, symbol: str) -> History | None:
         """Stored daily prices of a configured fund, or None if it is not configured."""
         fund = self._funds.get(symbol)
         return None if fund is None else fund.days
 
-    async def _async_update_data(self) -> dict[str, dict]:
+    async def _async_update_data(self) -> dict[str, dict[str, Any]]:
         try:
             quotes = await self._page.async_get_funds()
         except FondsenPageError as err:
-            raise UpdateFailed(str(err)) from err
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="update_failed",
+                translation_placeholders={"error": str(err)},
+            ) from err
 
-        data: dict[str, dict] = {}
+        data: dict[str, dict[str, Any]] = {}
         for symbol, history in list(self._funds.items()):
             quote = quotes.get(symbol)
             if quote is None:
                 if symbol not in self._missing:
                     _LOGGER.warning("Fund %s is no longer listed on the Zwitserleven page", symbol)
                     self._missing.add(symbol)
+                # Creating an existing issue only updates it.
+                ir.async_create_issue(
+                    self.hass,
+                    DOMAIN,
+                    fund_missing_issue_id(symbol),
+                    is_fixable=False,
+                    severity=ir.IssueSeverity.WARNING,
+                    learn_more_url=ZWITSERLEVEN_FONDSEN_URL,
+                    translation_key="fund_missing",
+                    translation_placeholders={"symbol": symbol},
+                )
                 continue
             if symbol in self._missing:
                 _LOGGER.info("Fund %s is listed on the Zwitserleven page again", symbol)
                 self._missing.discard(symbol)
+            # Also when the fund was not in _missing: a fund that was missing
+            # when its entry set up is dropped from the coordinator until a
+            # retry finds it, but its issue stays.
+            async_delete_fund_missing_issue(self.hass, symbol)
 
             await history.async_record(quote.price_date, quote.price)
             price = quote.price

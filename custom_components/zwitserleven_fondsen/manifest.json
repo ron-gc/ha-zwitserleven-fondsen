@@ -15,6 +15,7 @@
   "documentation": "https://github.com/ron-gc/ha-zwitserleven-fondsen",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/ron-gc/ha-zwitserleven-fondsen/issues",
+  "quality_scale": "platinum",
   "requirements": [
     "beautifulsoup4>=4.9.0"
   ],

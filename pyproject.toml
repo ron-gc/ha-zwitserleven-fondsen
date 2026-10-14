@@ -14,3 +14,12 @@ show_missing = true
 
 [tool.mypy]
 files = ["custom_components/zwitserleven_fondsen"]
+# The strict-typing rule of the Platinum tier of the quality scale.
+strict = true
+
+# Home Assistant documents `from homeassistant.components.http import
+# StaticPathConfig`, but the package re-exports it without `as` or __all__,
+# which strict mode does not count as an export.
+[[tool.mypy.overrides]]
+module = "homeassistant.components.http"
+implicit_reexport = true

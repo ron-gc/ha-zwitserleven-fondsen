@@ -5,6 +5,7 @@ from unittest.mock import patch
 import pytest
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.helpers import device_registry as dr, entity_registry as er
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.icon import async_get_icons
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
@@ -181,6 +182,71 @@ async def test_removing_the_fund_deletes_its_history(hass, entry, hass_storage):
 
 
 # ---------------------------------------------------------------------------
+# Repair issue for a fund that is no longer listed
+# ---------------------------------------------------------------------------
+
+ISSUE_ID = f"fund_missing_{SYMBOL}"
+
+
+async def _drop_the_fund(hass, entry, page):
+    page.async_get_funds.return_value = {"LTAOB": quote(symbol="LTAOB")}
+    await entry.runtime_data.async_refresh()
+    await hass.async_block_till_done()
+
+
+async def test_missing_fund_raises_a_repair_issue(hass, entry, hass_storage, issue_registry):
+    page = await _set_up(hass, entry, hass_storage)
+    assert issue_registry.async_get_issue(DOMAIN, ISSUE_ID) is None
+
+    await _drop_the_fund(hass, entry, page)
+
+    issue = issue_registry.async_get_issue(DOMAIN, ISSUE_ID)
+    assert issue.translation_key == "fund_missing"
+    assert issue.translation_placeholders == {"symbol": SYMBOL}
+    assert issue.severity is ir.IssueSeverity.WARNING
+    assert not issue.is_fixable
+
+
+async def test_repair_issue_goes_when_the_fund_is_listed_again(
+    hass, entry, hass_storage, issue_registry
+):
+    page = await _set_up(hass, entry, hass_storage)
+    await _drop_the_fund(hass, entry, page)
+
+    page.async_get_funds.return_value = {SYMBOL: quote()}
+    await entry.runtime_data.async_refresh()
+
+    assert issue_registry.async_get_issue(DOMAIN, ISSUE_ID) is None
+
+
+async def test_unloading_the_fund_deletes_its_repair_issue(
+    hass, entry, hass_storage, issue_registry
+):
+    page = await _set_up(hass, entry, hass_storage)
+    await _drop_the_fund(hass, entry, page)
+
+    assert await hass.config_entries.async_unload(entry.entry_id)
+
+    assert issue_registry.async_get_issue(DOMAIN, ISSUE_ID) is None
+
+
+async def test_fund_missing_at_setup_keeps_its_repair_issue_until_it_is_deleted(
+    hass, entry, issue_registry
+):
+    with _serve(quote(symbol="LTAOB")):
+        await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+
+    assert entry.state is ConfigEntryState.SETUP_RETRY
+    assert issue_registry.async_get_issue(DOMAIN, ISSUE_ID) is not None
+
+    await hass.config_entries.async_remove(entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert issue_registry.async_get_issue(DOMAIN, ISSUE_ID) is None
+
+
+# ---------------------------------------------------------------------------
 # History endpoint
 # ---------------------------------------------------------------------------
 
@@ -258,7 +324,10 @@ async def test_diagnostics_show_a_failed_update(hass, entry, hass_storage):
 
     coordinator = (await async_get_config_entry_diagnostics(hass, entry))["coordinator"]
     assert coordinator["last_update_success"] is False
-    assert "HTTP 503" in coordinator["last_exception"]
+    assert coordinator["last_exception"] == (
+        "UpdateFailed: Could not read the fund prices from the Zwitserleven page: "
+        "Zwitserleven returned HTTP 503"
+    )
 
 
 async def test_diagnostics_show_a_fund_missing_from_the_page(hass, entry, hass_storage):

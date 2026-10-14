@@ -43,6 +43,22 @@ a separate integration with its own domain (`zwitserleven_fondsen`), card
   at startup and listed in the diagnostics. A failed check is retried every hour until it succeeds.
   To check right away, call the `homeassistant.update_entity` action on any fund sensor
 
+## Use cases
+
+- See the funds of your Zwitserleven pension or savings plan on a dashboard, next to the rest of
+  your home.
+- Get a notification when a fund rises or drops sharply, see [Automation examples](#automation-examples).
+- Track what your holdings are worth by multiplying a price by the number of units you own.
+- Keep a long-term price history in the Home Assistant recorder and long-term statistics.
+
+## Supported funds
+
+Every fund listed on the Zwitserleven
+[fund overview page](https://www.zwitserleven.nl/over-zwitserleven/verantwoord-beleggen/fondsen/).
+The setup dialog reads that page, so it always offers the funds Zwitserleven lists at that
+moment. Funds that are not on that page, such as funds only visible after logging in to
+Mijn Zwitserleven, are not supported.
+
 ## Requirements
 
 - Home Assistant 2026.10 or newer
@@ -128,6 +144,15 @@ Deleting a fund also deletes the daily prices stored for it.
 Repeat for each fund you want to track. Each fund becomes a device with one price sensor. Funds
 you have already added are left out of the list.
 
+### Options
+
+To change a fund's display name later, go to **Settings → Devices & Services → Zwitserleven
+Fondsen**, select the fund and choose **Configure**.
+
+| Option | Description |
+|---|---|
+| **Name** | Display name of the fund's device and sensor. Leave empty to use the fund name from Zwitserleven |
+
 ## Sensor attributes
 
 The sensor **state** is the current price (numeric), and the **unit of measurement** is `EUR`.
@@ -145,6 +170,46 @@ Each sensor additionally exposes the following state attributes:
 
 The change is computed against the integration's own stored history, so it is `0` until the
 integration has seen at least two days of prices.
+
+## Automation examples
+
+### Notify when a fund drops more than 2% in a day
+
+```yaml
+automation:
+  - alias: "Fund dropped more than 2%"
+    triggers:
+      - trigger: state
+        entity_id: sensor.asn_duurzaam_aandelenfonds
+        # Only when the price itself changes, not just its attributes.
+        to: ~
+    conditions:
+      - condition: template
+        value_template: "{{ trigger.to_state.attributes.change_pct | float(0) <= -2 }}"
+    actions:
+      - action: notify.notify
+        data:
+          message: >
+            {{ trigger.to_state.attributes.long_name }} dropped
+            {{ trigger.to_state.attributes.change_pct }}% to
+            € {{ trigger.to_state.state }}.
+```
+
+### The value of your holdings
+
+The integration knows the price of one unit, not how many units you own. A template sensor can
+multiply the two; replace `123.4567` with your number of units:
+
+```yaml
+template:
+  - sensor:
+      - name: "ASN Duurzaam Aandelenfonds value"
+        unit_of_measurement: "EUR"
+        device_class: monetary
+        state_class: total
+        availability: "{{ has_value('sensor.asn_duurzaam_aandelenfonds') }}"
+        state: "{{ (states('sensor.asn_duurzaam_aandelenfonds') | float * 123.4567) | round(2) }}"
+```
 
 ## Lovelace card
 
@@ -189,6 +254,20 @@ Each tile also shows the date of its current price after the fund ID, for exampl
 > day you add a fund and the charts fill up over time. With a single stored price, a chart is a
 > flat line.
 
+## Known limitations
+
+- **It reads a web page.** Zwitserleven has no API, so a change to the fund overview page can
+  break the integration until it is updated, see the warning at the top.
+- **One price per day, published late.** Zwitserleven publishes a price a day or two after the
+  date it is for. The `price_date` attribute says which day the price is for.
+- **Updated once a night.** Each installation checks the page at its own time between 20:00 and
+  06:00 UTC. A price published after that time appears the next night, or right away when you
+  call `homeassistant.update_entity` on a fund sensor.
+- **History starts when you add a fund.** Zwitserleven only shows the current price, so earlier
+  prices cannot be loaded.
+- **Prices per unit only.** The integration does not know your holdings; see
+  [The value of your holdings](#the-value-of-your-holdings).
+
 ## Troubleshooting
 
 **The card does not appear / "Custom element doesn't exist: zwitserleven-fondsen-card"**
@@ -197,6 +276,11 @@ Each tile also shows the date of its current price after the fund ID, for exampl
 **No data / sensor unavailable**
 - Check that the fund is still listed on the [Zwitserleven fund overview](https://www.zwitserleven.nl/over-zwitserleven/verantwoord-beleggen/fondsen/)
 - Check the Home Assistant log, filtered on `zwitserleven_fondsen`
+
+**Repair: "Fund … is no longer listed by Zwitserleven"**
+- The fund overview page no longer lists the fund, so its sensor is unavailable. If Zwitserleven
+  closed or renamed the fund, delete the fund under **Settings → Devices & Services → Zwitserleven
+  Fondsen**. If the fund is listed again, the repair goes away by itself at the next update.
 
 **Wrong display name**
 - Set a custom **Name** in the integration options (Settings → Devices & Services → Zwitserleven Fondsen → Configure)
@@ -208,6 +292,7 @@ npm ci
 npm run build   # type-checks and rebuilds custom_components/zwitserleven_fondsen/www/
 npm test        # card tests
 pytest          # integration tests, needs Python 3.14 (see requirements_test.txt)
+mypy            # strict type check
 ```
 
 ### Trying it out in a test Home Assistant
