@@ -263,8 +263,11 @@ async def test_page_error_raises_update_failed(hass):
         hass, make_page(error=FondsenPageError("Zwitserleven returned HTTP 429"))
     )
 
-    with pytest.raises(UpdateFailed, match="HTTP 429"):
+    with pytest.raises(UpdateFailed) as err:
         await coord._async_update_data()
+
+    assert err.value.translation_key == "update_failed"
+    assert err.value.translation_placeholders == {"error": "Zwitserleven returned HTTP 429"}
 
 
 async def test_missing_fund_is_left_out_and_logged_once(hass, caplog):

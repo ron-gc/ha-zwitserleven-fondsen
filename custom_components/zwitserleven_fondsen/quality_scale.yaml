@@ -1,0 +1,101 @@
+rules:
+  # Bronze
+  action-setup:
+    status: exempt
+    comment: The integration registers no service actions.
+  appropriate-polling: done
+  brands: done
+  common-modules: done
+  config-flow-test-coverage: done
+  config-flow: done
+  dependency-transparency: done
+  docs-actions:
+    status: exempt
+    comment: The integration registers no service actions.
+  docs-conditions:
+    status: exempt
+    comment: The integration provides no conditions.
+  docs-high-level-description: done
+  docs-installation-instructions: done
+  docs-removal-instructions: done
+  docs-triggers:
+    status: exempt
+    comment: The integration provides no triggers.
+  entity-event-setup: done
+  entity-unique-id: done
+  has-entity-name: done
+  runtime-data: done
+  test-before-configure: done
+  test-before-setup: done
+  unique-config-entry: done
+
+  # Silver
+  action-exceptions:
+    status: exempt
+    comment: The integration registers no service actions.
+  config-entry-unloading: done
+  docs-configuration-parameters: done
+  docs-installation-parameters: done
+  entity-unavailable: done
+  integration-owner: done
+  log-when-unavailable: done
+  parallel-updates: done
+  reauthentication-flow:
+    status: exempt
+    comment: The fund page is public, so there are no credentials.
+  test-coverage: done
+
+  # Gold
+  devices: done
+  diagnostics: done
+  discovery-update-info:
+    status: exempt
+    comment: A web page, not a device on the network, so there is nothing to discover.
+  discovery:
+    status: exempt
+    comment: A web page, not a device on the network, so there is nothing to discover.
+  docs-data-update: done
+  docs-examples: done
+  docs-known-limitations: done
+  docs-supported-devices: done
+  docs-supported-functions: done
+  docs-troubleshooting: done
+  docs-use-cases: done
+  dynamic-devices:
+    status: exempt
+    comment: >
+      Each fund is a config entry the user adds, so no devices appear by
+      themselves. New funds on the page show up in the setup dialog.
+  entity-category: done
+  entity-device-class:
+    status: exempt
+    comment: >
+      The monetary device class only allows the total state class, and a fund
+      price is a measurement that goes up and down.
+  entity-disabled-by-default:
+    status: exempt
+    comment: Each fund has one entity, its price.
+  entity-translations: done
+  exception-translations: done
+  icon-translations: done
+  reconfiguration-flow:
+    status: exempt
+    comment: >
+      An entry is one fund, which is its identity. The only setting, the
+      display name, is in the options flow.
+  repair-issues: done
+  stale-devices:
+    status: exempt
+    comment: >
+      Each device belongs to the config entry of its fund and goes with it. A
+      fund that disappears from the page raises a repair issue that asks the
+      user to delete it.
+
+  # Platinum
+  async-dependency:
+    status: done
+    comment: >
+      The page is downloaded with Home Assistant's aiohttp session.
+      beautifulsoup4 only parses it, without I/O, in the executor.
+  inject-websession: done
+  strict-typing: done

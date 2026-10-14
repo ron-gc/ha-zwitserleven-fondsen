@@ -28,7 +28,10 @@ async def async_get_config_entry_diagnostics(
         # The coordinator is shared, so this covers every configured fund.
         "coordinator": {
             "last_update_success": coordinator.last_update_success,
-            "last_exception": repr(last_exception) if last_exception else None,
+            # The message is translated, so it is not in the exception's repr.
+            "last_exception": (
+                f"{type(last_exception).__name__}: {last_exception}" if last_exception else None
+            ),
             "funds": coordinator.funds,
             "missing_funds": coordinator.missing_funds,
             "daily_update_utc": update_time.isoformat() if update_time else None,

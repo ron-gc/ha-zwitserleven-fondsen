@@ -9,6 +9,7 @@ from pathlib import Path
 from homeassistant.components.frontend import add_extra_js_url, remove_extra_js_url
 from homeassistant.components.http import StaticPathConfig
 from homeassistant.components.lovelace.const import LOVELACE_DATA, MODE_STORAGE
+from homeassistant.components.lovelace.resources import ResourceStorageCollection
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.collection import ItemNotFound
 
@@ -29,7 +30,7 @@ def _file_hash() -> str:
     return hashlib.md5((_card_dir() / CARD_FILENAME).read_bytes()).hexdigest()[:8]
 
 
-def _writable_resources(hass: HomeAssistant):
+def _writable_resources(hass: HomeAssistant) -> ResourceStorageCollection | None:
     """Return the Lovelace resource collection if it can be written to.
 
     Every rejection is logged with its reason, so a user's log export tells
@@ -58,7 +59,7 @@ def _writable_resources(hass: HomeAssistant):
         return None
 
     resources = data.resources
-    if not hasattr(resources, "async_create_item"):
+    if not isinstance(resources, ResourceStorageCollection):
         _LOGGER.warning(
             "Lovelace reports '%s' resource mode but its resource collection "
             "(%s) is read-only, so the Zwitserleven Fondsen card is injected through the "
