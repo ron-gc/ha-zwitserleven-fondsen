@@ -275,12 +275,18 @@ Each tile also shows the date of its current price after the fund ID, for exampl
 
 **No data / sensor unavailable**
 - Check that the fund is still listed on the [Zwitserleven fund overview](https://www.zwitserleven.nl/over-zwitserleven/verantwoord-beleggen/fondsen/)
-- Check the Home Assistant log, filtered on `zwitserleven_fondsen`
+- Check the Home Assistant log, filtered on `zwitserleven_fondsen`. When the page cannot be read,
+  for example because the website is down, every fund sensor is unavailable and the log says
+  why. The integration tries again every hour, and the sensors come back by themselves.
 
 **Repair: "Fund … is no longer listed by Zwitserleven"**
 - The fund overview page no longer lists the fund, so its sensor is unavailable. If Zwitserleven
-  closed or renamed the fund, delete the fund under **Settings → Devices & Services → Zwitserleven
-  Fondsen**. If the fund is listed again, the repair goes away by itself at the next update.
+  closed or renamed the fund, open the repair under **Settings → Repairs** and select **Submit**
+  to delete the fund. If you expect the fund to come back, leave the repair: it goes away by
+  itself at the next update after the fund is listed again.
+- If the page changes so that no fund can be read at all, the integration does not raise this
+  repair for every fund. All fund sensors become unavailable and the log says the page could
+  not be read, until the integration is updated.
 
 **Wrong display name**
 - Set a custom **Name** in the integration options (Settings → Devices & Services → Zwitserleven Fondsen → Configure)

@@ -30,9 +30,7 @@ def _mock_coordinator():
     """Patch out the network-backed coordinator async_setup_entry uses."""
     coordinator = MagicMock(
         async_add_fund=AsyncMock(),
-        async_refresh=AsyncMock(),
-        last_update_success=True,
-        data={"LTAAF": {}, "LTAOB": {}},
+        async_refresh_with_retry=AsyncMock(),
     )
     return patch(
         "custom_components.zwitserleven_fondsen.get_coordinator",

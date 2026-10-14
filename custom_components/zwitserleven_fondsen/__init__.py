@@ -4,7 +4,6 @@ from typing import Any
 from aiohttp import web
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.http import KEY_HASS, HomeAssistantView
 from homeassistant.helpers.storage import Store
 
@@ -103,16 +102,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ZwitserlevenConfigEntry)
     await coordinator.async_add_fund(symbol, _history_store(hass, symbol))
     # Refreshes for every fund; the page cache keeps the entries that set up
     # together at startup down to one download.
-    await coordinator.async_refresh()
-    if not coordinator.last_update_success or symbol not in coordinator.data:
-        # A missing fund keeps its repair issue: the entry is retried, and the
-        # issue goes when the fund is listed again or the entry is deleted.
-        coordinator.remove_fund(symbol)
-        raise ConfigEntryNotReady(
-            translation_domain=DOMAIN,
-            translation_key="fund_not_available",
-            translation_placeholders={"symbol": symbol},
-        ) from coordinator.last_exception
+    #
+    # The entry sets up even when this fails or the fund is missing, with its
+    # sensor unavailable. ConfigEntryNotReady would make Home Assistant retry
+    # the setup about every 80 seconds for as long as the page fails or the
+    # fund stays delisted, each retry a request to Zwitserleven. Instead a
+    # failed page is retried hourly, a missing fund is checked again at the
+    # daily update, and the log or a repair issue tells the user why.
+    await coordinator.async_refresh_with_retry()
     entry.runtime_data = coordinator
     entry.async_on_unload(lambda: _async_remove_fund(hass, coordinator, symbol))
 
