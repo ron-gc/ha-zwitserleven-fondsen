@@ -14,6 +14,11 @@ All notable changes to this integration are listed here. The format follows
 ### Changed
 
 - Requires Home Assistant 2026.10 or newer.
+- The daily update no longer runs at 20:00 UTC on every installation. Each
+  installation now updates at its own fixed time between 20:00 and 06:00 UTC,
+  derived from its Home Assistant installation ID, to spread the load on the
+  Zwitserleven website. The time is logged at startup and shown in the
+  diagnostics.
 - Requests for the fund page name this integration and its version in the
   User-Agent, instead of posing as a Chrome browser.
 
