@@ -4,7 +4,7 @@ All notable changes to this integration are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.0.2] - 2026-10-17
 
 ### Added
 
@@ -75,4 +75,5 @@ First release as a standalone integration. It started from
   `price_is_live`, `traded_today`), since funds have one price per day.
 - Requires Home Assistant 2025.1 or newer.
 
+[0.0.2]: https://github.com/ron-gc/ha-zwitserleven-fondsen/releases/tag/v0.0.2
 [0.0.1]: https://github.com/ron-gc/ha-zwitserleven-fondsen/releases/tag/v0.0.1
