@@ -6,14 +6,17 @@ All notable changes to this integration are listed here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- A list button on each card tile opens the fund's price history: every
+  stored daily price, newest first, with its change against the day before.
+
 ## [0.0.2] - 2026-10-17
 
 ### Added
 
 - Diagnostics: download them from a fund's entry under Settings > Devices &
   services to attach to a bug report.
-- A list button on each card tile opens the fund's price history: every
-  stored daily price, newest first, with its change against the day before.
 - A repair issue when a fund is no longer listed on the Zwitserleven page.
   Submitting it deletes the fund. It goes away by itself if the fund is listed
   again. A page from which no fund can be read at all counts as a failed
