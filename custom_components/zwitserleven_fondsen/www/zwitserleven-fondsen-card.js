@@ -5,7 +5,7 @@
 * SPDX-License-Identifier: BSD-3-Clause
 */
 var t$2 = globalThis;
-var e$2 = t$2.ShadowRoot && (void 0 === t$2.ShadyCSS || t$2.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype;
+var e$4 = t$2.ShadowRoot && (void 0 === t$2.ShadyCSS || t$2.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype;
 var s$2 = Symbol();
 var o$4 = /* @__PURE__ */ new WeakMap();
 var n$3 = class {
@@ -16,7 +16,7 @@ var n$3 = class {
 	get styleSheet() {
 		let t = this.o;
 		const s = this.t;
-		if (e$2 && void 0 === t) {
+		if (e$4 && void 0 === t) {
 			const e = void 0 !== s && 1 === s.length;
 			e && (t = o$4.get(s)), void 0 === t && ((this.o = t = new CSSStyleSheet()).replaceSync(this.cssText), e && o$4.set(s, t));
 		}
@@ -35,13 +35,13 @@ var i$3 = (t, ...e) => {
 	})(s) + t[o + 1], t[0]), t, s$2);
 };
 var S$1 = (s, o) => {
-	if (e$2) s.adoptedStyleSheets = o.map((t) => t instanceof CSSStyleSheet ? t : t.styleSheet);
+	if (e$4) s.adoptedStyleSheets = o.map((t) => t instanceof CSSStyleSheet ? t : t.styleSheet);
 	else for (const e of o) {
 		const o = document.createElement("style"), n = t$2.litNonce;
 		void 0 !== n && o.setAttribute("nonce", n), o.textContent = e.cssText, s.appendChild(o);
 	}
 };
-var c$2 = e$2 ? (t) => t : (t) => t instanceof CSSStyleSheet ? ((t) => {
+var c$2 = e$4 ? (t) => t : (t) => t instanceof CSSStyleSheet ? ((t) => {
 	let e = "";
 	for (const s of t.cssRules) e += s.cssText;
 	return r$4(e);
@@ -52,7 +52,7 @@ var c$2 = e$2 ? (t) => t : (t) => t instanceof CSSStyleSheet ? ((t) => {
 * @license
 * Copyright 2017 Google LLC
 * SPDX-License-Identifier: BSD-3-Clause
-*/ var { is: i$2, defineProperty: e$1, getOwnPropertyDescriptor: h$1, getOwnPropertyNames: r$3, getOwnPropertySymbols: o$3, getPrototypeOf: n$2 } = Object, a$1 = globalThis, c$1 = a$1.trustedTypes, l$1 = c$1 ? c$1.emptyScript : "", p$1 = a$1.reactiveElementPolyfillSupport, d$1 = (t, s) => t, u$1 = {
+*/ var { is: i$2, defineProperty: e$3, getOwnPropertyDescriptor: h$1, getOwnPropertyNames: r$3, getOwnPropertySymbols: o$3, getPrototypeOf: n$2 } = Object, a$1 = globalThis, c$1 = a$1.trustedTypes, l$1 = c$1 ? c$1.emptyScript : "", p$1 = a$1.reactiveElementPolyfillSupport, d$1 = (t, s) => t, u$1 = {
 	toAttribute(t, s) {
 		switch (s) {
 			case Boolean:
@@ -100,7 +100,7 @@ var y$1 = class extends HTMLElement {
 	static createProperty(t, s = b$1) {
 		if (s.state && (s.attribute = !1), this._$Ei(), this.prototype.hasOwnProperty(t) && ((s = Object.create(s)).wrapped = !0), this.elementProperties.set(t, s), !s.noAccessor) {
 			const i = Symbol(), h = this.getPropertyDescriptor(t, i, s);
-			void 0 !== h && e$1(this.prototype, t, h);
+			void 0 !== h && e$3(this.prototype, t, h);
 		}
 	}
 	static getPropertyDescriptor(t, s, i) {
@@ -286,7 +286,7 @@ y$1.elementStyles = [], y$1.shadowRootOptions = { mode: "open" }, y$1[d$1("eleme
 var t$1 = globalThis;
 var i$1 = (t) => t;
 var s$1 = t$1.trustedTypes;
-var e = s$1 ? s$1.createPolicy("lit-html", { createHTML: (t) => t }) : void 0;
+var e$2 = s$1 ? s$1.createPolicy("lit-html", { createHTML: (t) => t }) : void 0;
 var h = "$lit$";
 var o$2 = `lit$${Math.random().toFixed(9).slice(2)}$`;
 var n$1 = "?" + o$2;
@@ -317,7 +317,7 @@ var C = /* @__PURE__ */ new WeakMap();
 var P = l.createTreeWalker(l, 129);
 function V(t, i) {
 	if (!u(t) || !t.hasOwnProperty("raw")) throw Error("invalid template strings array");
-	return void 0 !== e ? e.createHTML(i) : i;
+	return void 0 !== e$2 ? e$2.createHTML(i) : i;
 }
 var N = (t, i) => {
 	const s = t.length - 1, e = [];
@@ -645,6 +645,45 @@ function n(t) {
 	});
 }
 //#endregion
+//#region node_modules/@lit/reactive-element/decorators/base.js
+/**
+* @license
+* Copyright 2017 Google LLC
+* SPDX-License-Identifier: BSD-3-Clause
+*/
+var e$1 = (e, t, c) => (c.configurable = !0, c.enumerable = !0, Reflect.decorate && "object" != typeof t && Object.defineProperty(e, t, c), c);
+//#endregion
+//#region node_modules/@lit/reactive-element/decorators/query.js
+/**
+* @license
+* Copyright 2017 Google LLC
+* SPDX-License-Identifier: BSD-3-Clause
+*/ function e(e, r) {
+	return (n, s, i) => {
+		const o = (t) => t.renderRoot?.querySelector(e) ?? null;
+		if (r) {
+			const { get: e, set: r } = "object" == typeof s ? n : i ?? (() => {
+				const t = Symbol();
+				return {
+					get() {
+						return this[t];
+					},
+					set(e) {
+						this[t] = e;
+					}
+				};
+			})();
+			return e$1(n, s, { get() {
+				let t = e.call(this);
+				return void 0 === t && (t = o(this), (null !== t || this.hasUpdated) && r.call(this, t)), t;
+			} });
+		}
+		return e$1(n, s, { get() {
+			return o(this);
+		} });
+	};
+}
+//#endregion
 //#region src/translations.ts
 var translations = {
 	en: {
@@ -658,7 +697,16 @@ var translations = {
 			no_sensors: "No Zwitserleven Fondsen sensors found.",
 			setup_hint: "Set up under Settings → Integrations → Zwitserleven Fondsen."
 		},
-		card: { not_found: "Not found" }
+		card: {
+			not_found: "Not found",
+			price_history: "Price history",
+			date: "Date",
+			price: "Price",
+			change: "Change",
+			loading: "Loading…",
+			no_history: "No prices stored yet.",
+			close: "Close"
+		}
 	},
 	de: {
 		editor: {
@@ -671,7 +719,16 @@ var translations = {
 			no_sensors: "Keine Zwitserleven Fondsen Sensoren gefunden.",
 			setup_hint: "Integration einrichten unter Einstellungen → Integrationen → Zwitserleven Fondsen."
 		},
-		card: { not_found: "Nicht gefunden" }
+		card: {
+			not_found: "Nicht gefunden",
+			price_history: "Kursverlauf",
+			date: "Datum",
+			price: "Kurs",
+			change: "Änderung",
+			loading: "Wird geladen…",
+			no_history: "Noch keine Kurse gespeichert.",
+			close: "Schließen"
+		}
 	},
 	fr: {
 		editor: {
@@ -684,7 +741,16 @@ var translations = {
 			no_sensors: "Aucun capteur Zwitserleven Fondsen trouvé.",
 			setup_hint: "Configurer sous Paramètres → Intégrations → Zwitserleven Fondsen."
 		},
-		card: { not_found: "Introuvable" }
+		card: {
+			not_found: "Introuvable",
+			price_history: "Historique des cours",
+			date: "Date",
+			price: "Cours",
+			change: "Variation",
+			loading: "Chargement…",
+			no_history: "Aucun cours enregistré pour l'instant.",
+			close: "Fermer"
+		}
 	},
 	nl: {
 		editor: {
@@ -697,7 +763,16 @@ var translations = {
 			no_sensors: "Geen Zwitserleven Fondsen-sensoren gevonden.",
 			setup_hint: "Instellen via Instellingen → Integraties → Zwitserleven Fondsen."
 		},
-		card: { not_found: "Niet gevonden" }
+		card: {
+			not_found: "Niet gevonden",
+			price_history: "Koershistorie",
+			date: "Datum",
+			price: "Koers",
+			change: "Verandering",
+			loading: "Laden…",
+			no_history: "Nog geen koersen opgeslagen.",
+			close: "Sluiten"
+		}
 	},
 	es: {
 		editor: {
@@ -710,7 +785,16 @@ var translations = {
 			no_sensors: "No se encontraron sensores Zwitserleven Fondsen.",
 			setup_hint: "Configurar en Ajustes → Integraciones → Zwitserleven Fondsen."
 		},
-		card: { not_found: "No encontrado" }
+		card: {
+			not_found: "No encontrado",
+			price_history: "Historial de precios",
+			date: "Fecha",
+			price: "Precio",
+			change: "Variación",
+			loading: "Cargando…",
+			no_history: "Aún no hay precios guardados.",
+			close: "Cerrar"
+		}
 	},
 	it: {
 		editor: {
@@ -723,7 +807,16 @@ var translations = {
 			no_sensors: "Nessun sensore Zwitserleven Fondsen trovato.",
 			setup_hint: "Configurare in Impostazioni → Integrazioni → Zwitserleven Fondsen."
 		},
-		card: { not_found: "Non trovato" }
+		card: {
+			not_found: "Non trovato",
+			price_history: "Storico prezzi",
+			date: "Data",
+			price: "Prezzo",
+			change: "Variazione",
+			loading: "Caricamento…",
+			no_history: "Nessun prezzo salvato finora.",
+			close: "Chiudi"
+		}
 	},
 	pt: {
 		editor: {
@@ -736,7 +829,16 @@ var translations = {
 			no_sensors: "Nenhum sensor Zwitserleven Fondsen encontrado.",
 			setup_hint: "Configurar em Definições → Integrações → Zwitserleven Fondsen."
 		},
-		card: { not_found: "Não encontrado" }
+		card: {
+			not_found: "Não encontrado",
+			price_history: "Histórico de preços",
+			date: "Data",
+			price: "Preço",
+			change: "Variação",
+			loading: "A carregar…",
+			no_history: "Ainda não há preços guardados.",
+			close: "Fechar"
+		}
 	},
 	pl: {
 		editor: {
@@ -749,7 +851,16 @@ var translations = {
 			no_sensors: "Nie znaleziono czujników Zwitserleven Fondsen.",
 			setup_hint: "Skonfiguruj w Ustawienia → Integracje → Zwitserleven Fondsen."
 		},
-		card: { not_found: "Nie znaleziono" }
+		card: {
+			not_found: "Nie znaleziono",
+			price_history: "Historia cen",
+			date: "Data",
+			price: "Cena",
+			change: "Zmiana",
+			loading: "Ładowanie…",
+			no_history: "Brak zapisanych cen.",
+			close: "Zamknij"
+		}
 	},
 	sv: {
 		editor: {
@@ -762,7 +873,16 @@ var translations = {
 			no_sensors: "Inga Zwitserleven Fondsen-sensorer hittades.",
 			setup_hint: "Konfigurera under Inställningar → Integrationer → Zwitserleven Fondsen."
 		},
-		card: { not_found: "Hittades inte" }
+		card: {
+			not_found: "Hittades inte",
+			price_history: "Kurshistorik",
+			date: "Datum",
+			price: "Kurs",
+			change: "Förändring",
+			loading: "Laddar…",
+			no_history: "Inga kurser sparade än.",
+			close: "Stäng"
+		}
 	},
 	da: {
 		editor: {
@@ -775,7 +895,16 @@ var translations = {
 			no_sensors: "Ingen Zwitserleven Fondsen-sensorer fundet.",
 			setup_hint: "Opsæt under Indstillinger → Integrationer → Zwitserleven Fondsen."
 		},
-		card: { not_found: "Ikke fundet" }
+		card: {
+			not_found: "Ikke fundet",
+			price_history: "Kurshistorik",
+			date: "Dato",
+			price: "Kurs",
+			change: "Ændring",
+			loading: "Indlæser…",
+			no_history: "Ingen kurser gemt endnu.",
+			close: "Luk"
+		}
 	},
 	nb: {
 		editor: {
@@ -788,7 +917,16 @@ var translations = {
 			no_sensors: "Ingen Zwitserleven Fondsen-sensorer funnet.",
 			setup_hint: "Konfigurer under Innstillinger → Integrasjoner → Zwitserleven Fondsen."
 		},
-		card: { not_found: "Ikke funnet" }
+		card: {
+			not_found: "Ikke funnet",
+			price_history: "Kurshistorikk",
+			date: "Dato",
+			price: "Kurs",
+			change: "Endring",
+			loading: "Laster…",
+			no_history: "Ingen kurser lagret ennå.",
+			close: "Lukk"
+		}
 	},
 	fi: {
 		editor: {
@@ -801,7 +939,16 @@ var translations = {
 			no_sensors: "Zwitserleven Fondsen -antureita ei löydy.",
 			setup_hint: "Määritä kohdassa Asetukset → Integraatiot → Zwitserleven Fondsen."
 		},
-		card: { not_found: "Ei löydy" }
+		card: {
+			not_found: "Ei löydy",
+			price_history: "Kurssihistoria",
+			date: "Päivä",
+			price: "Kurssi",
+			change: "Muutos",
+			loading: "Ladataan…",
+			no_history: "Kursseja ei ole vielä tallennettu.",
+			close: "Sulje"
+		}
 	},
 	cs: {
 		editor: {
@@ -814,7 +961,16 @@ var translations = {
 			no_sensors: "Nebyly nalezeny žádné senzory Zwitserleven Fondsen.",
 			setup_hint: "Nastavte v Nastavení → Integrace → Zwitserleven Fondsen."
 		},
-		card: { not_found: "Nenalezeno" }
+		card: {
+			not_found: "Nenalezeno",
+			price_history: "Historie cen",
+			date: "Datum",
+			price: "Cena",
+			change: "Změna",
+			loading: "Načítání…",
+			no_history: "Zatím nejsou uloženy žádné ceny.",
+			close: "Zavřít"
+		}
 	},
 	hu: {
 		editor: {
@@ -827,7 +983,16 @@ var translations = {
 			no_sensors: "Nem találhatók Zwitserleven Fondsen érzékelők.",
 			setup_hint: "Állítsa be a Beállítások → Integrációk → Zwitserleven Fondsen menüpontban."
 		},
-		card: { not_found: "Nem található" }
+		card: {
+			not_found: "Nem található",
+			price_history: "Árfolyam-előzmények",
+			date: "Dátum",
+			price: "Árfolyam",
+			change: "Változás",
+			loading: "Betöltés…",
+			no_history: "Még nincsenek mentett árfolyamok.",
+			close: "Bezárás"
+		}
 	},
 	ru: {
 		editor: {
@@ -840,7 +1005,16 @@ var translations = {
 			no_sensors: "Датчики Zwitserleven Fondsen не найдены.",
 			setup_hint: "Настройте в Настройки → Интеграции → Zwitserleven Fondsen."
 		},
-		card: { not_found: "Не найдено" }
+		card: {
+			not_found: "Не найдено",
+			price_history: "История цен",
+			date: "Дата",
+			price: "Цена",
+			change: "Изменение",
+			loading: "Загрузка…",
+			no_history: "Цены ещё не сохранены.",
+			close: "Закрыть"
+		}
 	},
 	zh: {
 		editor: {
@@ -853,7 +1027,16 @@ var translations = {
 			no_sensors: "未找到 Zwitserleven Fondsen 传感器。",
 			setup_hint: "在设置 → 集成 → Zwitserleven Fondsen 中进行配置。"
 		},
-		card: { not_found: "未找到" }
+		card: {
+			not_found: "未找到",
+			price_history: "价格历史",
+			date: "日期",
+			price: "价格",
+			change: "变动",
+			loading: "加载中…",
+			no_history: "尚未保存任何价格。",
+			close: "关闭"
+		}
 	},
 	ja: {
 		editor: {
@@ -866,7 +1049,16 @@ var translations = {
 			no_sensors: "Zwitserleven Fondsen センサーが見つかりません。",
 			setup_hint: "設定 → インテグレーション → Zwitserleven Fondsen で設定してください。"
 		},
-		card: { not_found: "見つかりません" }
+		card: {
+			not_found: "見つかりません",
+			price_history: "価格履歴",
+			date: "日付",
+			price: "価格",
+			change: "変動",
+			loading: "読み込み中…",
+			no_history: "保存された価格はまだありません。",
+			close: "閉じる"
+		}
 	},
 	ko: {
 		editor: {
@@ -879,7 +1071,16 @@ var translations = {
 			no_sensors: "Zwitserleven Fondsen 센서를 찾을 수 없습니다.",
 			setup_hint: "설정 → 통합 → Zwitserleven Fondsen에서 설정하세요."
 		},
-		card: { not_found: "찾을 수 없음" }
+		card: {
+			not_found: "찾을 수 없음",
+			price_history: "가격 기록",
+			date: "날짜",
+			price: "가격",
+			change: "변동",
+			loading: "불러오는 중…",
+			no_history: "아직 저장된 가격이 없습니다.",
+			close: "닫기"
+		}
 	},
 	tr: {
 		editor: {
@@ -892,7 +1093,16 @@ var translations = {
 			no_sensors: "Zwitserleven Fondsen sensörü bulunamadı.",
 			setup_hint: "Ayarlar → Entegrasyonlar → Zwitserleven Fondsen altında yapılandırın."
 		},
-		card: { not_found: "Bulunamadı" }
+		card: {
+			not_found: "Bulunamadı",
+			price_history: "Fiyat geçmişi",
+			date: "Tarih",
+			price: "Fiyat",
+			change: "Değişim",
+			loading: "Yükleniyor…",
+			no_history: "Henüz kayıtlı fiyat yok.",
+			close: "Kapat"
+		}
 	},
 	ar: {
 		editor: {
@@ -905,7 +1115,16 @@ var translations = {
 			no_sensors: "لم يتم العثور على أجهزة استشعار Zwitserleven Fondsen.",
 			setup_hint: "الإعداد في الإعدادات ← التكاملات ← Zwitserleven Fondsen."
 		},
-		card: { not_found: "غير موجود" }
+		card: {
+			not_found: "غير موجود",
+			price_history: "سجل الأسعار",
+			date: "التاريخ",
+			price: "السعر",
+			change: "التغير",
+			loading: "جارٍ التحميل…",
+			no_history: "لا توجد أسعار محفوظة بعد.",
+			close: "إغلاق"
+		}
 	}
 };
 function t(lang) {
@@ -920,6 +1139,25 @@ function formatPrice(price, locale) {
 		minimumFractionDigits: 2,
 		maximumFractionDigits: 4
 	}).format(price);
+}
+/** A price change with its sign, e.g. "+€ 1,25" or "-€ 0,40"; no sign for 0. */
+function formatPriceChange(change, locale) {
+	return new Intl.NumberFormat(locale, {
+		style: "currency",
+		currency: "EUR",
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 4,
+		signDisplay: "exceptZero"
+	}).format(change);
+}
+/** A percentage change with its sign, e.g. "+0,55%"; `pct` is in percent. */
+function formatPercentChange(pct, locale) {
+	return new Intl.NumberFormat(locale, {
+		style: "percent",
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 2,
+		signDisplay: "exceptZero"
+	}).format(pct / 100);
 }
 /** Local Date for a "YYYY-MM-DD" day, or null if it doesn't parse. */
 function parseDay(day) {
@@ -1022,6 +1260,26 @@ function buildChartData(input) {
 		}
 		case "1J": return since(daysBefore(latest, 0, 1));
 	}
+}
+//#endregion
+//#region src/history-list.ts
+/** One row per stored daily price, newest first, from prices oldest first. */
+function historyRows(prices) {
+	return prices.map(([date, price], i) => {
+		if (i === 0) return {
+			date,
+			price,
+			change: null,
+			changePct: null
+		};
+		const previous = prices[i - 1][1];
+		return {
+			date,
+			price,
+			change: price - previous,
+			changePct: previous !== 0 ? (price - previous) / previous * 100 : null
+		};
+	}).reverse();
 }
 //#endregion
 //#region \0@oxc-project+runtime@0.153.0/helpers/esm/decorate.js
@@ -1417,8 +1675,13 @@ var ZwitserlevenFondsenCard = class extends i {
             ${this._config.entities.map((entry) => this._renderEntity(entry))}
           </div>
         </div>
+        ${this._renderHistoryDialog()}
       </ha-card>
     `;
+	}
+	updated() {
+		const dialog = this._historyDialog;
+		if (dialog && !dialog.open) dialog.showModal();
 	}
 	_renderEntity(entityId) {
 		const raw = this._hass?.states[entityId];
@@ -1434,6 +1697,7 @@ var ZwitserlevenFondsenCard = class extends i {
 		const attr = entity.attributes;
 		const displayName = raw.attributes["friendly_name"] || attr.long_name || attr.symbol;
 		const locale = this._hass?.locale?.language;
+		const strings = t(locale ?? "en").card;
 		const price = parseFloat(entity.state);
 		this._fetchDailyHistory(attr.symbol);
 		const chartData = buildChartData({
@@ -1457,6 +1721,17 @@ var ZwitserlevenFondsenCard = class extends i {
             <span class="asset-symbol">${attr.symbol}</span>
             ${priceDate ? b` · <span title=${formatPriceDateLong(attr.price_date, locale)}>${priceDate}</span>` : A}
           </span>
+          <button
+            class="history-btn"
+            title=${strings.price_history}
+            aria-label=${strings.price_history}
+            @click=${(e) => {
+			e.stopPropagation();
+			this._historyEntityId = entityId;
+		}}
+          >
+            <ha-icon icon="mdi:format-list-bulleted"></ha-icon>
+          </button>
         </div>
         <div class="asset-price">
           <div class="price-stack">
@@ -1471,6 +1746,82 @@ var ZwitserlevenFondsenCard = class extends i {
           ${this._renderSparkline(chartData, trendColor)}
         </div>
       </div>
+    `;
+	}
+	/** The stored daily prices of the open fund, newest first, in a modal dialog. */
+	_renderHistoryDialog() {
+		const entityId = this._historyEntityId;
+		const raw = entityId ? this._hass?.states[entityId] : void 0;
+		if (!raw) return A;
+		const attr = raw.attributes;
+		const name = raw.attributes["friendly_name"] || attr.long_name || attr.symbol;
+		const locale = this._hass?.locale?.language;
+		const strings = t(locale ?? "en").card;
+		const history = this._cachedDailyHistory(attr.symbol);
+		const rows = history ? historyRows(withLivePrice({
+			dailyHistory: history,
+			livePrice: parseFloat(raw.state),
+			priceDate: attr.price_date
+		})) : null;
+		let body;
+		if (rows === null && this._fetchingDaily.has(attr.symbol)) body = b`<p class="status">${strings.loading}</p>`;
+		else if (!rows?.length) body = b`<p class="status">${strings.no_history}</p>`;
+		else body = b`
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">${strings.date}</th>
+              <th scope="col" class="num">${strings.price}</th>
+              <th scope="col" class="num">${strings.change}</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map((row) => {
+			const trend = !row.change ? "" : row.change > 0 ? "up" : "down";
+			return b`
+                <tr>
+                  <td title=${formatPriceDateLong(row.date, locale)}>
+                    ${formatPriceDate(row.date, locale)}
+                  </td>
+                  <td class="num">${formatPrice(row.price, locale)}</td>
+                  <td class="num ${trend}">
+                    ${row.change === null ? "–" : b`${formatPriceChange(row.change, locale)}${row.changePct === null ? A : b` <span class="pct">${formatPercentChange(row.changePct, locale)}</span>`}`}
+                  </td>
+                </tr>
+              `;
+		})}
+          </tbody>
+        </table>
+      `;
+		return b`
+      <dialog
+        class="history-dialog"
+        aria-labelledby="history-title"
+        @close=${() => {
+			this._historyEntityId = void 0;
+		}}
+        @click=${(e) => {
+			if (e.target === e.currentTarget) this._historyDialog?.close();
+		}}
+      >
+        <div class="dialog-content">
+          <div class="dialog-header">
+            <div class="dialog-heading">
+              <h2 id="history-title">${strings.price_history}</h2>
+              <div class="dialog-subtitle">
+                ${name} · <span class="asset-symbol">${attr.symbol}</span>
+              </div>
+            </div>
+            <button
+              class="close-btn"
+              title=${strings.close}
+              aria-label=${strings.close}
+              @click=${() => this._historyDialog?.close()}
+            >✕</button>
+          </div>
+          <div class="dialog-body">${body}</div>
+        </div>
+      </dialog>
     `;
 	}
 	_openMoreInfo(entityId) {
@@ -1579,6 +1930,28 @@ var ZwitserlevenFondsenCard = class extends i {
     .asset-symbol {
       font-family: monospace;
     }
+    .history-btn {
+      flex-shrink: 0;
+      align-self: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      margin: -3px -4px -3px 0;
+      padding: 0;
+      border: none;
+      border-radius: 4px;
+      background: none;
+      cursor: pointer;
+      color: var(--secondary-text-color);
+      --mdc-icon-size: 16px;
+    }
+    .history-btn:hover,
+    .history-btn:focus-visible {
+      color: var(--primary-color);
+      background: var(--divider-color);
+    }
     .asset-price {
       display: flex;
       justify-content: space-between;
@@ -1621,11 +1994,119 @@ var ZwitserlevenFondsenCard = class extends i {
       padding: 6px 0;
     }
     .error { color: var(--error-color, #f44336); }
+
+    .history-dialog {
+      width: min(460px, calc(100vw - 32px));
+      max-height: min(640px, calc(100vh - 64px));
+      padding: 0;
+      border: none;
+      border-radius: var(--ha-card-border-radius, 12px);
+      background: var(--card-background-color, #fff);
+      color: var(--primary-text-color);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    .history-dialog[open] {
+      display: flex;
+    }
+    .history-dialog::backdrop {
+      background: rgba(0, 0, 0, 0.4);
+    }
+    .dialog-content {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      min-height: 0;
+    }
+    .dialog-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 16px 16px 8px;
+    }
+    .dialog-heading {
+      min-width: 0;
+    }
+    .dialog-heading h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+    .dialog-subtitle {
+      font-size: 0.8rem;
+      color: var(--secondary-text-color);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .close-btn {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 50%;
+      background: none;
+      cursor: pointer;
+      color: var(--secondary-text-color);
+      font-size: 1rem;
+    }
+    .close-btn:hover,
+    .close-btn:focus-visible {
+      background: var(--divider-color);
+      color: var(--primary-text-color);
+    }
+    .dialog-body {
+      overflow-y: auto;
+      padding: 0 16px 12px;
+    }
+    .dialog-body .status {
+      margin: 0;
+      padding: 16px 0;
+      color: var(--secondary-text-color);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      font-variant-numeric: tabular-nums;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      background: var(--card-background-color, #fff);
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--secondary-text-color);
+      padding: 8px 4px 6px;
+      border-bottom: 1px solid var(--divider-color);
+    }
+    td {
+      padding: 6px 4px;
+      border-bottom: 1px solid var(--divider-color);
+      white-space: nowrap;
+    }
+    .num {
+      text-align: right;
+    }
+    td.up {
+      color: var(--success-color, #4caf50);
+    }
+    td.down {
+      color: var(--error-color, #f44336);
+    }
+    .pct {
+      display: inline-block;
+      min-width: 4.5em;
+      margin-left: 4px;
+    }
   `;
 	}
 };
 __decorate([r()], ZwitserlevenFondsenCard.prototype, "_config", void 0);
 __decorate([r()], ZwitserlevenFondsenCard.prototype, "_timeRange", void 0);
+__decorate([r()], ZwitserlevenFondsenCard.prototype, "_historyEntityId", void 0);
+__decorate([e("dialog.history-dialog")], ZwitserlevenFondsenCard.prototype, "_historyDialog", void 0);
 /**
 * Define `tag` unless something else already claimed it.
 *

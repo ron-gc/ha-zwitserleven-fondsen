@@ -11,6 +11,13 @@ export interface Strings {
   };
   card: {
     not_found: string;
+    price_history: string;
+    date: string;
+    price: string;
+    change: string;
+    loading: string;
+    no_history: string;
+    close: string;
   };
 }
 
@@ -26,7 +33,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "No Zwitserleven Fondsen sensors found.",
       setup_hint: "Set up under Settings → Integrations → Zwitserleven Fondsen.",
     },
-    card: { not_found: "Not found" },
+    card: {
+      not_found: "Not found",
+      price_history: "Price history",
+      date: "Date",
+      price: "Price",
+      change: "Change",
+      loading: "Loading…",
+      no_history: "No prices stored yet.",
+      close: "Close",
+    },
   },
   de: {
     editor: {
@@ -39,7 +55,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "Keine Zwitserleven Fondsen Sensoren gefunden.",
       setup_hint: "Integration einrichten unter Einstellungen → Integrationen → Zwitserleven Fondsen.",
     },
-    card: { not_found: "Nicht gefunden" },
+    card: {
+      not_found: "Nicht gefunden",
+      price_history: "Kursverlauf",
+      date: "Datum",
+      price: "Kurs",
+      change: "Änderung",
+      loading: "Wird geladen…",
+      no_history: "Noch keine Kurse gespeichert.",
+      close: "Schließen",
+    },
   },
   fr: {
     editor: {
@@ -52,7 +77,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "Aucun capteur Zwitserleven Fondsen trouvé.",
       setup_hint: "Configurer sous Paramètres → Intégrations → Zwitserleven Fondsen.",
     },
-    card: { not_found: "Introuvable" },
+    card: {
+      not_found: "Introuvable",
+      price_history: "Historique des cours",
+      date: "Date",
+      price: "Cours",
+      change: "Variation",
+      loading: "Chargement…",
+      no_history: "Aucun cours enregistré pour l'instant.",
+      close: "Fermer",
+    },
   },
   nl: {
     editor: {
@@ -65,7 +99,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "Geen Zwitserleven Fondsen-sensoren gevonden.",
       setup_hint: "Instellen via Instellingen → Integraties → Zwitserleven Fondsen.",
     },
-    card: { not_found: "Niet gevonden" },
+    card: {
+      not_found: "Niet gevonden",
+      price_history: "Koershistorie",
+      date: "Datum",
+      price: "Koers",
+      change: "Verandering",
+      loading: "Laden…",
+      no_history: "Nog geen koersen opgeslagen.",
+      close: "Sluiten",
+    },
   },
   es: {
     editor: {
@@ -78,7 +121,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "No se encontraron sensores Zwitserleven Fondsen.",
       setup_hint: "Configurar en Ajustes → Integraciones → Zwitserleven Fondsen.",
     },
-    card: { not_found: "No encontrado" },
+    card: {
+      not_found: "No encontrado",
+      price_history: "Historial de precios",
+      date: "Fecha",
+      price: "Precio",
+      change: "Variación",
+      loading: "Cargando…",
+      no_history: "Aún no hay precios guardados.",
+      close: "Cerrar",
+    },
   },
   it: {
     editor: {
@@ -91,7 +143,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "Nessun sensore Zwitserleven Fondsen trovato.",
       setup_hint: "Configurare in Impostazioni → Integrazioni → Zwitserleven Fondsen.",
     },
-    card: { not_found: "Non trovato" },
+    card: {
+      not_found: "Non trovato",
+      price_history: "Storico prezzi",
+      date: "Data",
+      price: "Prezzo",
+      change: "Variazione",
+      loading: "Caricamento…",
+      no_history: "Nessun prezzo salvato finora.",
+      close: "Chiudi",
+    },
   },
   pt: {
     editor: {
@@ -104,7 +165,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "Nenhum sensor Zwitserleven Fondsen encontrado.",
       setup_hint: "Configurar em Definições → Integrações → Zwitserleven Fondsen.",
     },
-    card: { not_found: "Não encontrado" },
+    card: {
+      not_found: "Não encontrado",
+      price_history: "Histórico de preços",
+      date: "Data",
+      price: "Preço",
+      change: "Variação",
+      loading: "A carregar…",
+      no_history: "Ainda não há preços guardados.",
+      close: "Fechar",
+    },
   },
   pl: {
     editor: {
@@ -117,7 +187,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "Nie znaleziono czujników Zwitserleven Fondsen.",
       setup_hint: "Skonfiguruj w Ustawienia → Integracje → Zwitserleven Fondsen.",
     },
-    card: { not_found: "Nie znaleziono" },
+    card: {
+      not_found: "Nie znaleziono",
+      price_history: "Historia cen",
+      date: "Data",
+      price: "Cena",
+      change: "Zmiana",
+      loading: "Ładowanie…",
+      no_history: "Brak zapisanych cen.",
+      close: "Zamknij",
+    },
   },
   sv: {
     editor: {
@@ -130,7 +209,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "Inga Zwitserleven Fondsen-sensorer hittades.",
       setup_hint: "Konfigurera under Inställningar → Integrationer → Zwitserleven Fondsen.",
     },
-    card: { not_found: "Hittades inte" },
+    card: {
+      not_found: "Hittades inte",
+      price_history: "Kurshistorik",
+      date: "Datum",
+      price: "Kurs",
+      change: "Förändring",
+      loading: "Laddar…",
+      no_history: "Inga kurser sparade än.",
+      close: "Stäng",
+    },
   },
   da: {
     editor: {
@@ -143,7 +231,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "Ingen Zwitserleven Fondsen-sensorer fundet.",
       setup_hint: "Opsæt under Indstillinger → Integrationer → Zwitserleven Fondsen.",
     },
-    card: { not_found: "Ikke fundet" },
+    card: {
+      not_found: "Ikke fundet",
+      price_history: "Kurshistorik",
+      date: "Dato",
+      price: "Kurs",
+      change: "Ændring",
+      loading: "Indlæser…",
+      no_history: "Ingen kurser gemt endnu.",
+      close: "Luk",
+    },
   },
   nb: {
     editor: {
@@ -156,7 +253,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "Ingen Zwitserleven Fondsen-sensorer funnet.",
       setup_hint: "Konfigurer under Innstillinger → Integrasjoner → Zwitserleven Fondsen.",
     },
-    card: { not_found: "Ikke funnet" },
+    card: {
+      not_found: "Ikke funnet",
+      price_history: "Kurshistorikk",
+      date: "Dato",
+      price: "Kurs",
+      change: "Endring",
+      loading: "Laster…",
+      no_history: "Ingen kurser lagret ennå.",
+      close: "Lukk",
+    },
   },
   fi: {
     editor: {
@@ -169,7 +275,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "Zwitserleven Fondsen -antureita ei löydy.",
       setup_hint: "Määritä kohdassa Asetukset → Integraatiot → Zwitserleven Fondsen.",
     },
-    card: { not_found: "Ei löydy" },
+    card: {
+      not_found: "Ei löydy",
+      price_history: "Kurssihistoria",
+      date: "Päivä",
+      price: "Kurssi",
+      change: "Muutos",
+      loading: "Ladataan…",
+      no_history: "Kursseja ei ole vielä tallennettu.",
+      close: "Sulje",
+    },
   },
   cs: {
     editor: {
@@ -182,7 +297,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "Nebyly nalezeny žádné senzory Zwitserleven Fondsen.",
       setup_hint: "Nastavte v Nastavení → Integrace → Zwitserleven Fondsen.",
     },
-    card: { not_found: "Nenalezeno" },
+    card: {
+      not_found: "Nenalezeno",
+      price_history: "Historie cen",
+      date: "Datum",
+      price: "Cena",
+      change: "Změna",
+      loading: "Načítání…",
+      no_history: "Zatím nejsou uloženy žádné ceny.",
+      close: "Zavřít",
+    },
   },
   hu: {
     editor: {
@@ -195,7 +319,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "Nem találhatók Zwitserleven Fondsen érzékelők.",
       setup_hint: "Állítsa be a Beállítások → Integrációk → Zwitserleven Fondsen menüpontban.",
     },
-    card: { not_found: "Nem található" },
+    card: {
+      not_found: "Nem található",
+      price_history: "Árfolyam-előzmények",
+      date: "Dátum",
+      price: "Árfolyam",
+      change: "Változás",
+      loading: "Betöltés…",
+      no_history: "Még nincsenek mentett árfolyamok.",
+      close: "Bezárás",
+    },
   },
   ru: {
     editor: {
@@ -208,7 +341,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "Датчики Zwitserleven Fondsen не найдены.",
       setup_hint: "Настройте в Настройки → Интеграции → Zwitserleven Fondsen.",
     },
-    card: { not_found: "Не найдено" },
+    card: {
+      not_found: "Не найдено",
+      price_history: "История цен",
+      date: "Дата",
+      price: "Цена",
+      change: "Изменение",
+      loading: "Загрузка…",
+      no_history: "Цены ещё не сохранены.",
+      close: "Закрыть",
+    },
   },
   zh: {
     editor: {
@@ -221,7 +363,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "未找到 Zwitserleven Fondsen 传感器。",
       setup_hint: "在设置 → 集成 → Zwitserleven Fondsen 中进行配置。",
     },
-    card: { not_found: "未找到" },
+    card: {
+      not_found: "未找到",
+      price_history: "价格历史",
+      date: "日期",
+      price: "价格",
+      change: "变动",
+      loading: "加载中…",
+      no_history: "尚未保存任何价格。",
+      close: "关闭",
+    },
   },
   ja: {
     editor: {
@@ -234,7 +385,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "Zwitserleven Fondsen センサーが見つかりません。",
       setup_hint: "設定 → インテグレーション → Zwitserleven Fondsen で設定してください。",
     },
-    card: { not_found: "見つかりません" },
+    card: {
+      not_found: "見つかりません",
+      price_history: "価格履歴",
+      date: "日付",
+      price: "価格",
+      change: "変動",
+      loading: "読み込み中…",
+      no_history: "保存された価格はまだありません。",
+      close: "閉じる",
+    },
   },
   ko: {
     editor: {
@@ -247,7 +407,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "Zwitserleven Fondsen 센서를 찾을 수 없습니다.",
       setup_hint: "설정 → 통합 → Zwitserleven Fondsen에서 설정하세요.",
     },
-    card: { not_found: "찾을 수 없음" },
+    card: {
+      not_found: "찾을 수 없음",
+      price_history: "가격 기록",
+      date: "날짜",
+      price: "가격",
+      change: "변동",
+      loading: "불러오는 중…",
+      no_history: "아직 저장된 가격이 없습니다.",
+      close: "닫기",
+    },
   },
   tr: {
     editor: {
@@ -260,7 +429,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "Zwitserleven Fondsen sensörü bulunamadı.",
       setup_hint: "Ayarlar → Entegrasyonlar → Zwitserleven Fondsen altında yapılandırın.",
     },
-    card: { not_found: "Bulunamadı" },
+    card: {
+      not_found: "Bulunamadı",
+      price_history: "Fiyat geçmişi",
+      date: "Tarih",
+      price: "Fiyat",
+      change: "Değişim",
+      loading: "Yükleniyor…",
+      no_history: "Henüz kayıtlı fiyat yok.",
+      close: "Kapat",
+    },
   },
   ar: {
     editor: {
@@ -273,7 +451,16 @@ const translations: Record<string, Strings> = {
       no_sensors: "لم يتم العثور على أجهزة استشعار Zwitserleven Fondsen.",
       setup_hint: "الإعداد في الإعدادات ← التكاملات ← Zwitserleven Fondsen.",
     },
-    card: { not_found: "غير موجود" },
+    card: {
+      not_found: "غير موجود",
+      price_history: "سجل الأسعار",
+      date: "التاريخ",
+      price: "السعر",
+      change: "التغير",
+      loading: "جارٍ التحميل…",
+      no_history: "لا توجد أسعار محفوظة بعد.",
+      close: "إغلاق",
+    },
   },
 };
 

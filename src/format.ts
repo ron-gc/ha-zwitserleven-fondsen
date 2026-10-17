@@ -19,6 +19,27 @@ export function formatPrice(price: number, locale?: string): string {
   }).format(price);
 }
 
+/** A price change with its sign, e.g. "+€ 1,25" or "-€ 0,40"; no sign for 0. */
+export function formatPriceChange(change: number, locale?: string): string {
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: CURRENCY,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: PRICE_DECIMALS,
+    signDisplay: "exceptZero",
+  }).format(change);
+}
+
+/** A percentage change with its sign, e.g. "+0,55%"; `pct` is in percent. */
+export function formatPercentChange(pct: number, locale?: string): string {
+  return new Intl.NumberFormat(locale, {
+    style: "percent",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+    signDisplay: "exceptZero",
+  }).format(pct / 100);
+}
+
 /** Local Date for a "YYYY-MM-DD" day, or null if it doesn't parse. */
 function parseDay(day: string): Date | null {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(day);
