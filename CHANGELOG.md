@@ -6,6 +6,8 @@ All notable changes to this integration are listed here. The format follows
 
 ## [Unreleased]
 
+## [0.0.2] - 2026-10-17
+
 ### Added
 
 - Diagnostics: download them from a fund's entry under Settings > Devices &
@@ -77,4 +79,5 @@ First release as a standalone integration. It started from
   `price_is_live`, `traded_today`), since funds have one price per day.
 - Requires Home Assistant 2025.1 or newer.
 
+[0.0.2]: https://github.com/ron-gc/ha-zwitserleven-fondsen/releases/tag/v0.0.2
 [0.0.1]: https://github.com/ron-gc/ha-zwitserleven-fondsen/releases/tag/v0.0.1
