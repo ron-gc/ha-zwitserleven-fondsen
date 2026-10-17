@@ -102,7 +102,7 @@ If the card is still missing:
 1. Confirm Zwitserleven Fondsen is listed under **Settings → Devices & Services**. Without a
    configured entry the integration never starts, and the card is not served at all.
 2. Open your browser's developer console and reload the dashboard. The card logs one line on
-   load: `[zwitserleven-fondsen-card] v0.0.2 loaded from http://<your-ha>:8123/zwitserleven_fondsen/zwitserleven-fondsen-card.js?v=…`.
+   load: `[zwitserleven-fondsen-card] v0.1.0 loaded from http://<your-ha>:8123/zwitserleven_fondsen/zwitserleven-fondsen-card.js?v=…`.
    - **No such line** — the browser never loaded the file. Continue with step 3.
    - **Two such lines** — a second, probably stale copy is registered. The card also warns which
      copy was ignored. Remove the duplicate under **Settings → Dashboards → ⋮ → Resources**.
