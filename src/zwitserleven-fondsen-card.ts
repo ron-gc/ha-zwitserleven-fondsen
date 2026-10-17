@@ -1,15 +1,23 @@
 import { LitElement, html, css, nothing, svg } from "lit";
-import { property, state } from "lit/decorators.js";
+import { property, query, state } from "lit/decorators.js";
 import type {
   HomeAssistant,
   ZwitserlevenFondsenCardConfig,
+  StockAttributes,
   StockEntity,
   TimeRange,
 } from "./types";
 import { t } from "./translations";
-import { formatPrice, formatPriceDate, formatPriceDateLong } from "./format";
+import {
+  formatPercentChange,
+  formatPrice,
+  formatPriceChange,
+  formatPriceDate,
+  formatPriceDateLong,
+} from "./format";
 import { sparklinePoints, SPARKLINE_HEIGHT, SPARKLINE_WIDTH } from "./sparkline";
-import { buildChartData } from "./chart-data";
+import { buildChartData, withLivePrice } from "./chart-data";
+import { historyRows } from "./history-list";
 
 const DOMAIN = "zwitserleven_fondsen";
 const CARD_TAG = "zwitserleven-fondsen-card";
@@ -351,6 +359,9 @@ export class ZwitserlevenFondsenCard extends LitElement {
   private _hass?: HomeAssistant;
   @state() private _config?: ZwitserlevenFondsenCardConfig;
   @state() private _timeRange: TimeRange = "1T";
+  /** The fund whose price history list is open, if any. */
+  @state() private _historyEntityId?: string;
+  @query("dialog.history-dialog") private _historyDialog?: HTMLDialogElement;
 
   /** Cache: symbol → { data, ts } — stored daily prices from the REST endpoint */
   private _dailyHistoryCache = new Map<string, { data: [string, number][]; ts: number }>();
@@ -466,8 +477,15 @@ export class ZwitserlevenFondsenCard extends LitElement {
             )}
           </div>
         </div>
+        ${this._renderHistoryDialog()}
       </ha-card>
     `;
+  }
+
+  protected updated(): void {
+    // Opened modally, the dialog blocks the page and closes on Escape.
+    const dialog = this._historyDialog;
+    if (dialog && !dialog.open) dialog.showModal();
   }
 
   private _renderEntity(entityId: string) {
@@ -483,10 +501,11 @@ export class ZwitserlevenFondsenCard extends LitElement {
       `;
     }
 
-    const entity = raw as unknown as { state: string; attributes: import("./types").StockAttributes };
+    const entity = raw as unknown as { state: string; attributes: StockAttributes };
     const attr = entity.attributes;
     const displayName = (raw.attributes["friendly_name"] as string) || attr.long_name || attr.symbol;
     const locale = this._hass?.locale?.language;
+    const strings = t(locale ?? "en").card;
     const price = parseFloat(entity.state);
     // Fetch the stored daily prices (no-op if cached or already in flight)
     void this._fetchDailyHistory(attr.symbol);
@@ -518,6 +537,18 @@ export class ZwitserlevenFondsenCard extends LitElement {
               ? html` · <span title=${formatPriceDateLong(attr.price_date, locale)}>${priceDate}</span>`
               : nothing}
           </span>
+          <button
+            class="history-btn"
+            title=${strings.price_history}
+            aria-label=${strings.price_history}
+            @click=${(e: Event) => {
+              // The tile itself opens the more-info dialog.
+              e.stopPropagation();
+              this._historyEntityId = entityId;
+            }}
+          >
+            <ha-icon icon="mdi:format-list-bulleted"></ha-icon>
+          </button>
         </div>
         <div class="asset-price">
           <div class="price-stack">
@@ -532,6 +563,99 @@ export class ZwitserlevenFondsenCard extends LitElement {
           ${this._renderSparkline(chartData, trendColor)}
         </div>
       </div>
+    `;
+  }
+
+  /** The stored daily prices of the open fund, newest first, in a modal dialog. */
+  private _renderHistoryDialog() {
+    const entityId = this._historyEntityId;
+    const raw = entityId ? this._hass?.states[entityId] : undefined;
+    if (!raw) return nothing;
+
+    const attr = raw.attributes as unknown as StockAttributes;
+    const name = (raw.attributes["friendly_name"] as string) || attr.long_name || attr.symbol;
+    const locale = this._hass?.locale?.language;
+    const strings = t(locale ?? "en").card;
+    const history = this._cachedDailyHistory(attr.symbol);
+    const rows = history
+      ? historyRows(
+          withLivePrice({
+            dailyHistory: history,
+            livePrice: parseFloat(raw.state),
+            priceDate: attr.price_date,
+          }),
+        )
+      : null;
+
+    let body;
+    if (rows === null && this._fetchingDaily.has(attr.symbol)) {
+      body = html`<p class="status">${strings.loading}</p>`;
+    } else if (!rows?.length) {
+      body = html`<p class="status">${strings.no_history}</p>`;
+    } else {
+      body = html`
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">${strings.date}</th>
+              <th scope="col" class="num">${strings.price}</th>
+              <th scope="col" class="num">${strings.change}</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map((row) => {
+              const trend = !row.change ? "" : row.change > 0 ? "up" : "down";
+              return html`
+                <tr>
+                  <td title=${formatPriceDateLong(row.date, locale)}>
+                    ${formatPriceDate(row.date, locale)}
+                  </td>
+                  <td class="num">${formatPrice(row.price, locale)}</td>
+                  <td class="num ${trend}">
+                    ${row.change === null
+                      ? "–"
+                      : html`${formatPriceChange(row.change, locale)}${row.changePct === null
+                          ? nothing
+                          : html` <span class="pct">${formatPercentChange(row.changePct, locale)}</span>`}`}
+                  </td>
+                </tr>
+              `;
+            })}
+          </tbody>
+        </table>
+      `;
+    }
+
+    return html`
+      <dialog
+        class="history-dialog"
+        aria-labelledby="history-title"
+        @close=${() => {
+          this._historyEntityId = undefined;
+        }}
+        @click=${(e: Event) => {
+          // Only a click on the backdrop has the dialog itself as its target.
+          if (e.target === e.currentTarget) this._historyDialog?.close();
+        }}
+      >
+        <div class="dialog-content">
+          <div class="dialog-header">
+            <div class="dialog-heading">
+              <h2 id="history-title">${strings.price_history}</h2>
+              <div class="dialog-subtitle">
+                ${name} · <span class="asset-symbol">${attr.symbol}</span>
+              </div>
+            </div>
+            <button
+              class="close-btn"
+              title=${strings.close}
+              aria-label=${strings.close}
+              @click=${() => this._historyDialog?.close()}
+            >✕</button>
+          </div>
+          <div class="dialog-body">${body}</div>
+        </div>
+      </dialog>
     `;
   }
 
@@ -647,6 +771,28 @@ export class ZwitserlevenFondsenCard extends LitElement {
     .asset-symbol {
       font-family: monospace;
     }
+    .history-btn {
+      flex-shrink: 0;
+      align-self: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      margin: -3px -4px -3px 0;
+      padding: 0;
+      border: none;
+      border-radius: 4px;
+      background: none;
+      cursor: pointer;
+      color: var(--secondary-text-color);
+      --mdc-icon-size: 16px;
+    }
+    .history-btn:hover,
+    .history-btn:focus-visible {
+      color: var(--primary-color);
+      background: var(--divider-color);
+    }
     .asset-price {
       display: flex;
       justify-content: space-between;
@@ -689,6 +835,112 @@ export class ZwitserlevenFondsenCard extends LitElement {
       padding: 6px 0;
     }
     .error { color: var(--error-color, #f44336); }
+
+    .history-dialog {
+      width: min(460px, calc(100vw - 32px));
+      max-height: min(640px, calc(100vh - 64px));
+      padding: 0;
+      border: none;
+      border-radius: var(--ha-card-border-radius, 12px);
+      background: var(--card-background-color, #fff);
+      color: var(--primary-text-color);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    .history-dialog[open] {
+      display: flex;
+    }
+    .history-dialog::backdrop {
+      background: rgba(0, 0, 0, 0.4);
+    }
+    .dialog-content {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      min-height: 0;
+    }
+    .dialog-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 16px 16px 8px;
+    }
+    .dialog-heading {
+      min-width: 0;
+    }
+    .dialog-heading h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+    .dialog-subtitle {
+      font-size: 0.8rem;
+      color: var(--secondary-text-color);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .close-btn {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 50%;
+      background: none;
+      cursor: pointer;
+      color: var(--secondary-text-color);
+      font-size: 1rem;
+    }
+    .close-btn:hover,
+    .close-btn:focus-visible {
+      background: var(--divider-color);
+      color: var(--primary-text-color);
+    }
+    .dialog-body {
+      overflow-y: auto;
+      padding: 0 16px 12px;
+    }
+    .dialog-body .status {
+      margin: 0;
+      padding: 16px 0;
+      color: var(--secondary-text-color);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      font-variant-numeric: tabular-nums;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      background: var(--card-background-color, #fff);
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--secondary-text-color);
+      padding: 8px 4px 6px;
+      border-bottom: 1px solid var(--divider-color);
+    }
+    td {
+      padding: 6px 4px;
+      border-bottom: 1px solid var(--divider-color);
+      white-space: nowrap;
+    }
+    .num {
+      text-align: right;
+    }
+    td.up {
+      color: var(--success-color, #4caf50);
+    }
+    td.down {
+      color: var(--error-color, #f44336);
+    }
+    .pct {
+      display: inline-block;
+      min-width: 4.5em;
+      margin-left: 4px;
+    }
   `;
 }
 

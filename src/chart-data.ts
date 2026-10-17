@@ -26,7 +26,9 @@ function daysBefore(day: string, days: number, years = 0): string {
  * price date. The stored history normally already holds it; merging covers
  * the moment between a new price arriving and the card refetching the history.
  */
-function withLivePrice(input: ChartDataInput): [string, number][] {
+export function withLivePrice(
+  input: Pick<ChartDataInput, "dailyHistory" | "livePrice" | "priceDate">,
+): [string, number][] {
   const { dailyHistory, livePrice, priceDate } = input;
   if (!priceDate || !Number.isFinite(livePrice)) return dailyHistory;
   const last = dailyHistory[dailyHistory.length - 1];

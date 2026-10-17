@@ -6,6 +6,11 @@ All notable changes to this integration are listed here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- A list button on each card tile opens the fund's price history: every
+  stored daily price, newest first, with its change against the day before.
+
 ## [0.0.2] - 2026-10-17
 
 ### Added

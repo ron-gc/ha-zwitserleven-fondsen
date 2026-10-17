@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { formatPrice, formatPriceDate, formatPriceDateLong } from "./format";
+import {
+  formatPercentChange,
+  formatPrice,
+  formatPriceChange,
+  formatPriceDate,
+  formatPriceDateLong,
+} from "./format";
 
 describe("formatPrice", () => {
   it("formats in euro", () => {
@@ -48,5 +54,23 @@ describe("formatPriceDate", () => {
   it("has a long form for the tooltip", () => {
     expect(formatPriceDateLong("2026-10-09", "en-GB")).toBe("9 October 2026");
     expect(formatPriceDateLong("2026-10-09", "nl-NL")).toBe("9 oktober 2026");
+  });
+});
+
+describe("formatPriceChange", () => {
+  it("shows the sign of a change", () => {
+    expect(formatPriceChange(1.25, "en-US")).toBe("+€1.25");
+    expect(formatPriceChange(-0.4, "en-US")).toBe("-€0.40");
+  });
+
+  it("shows no sign for no change", () => {
+    expect(formatPriceChange(0, "en-US")).toBe("€0.00");
+  });
+});
+
+describe("formatPercentChange", () => {
+  it("takes percent and shows two decimals with the sign", () => {
+    expect(formatPercentChange(0.554, "en-US")).toBe("+0.55%");
+    expect(formatPercentChange(-5, "en-US")).toBe("-5.00%");
   });
 });

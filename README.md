@@ -35,6 +35,8 @@ a separate integration with its own domain (`zwitserleven_fondsen`), card
   - **Price date** — the date of the current price, shown after the fund ID
   - **Reference price** — period baseline shown below the current price
   - **Click any tile** to open the HA sensor detail dialog
+  - **Price history list** — the list button on a tile shows every stored daily price with its
+    change, newest first
   - **Tile size** — choose S / M / L in the visual editor to control how many tiles fit per row
   - **Visual card editor** with drag & drop to reorder funds
 - **Daily updates** — prices change at most once a day, so the page is checked when Home Assistant
@@ -49,6 +51,7 @@ a separate integration with its own domain (`zwitserleven_fondsen`), card
   your home.
 - Get a notification when a fund rises or drops sharply, see [Automation examples](#automation-examples).
 - Track what your holdings are worth by multiplying a price by the number of units you own.
+- Look up a fund's daily prices in a list on the card, see [Price history list](#price-history-list).
 - Keep a long-term price history in the Home Assistant recorder and long-term statistics.
 
 ## Supported funds
@@ -253,6 +256,13 @@ Each tile also shows the date of its current price after the fund ID, for exampl
 > **Note:** Zwitserleven only publishes the current price, so the stored history starts on the
 > day you add a fund and the charts fill up over time. With a single stored price, a chart is a
 > flat line.
+
+### Price history list
+
+The list button in the top-right corner of a tile opens the fund's price history: one row per
+stored day, newest first, with the price and its change against the day before, as an amount
+and a percentage. The dates are the days Zwitserleven published the prices for, as in the
+charts, and the list goes back to the day you added the fund.
 
 ## Known limitations
 
