@@ -25,10 +25,12 @@
       "init": {
         "title": "Fondsopties",
         "data": {
-          "name": "Weergavenaam (optioneel)"
+          "name": "Weergavenaam (optioneel)",
+          "units": "Aantal eenheden in bezit (optioneel)"
         },
         "data_description": {
-          "name": "Naam voor het apparaat en de sensoren van het fonds. Laat dit leeg om de fondsnaam van Zwitserleven te gebruiken."
+          "name": "Naam voor het apparaat en de sensoren van het fonds. Laat dit leeg om de fondsnaam van Zwitserleven te gebruiken.",
+          "units": "Hoeveel eenheden van dit fonds je bezit. Voegt een sensor Waarde toe met wat ze waard zijn. Laat dit leeg als je dat niet wilt."
         }
       }
     }
@@ -40,6 +42,9 @@
       },
       "price_date": {
         "name": "Koersdatum"
+      },
+      "value": {
+        "name": "Waarde"
       }
     }
   },

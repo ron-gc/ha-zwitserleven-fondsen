@@ -10,6 +10,7 @@ from custom_components.zwitserleven_fondsen.const import (
     DOMAIN,
     CONF_SYMBOL,
     CONF_NAME,
+    CONF_UNITS,
 )
 from custom_components.zwitserleven_fondsen.fondsen_page import FondsenPageError
 
@@ -146,23 +147,27 @@ def entry(hass):
     return entry
 
 
-async def _rename(hass, entry, user_input):
+async def _configure(hass, entry, user_input):
     result = await hass.config_entries.options.async_init(entry.entry_id)
     return await hass.config_entries.options.async_configure(result["flow_id"], user_input)
 
 
-async def test_options_flow_suggests_the_current_name(hass, entry):
+def _suggested(result):
+    return {str(key): key.description["suggested_value"] for key in result["data_schema"].schema}
+
+
+async def test_options_flow_suggests_the_current_values(hass, entry):
+    hass.config_entries.async_update_entry(entry, options={CONF_UNITS: 12.5})
     result = await hass.config_entries.options.async_init(entry.entry_id)
 
     assert result["type"] == FlowResultType.FORM
     assert result["step_id"] == "init"
-    # Suggested, not a default: a default would come back when the field is cleared.
-    (key,) = result["data_schema"].schema
-    assert key.description == {"suggested_value": "Obligaties"}
+    # Suggested, not defaults: a default would come back when a field is cleared.
+    assert _suggested(result) == {CONF_NAME: "Obligaties", CONF_UNITS: 12.5}
 
 
 async def test_options_flow_renames_the_entry(hass, entry):
-    result = await _rename(hass, entry, {CONF_NAME: " Obligatiefonds "})
+    result = await _configure(hass, entry, {CONF_NAME: " Obligatiefonds "})
 
     assert result["type"] == FlowResultType.CREATE_ENTRY
     assert entry.title == "Obligatiefonds"
@@ -172,13 +177,30 @@ async def test_options_flow_renames_the_entry(hass, entry):
 async def test_clearing_the_name_restores_the_fund_name(hass, entry):
     # A cleared field is left out of the input altogether.
     with _serve(OBLIGATIES):
-        await _rename(hass, entry, {})
+        await _configure(hass, entry, {})
 
     assert entry.title == "ASN Duurzaam Obligatiefonds"
 
 
 async def test_clearing_the_name_falls_back_to_the_fund_id_without_the_page(hass, entry):
     with _serve(error=FondsenPageError("Zwitserleven returned HTTP 503")):
-        await _rename(hass, entry, {CONF_NAME: ""})
+        await _configure(hass, entry, {CONF_NAME: ""})
 
     assert entry.title == "LTAOB"
+
+
+async def test_options_flow_saves_the_units(hass, entry):
+    await _configure(hass, entry, {CONF_NAME: "Obligaties", CONF_UNITS: 12.5})
+
+    assert entry.title == "Obligaties"
+    assert entry.options == {CONF_UNITS: 12.5}
+
+
+@pytest.mark.parametrize("user_input", [{CONF_NAME: "Obligaties"}, {CONF_NAME: "Obligaties", CONF_UNITS: 0}])
+async def test_clearing_the_units_removes_them(hass, entry, user_input):
+    hass.config_entries.async_update_entry(entry, options={CONF_UNITS: 12.5})
+
+    await _configure(hass, entry, user_input)
+
+    assert entry.options == {}
+

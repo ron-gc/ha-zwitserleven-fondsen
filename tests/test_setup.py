@@ -19,6 +19,7 @@ from pytest_homeassistant_custom_component.common import (
 
 from custom_components.zwitserleven_fondsen.const import (
     CONF_NAME,
+    CONF_UNITS,
     CONF_SYMBOL,
     DATA_COORDINATOR,
     DOMAIN,
@@ -139,6 +140,36 @@ async def test_the_enabled_price_date_sensor_is_the_price_date(hass, entry, hass
     state = hass.states.get("sensor.asn_duurzaam_aandelenfonds_price_date")
     assert state.state == "2026-10-02"
     assert state.attributes["device_class"] == "date"
+
+
+async def test_units_add_a_value_sensor(hass, entry, hass_storage):
+    hass.config_entries.async_update_entry(entry, options={CONF_UNITS: 10.5})
+    await _set_up(hass, entry, hass_storage)
+
+    state = hass.states.get("sensor.asn_duurzaam_aandelenfonds_value")
+    assert float(state.state) == round(225.87 * 10.5, 2)
+    assert state.attributes["unit_of_measurement"] == "EUR"
+    assert state.attributes["device_class"] == "monetary"
+    assert state.attributes["state_class"] == "total"
+
+
+async def test_without_units_there_is_no_value_sensor(hass, entry, hass_storage):
+    await _set_up(hass, entry, hass_storage)
+
+    assert er.async_get(hass).async_get_entity_id("sensor", DOMAIN, f"{UNIQUE_ID}_value") is None
+
+
+async def test_clearing_the_units_removes_the_value_sensor(hass, entry, hass_storage):
+    hass.config_entries.async_update_entry(entry, options={CONF_UNITS: 10.5})
+    await _set_up(hass, entry, hass_storage)
+
+    with _serve(quote()):
+        hass.config_entries.async_update_entry(entry, options={})
+        await hass.async_block_till_done()
+
+    assert entry.state is ConfigEntryState.LOADED
+    assert er.async_get(hass).async_get_entity_id("sensor", DOMAIN, f"{UNIQUE_ID}_value") is None
+    assert hass.states.get("sensor.asn_duurzaam_aandelenfonds_value") is None
 
 
 async def _wait(hass, freezer, delta):
@@ -508,3 +539,13 @@ async def test_diagnostics_show_a_fund_missing_from_the_page(hass, entry, hass_s
     diagnostics = await async_get_config_entry_diagnostics(hass, entry)
     assert diagnostics["coordinator"]["missing_funds"] == [SYMBOL]
     assert diagnostics["fund"] is None
+
+
+async def test_diagnostics_redact_the_units(hass, entry, hass_storage):
+    """Diagnostics go into public bug reports; the units tell what someone owns."""
+    hass.config_entries.async_update_entry(entry, options={CONF_UNITS: 10.5})
+    await _set_up(hass, entry, hass_storage)
+
+    diagnostics = await async_get_config_entry_diagnostics(hass, entry)
+    assert diagnostics["entry"]["options"] == {CONF_UNITS: "**REDACTED**"}
+    assert "10.5" not in str(diagnostics)

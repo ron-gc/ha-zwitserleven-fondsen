@@ -6,6 +6,7 @@ from custom_components.zwitserleven_fondsen.sensor import (
     ZwitserlevenChangeSensor,
     ZwitserlevenPriceDateSensor,
     ZwitserlevenSensor,
+    ZwitserlevenValueSensor,
 )
 from custom_components.zwitserleven_fondsen.const import CONF_SYMBOL
 
@@ -85,3 +86,11 @@ def test_price_date_sensor_is_the_date_the_price_is_for():
 def test_every_sensor_has_no_value_without_coordinator_data():
     for cls in (ZwitserlevenSensor, ZwitserlevenChangeSensor, ZwitserlevenPriceDateSensor):
         assert cls(*_parts(data=None)).native_value is None, cls.__name__
+
+
+def test_value_sensor_is_the_price_times_the_units():
+    sensor = ZwitserlevenValueSensor(*_parts(), 10.5)
+    assert sensor.native_value == round(225.87 * 10.5, 2)
+    assert sensor.native_unit_of_measurement == "EUR"
+    assert sensor.unique_id == f"zwitserleven_fondsen_{SYMBOL}_value"
+    assert ZwitserlevenValueSensor(*_parts(data=None), 10.5).native_value is None
