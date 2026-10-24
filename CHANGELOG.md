@@ -6,6 +6,17 @@ All notable changes to this integration are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The card is easier to use on a touch screen and with a keyboard or screen
+  reader:
+  - In the card editor, the ▲ ▼ buttons move a fund up or down; dragging,
+    which doesn't work on touch screens, still works with a mouse.
+  - Tiles can be reached with Tab and opened with Enter or Space.
+  - The time range labels follow the user's language (for example 1J in
+    Dutch), with the full name as a tooltip, and screen readers hear which
+    range is selected.
+
 ## [0.2.1] - 2026-10-24
 
 ### Changed

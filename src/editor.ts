@@ -2,7 +2,7 @@ import { LitElement, html, css, nothing } from "lit";
 import { property, state } from "lit/decorators.js";
 import type { HomeAssistant, ZwitserlevenFondsenCardConfig } from "./types";
 import { findFundSensors, type Fund } from "./fund";
-import { RANGES } from "./ranges";
+import { RANGES, rangeLabels } from "./ranges";
 import { t } from "./translations";
 
 // ---------------------------------------------------------------------------
@@ -24,7 +24,17 @@ export class ZwitserlevenFondsenCardEditor extends LitElement {
     return fund.longName ?? fund.symbol ?? fund.entityId;
   }
 
-  // ---- Drag & Drop --------------------------------------------------------
+  // ---- Reordering ---------------------------------------------------------
+  // Drag and drop for a mouse; the move buttons for touch screens, where
+  // HTML drag and drop does not work, and for the keyboard.
+
+  private _move(from: number, to: number): void {
+    const entities = [...(this._config?.entities ?? [])];
+    if (to < 0 || to >= entities.length) return;
+    const [moved] = entities.splice(from, 1);
+    entities.splice(to, 0, moved);
+    this._set("entities", entities);
+  }
 
   private _onDragStart(e: DragEvent, index: number): void {
     this._dragIndex = index;
@@ -34,11 +44,8 @@ export class ZwitserlevenFondsenCardEditor extends LitElement {
   private _onDragOver(e: DragEvent, index: number): void {
     e.preventDefault();
     if (this._dragIndex === null || this._dragIndex === index) return;
-    const entities = [...(this._config?.entities ?? [])];
-    const [moved] = entities.splice(this._dragIndex, 1);
-    entities.splice(index, 0, moved);
+    this._move(this._dragIndex, index);
     this._dragIndex = index;
-    this._set("entities", entities);
   }
 
   private _onDragEnd(): void {
@@ -53,7 +60,8 @@ export class ZwitserlevenFondsenCardEditor extends LitElement {
     const all = findFundSensors(this.hass);
     const selectedIds = entities;
     const available = all.filter((fund) => !selectedIds.includes(fund.entityId));
-    const s = t(this.hass?.locale?.language ?? "en").editor;
+    const strings = t(this.hass?.locale?.language ?? "en");
+    const s = strings.editor;
 
     return html`
       <div class="editor">
@@ -66,26 +74,35 @@ export class ZwitserlevenFondsenCardEditor extends LitElement {
           }}
         ></ha-textfield>
 
-        <div class="field-label">${s.default_range}</div>
-        <div class="range-picker">
-          ${RANGES.map(
-            ({ value, label }) => html`
+        <div class="field-label" id="default-range-label">${s.default_range}</div>
+        <div class="range-picker" role="group" aria-labelledby="default-range-label">
+          ${RANGES.map((range) => {
+            const { short, name } = rangeLabels(strings.card, range);
+            const active = (default_range ?? "1T") === range;
+            return html`
               <button
-                class="range-opt ${(default_range ?? "1T") === value ? "active" : ""}"
-                @click=${() => this._set("default_range", value)}
-              >${label}</button>
-            `
-          )}
+                class="range-opt ${active ? "active" : ""}"
+                title=${name}
+                aria-label=${name}
+                aria-pressed=${active ? "true" : "false"}
+                @click=${() => this._set("default_range", range)}
+              >${short}</button>
+            `;
+          })}
         </div>
 
-        <div class="field-label">${s.tile_size}</div>
-        <div class="range-picker">
-          ${(["small", "medium", "large"] as const).map((size) => html`
-            <button
-              class="range-opt ${(this._config?.tile_size ?? "small") === size ? "active" : ""}"
-              @click=${() => this._set("tile_size", size)}
-            >${size === "small" ? "S" : size === "medium" ? "M" : "L"}</button>
-          `)}
+        <div class="field-label" id="tile-size-label">${s.tile_size}</div>
+        <div class="range-picker" role="group" aria-labelledby="tile-size-label">
+          ${(["small", "medium", "large"] as const).map((size) => {
+            const active = (this._config?.tile_size ?? "small") === size;
+            return html`
+              <button
+                class="range-opt ${active ? "active" : ""}"
+                aria-pressed=${active ? "true" : "false"}
+                @click=${() => this._set("tile_size", size)}
+              >${size === "small" ? "S" : size === "medium" ? "M" : "L"}</button>
+            `;
+          })}
         </div>
 
         ${entities.length > 0 ? html`
@@ -108,7 +125,26 @@ export class ZwitserlevenFondsenCardEditor extends LitElement {
                   >⠿</span>
                   <span class="sensor-name">${name}</span>
                   <span class="sensor-meta">${symbol}</span>
-                  <button class="remove-btn" @click=${() => this._removeEntity(entityId)}>✕</button>
+                  <button
+                    class="row-btn move-up"
+                    title=${s.move_up}
+                    aria-label="${s.move_up}: ${name}"
+                    ?disabled=${index === 0}
+                    @click=${() => this._move(index, index - 1)}
+                  >▲</button>
+                  <button
+                    class="row-btn move-down"
+                    title=${s.move_down}
+                    aria-label="${s.move_down}: ${name}"
+                    ?disabled=${index === entities.length - 1}
+                    @click=${() => this._move(index, index + 1)}
+                  >▼</button>
+                  <button
+                    class="row-btn remove-btn"
+                    title=${s.remove}
+                    aria-label="${s.remove}: ${name}"
+                    @click=${() => this._removeEntity(entityId)}
+                  >✕</button>
                 </div>
               `;
             })}
@@ -218,18 +254,29 @@ export class ZwitserlevenFondsenCardEditor extends LitElement {
       cursor: grab;
       flex-shrink: 0;
     }
-    .remove-btn {
+    /* Big enough to tap on a touch screen. */
+    .row-btn {
       background: none;
       border: none;
       cursor: pointer;
       color: var(--secondary-text-color);
       font-size: 0.8rem;
-      padding: 2px 4px;
+      min-width: 32px;
+      min-height: 32px;
+      padding: 0;
       border-radius: 4px;
       flex-shrink: 0;
       line-height: 1;
     }
-    .remove-btn:hover {
+    .row-btn:hover:not(:disabled) {
+      color: var(--primary-text-color);
+      background: var(--divider-color);
+    }
+    .row-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+    .remove-btn:hover:not(:disabled) {
       color: var(--error-color, #f44336);
     }
     .sensor-row {

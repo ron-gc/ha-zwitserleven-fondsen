@@ -735,11 +735,25 @@ var translations = {
 			drag_hint: "drag to reorder",
 			add: "Add",
 			no_sensors: "No Zwitserleven Fondsen sensors found.",
-			setup_hint: "Set up under Settings → Integrations → Zwitserleven Fondsen."
+			setup_hint: "Set up under Settings → Integrations → Zwitserleven Fondsen.",
+			move_up: "Move up",
+			move_down: "Move down",
+			remove: "Remove"
 		},
 		card: {
 			not_found: "Not found",
 			unavailable: "Unavailable",
+			range_1T: "1D",
+			range_1W: "1W",
+			range_1M: "1M",
+			range_YTD: "YTD",
+			range_1J: "1Y",
+			range_name_1T: "1 day",
+			range_name_1W: "1 week",
+			range_name_1M: "1 month",
+			range_name_YTD: "Year to date",
+			range_name_1J: "1 year",
+			time_range: "Time range",
 			price_history: "Price history",
 			date: "Date",
 			price: "Price",
@@ -759,11 +773,25 @@ var translations = {
 			drag_hint: "ziehen zum Sortieren",
 			add: "Hinzufügen",
 			no_sensors: "Keine Zwitserleven Fondsen Sensoren gefunden.",
-			setup_hint: "Integration einrichten unter Einstellungen → Integrationen → Zwitserleven Fondsen."
+			setup_hint: "Integration einrichten unter Einstellungen → Integrationen → Zwitserleven Fondsen.",
+			move_up: "Nach oben",
+			move_down: "Nach unten",
+			remove: "Entfernen"
 		},
 		card: {
 			not_found: "Nicht gefunden",
 			unavailable: "Nicht verfügbar",
+			range_1T: "1T",
+			range_1W: "1W",
+			range_1M: "1M",
+			range_YTD: "YTD",
+			range_1J: "1J",
+			range_name_1T: "1 Tag",
+			range_name_1W: "1 Woche",
+			range_name_1M: "1 Monat",
+			range_name_YTD: "Seit Jahresbeginn",
+			range_name_1J: "1 Jahr",
+			time_range: "Zeitraum",
 			price_history: "Kursverlauf",
 			date: "Datum",
 			price: "Kurs",
@@ -783,11 +811,25 @@ var translations = {
 			drag_hint: "glisser pour réorganiser",
 			add: "Ajouter",
 			no_sensors: "Aucun capteur Zwitserleven Fondsen trouvé.",
-			setup_hint: "Configurer sous Paramètres → Intégrations → Zwitserleven Fondsen."
+			setup_hint: "Configurer sous Paramètres → Intégrations → Zwitserleven Fondsen.",
+			move_up: "Monter",
+			move_down: "Descendre",
+			remove: "Supprimer"
 		},
 		card: {
 			not_found: "Introuvable",
 			unavailable: "Indisponible",
+			range_1T: "1J",
+			range_1W: "1S",
+			range_1M: "1M",
+			range_YTD: "YTD",
+			range_1J: "1A",
+			range_name_1T: "1 jour",
+			range_name_1W: "1 semaine",
+			range_name_1M: "1 mois",
+			range_name_YTD: "Depuis le début de l'année",
+			range_name_1J: "1 an",
+			time_range: "Période",
 			price_history: "Historique des cours",
 			date: "Date",
 			price: "Cours",
@@ -807,11 +849,25 @@ var translations = {
 			drag_hint: "slepen om te sorteren",
 			add: "Toevoegen",
 			no_sensors: "Geen Zwitserleven Fondsen-sensoren gevonden.",
-			setup_hint: "Instellen via Instellingen → Integraties → Zwitserleven Fondsen."
+			setup_hint: "Instellen via Instellingen → Integraties → Zwitserleven Fondsen.",
+			move_up: "Omhoog",
+			move_down: "Omlaag",
+			remove: "Verwijderen"
 		},
 		card: {
 			not_found: "Niet gevonden",
 			unavailable: "Niet beschikbaar",
+			range_1T: "1D",
+			range_1W: "1W",
+			range_1M: "1M",
+			range_YTD: "YTD",
+			range_1J: "1J",
+			range_name_1T: "1 dag",
+			range_name_1W: "1 week",
+			range_name_1M: "1 maand",
+			range_name_YTD: "Sinds begin van het jaar",
+			range_name_1J: "1 jaar",
+			time_range: "Periode",
 			price_history: "Koershistorie",
 			date: "Datum",
 			price: "Koers",
@@ -831,11 +887,25 @@ var translations = {
 			drag_hint: "arrastrar para ordenar",
 			add: "Añadir",
 			no_sensors: "No se encontraron sensores Zwitserleven Fondsen.",
-			setup_hint: "Configurar en Ajustes → Integraciones → Zwitserleven Fondsen."
+			setup_hint: "Configurar en Ajustes → Integraciones → Zwitserleven Fondsen.",
+			move_up: "Subir",
+			move_down: "Bajar",
+			remove: "Quitar"
 		},
 		card: {
 			not_found: "No encontrado",
 			unavailable: "No disponible",
+			range_1T: "1D",
+			range_1W: "1S",
+			range_1M: "1M",
+			range_YTD: "YTD",
+			range_1J: "1A",
+			range_name_1T: "1 día",
+			range_name_1W: "1 semana",
+			range_name_1M: "1 mes",
+			range_name_YTD: "En lo que va de año",
+			range_name_1J: "1 año",
+			time_range: "Periodo",
 			price_history: "Historial de precios",
 			date: "Fecha",
 			price: "Precio",
@@ -855,11 +925,25 @@ var translations = {
 			drag_hint: "trascina per riordinare",
 			add: "Aggiungi",
 			no_sensors: "Nessun sensore Zwitserleven Fondsen trovato.",
-			setup_hint: "Configurare in Impostazioni → Integrazioni → Zwitserleven Fondsen."
+			setup_hint: "Configurare in Impostazioni → Integrazioni → Zwitserleven Fondsen.",
+			move_up: "Sposta su",
+			move_down: "Sposta giù",
+			remove: "Rimuovi"
 		},
 		card: {
 			not_found: "Non trovato",
 			unavailable: "Non disponibile",
+			range_1T: "1G",
+			range_1W: "1S",
+			range_1M: "1M",
+			range_YTD: "YTD",
+			range_1J: "1A",
+			range_name_1T: "1 giorno",
+			range_name_1W: "1 settimana",
+			range_name_1M: "1 mese",
+			range_name_YTD: "Da inizio anno",
+			range_name_1J: "1 anno",
+			time_range: "Periodo",
 			price_history: "Storico prezzi",
 			date: "Data",
 			price: "Prezzo",
@@ -879,11 +963,25 @@ var translations = {
 			drag_hint: "arrastar para reordenar",
 			add: "Adicionar",
 			no_sensors: "Nenhum sensor Zwitserleven Fondsen encontrado.",
-			setup_hint: "Configurar em Definições → Integrações → Zwitserleven Fondsen."
+			setup_hint: "Configurar em Definições → Integrações → Zwitserleven Fondsen.",
+			move_up: "Mover para cima",
+			move_down: "Mover para baixo",
+			remove: "Remover"
 		},
 		card: {
 			not_found: "Não encontrado",
 			unavailable: "Indisponível",
+			range_1T: "1D",
+			range_1W: "1S",
+			range_1M: "1M",
+			range_YTD: "YTD",
+			range_1J: "1A",
+			range_name_1T: "1 dia",
+			range_name_1W: "1 semana",
+			range_name_1M: "1 mês",
+			range_name_YTD: "Desde o início do ano",
+			range_name_1J: "1 ano",
+			time_range: "Período",
 			price_history: "Histórico de preços",
 			date: "Data",
 			price: "Preço",
@@ -903,11 +1001,25 @@ var translations = {
 			drag_hint: "przeciągnij, aby zmienić kolejność",
 			add: "Dodaj",
 			no_sensors: "Nie znaleziono czujników Zwitserleven Fondsen.",
-			setup_hint: "Skonfiguruj w Ustawienia → Integracje → Zwitserleven Fondsen."
+			setup_hint: "Skonfiguruj w Ustawienia → Integracje → Zwitserleven Fondsen.",
+			move_up: "Przenieś w górę",
+			move_down: "Przenieś w dół",
+			remove: "Usuń"
 		},
 		card: {
 			not_found: "Nie znaleziono",
 			unavailable: "Niedostępny",
+			range_1T: "1D",
+			range_1W: "1T",
+			range_1M: "1M",
+			range_YTD: "YTD",
+			range_1J: "1R",
+			range_name_1T: "1 dzień",
+			range_name_1W: "1 tydzień",
+			range_name_1M: "1 miesiąc",
+			range_name_YTD: "Od początku roku",
+			range_name_1J: "1 rok",
+			time_range: "Okres",
 			price_history: "Historia cen",
 			date: "Data",
 			price: "Cena",
@@ -927,11 +1039,25 @@ var translations = {
 			drag_hint: "dra för att sortera",
 			add: "Lägg till",
 			no_sensors: "Inga Zwitserleven Fondsen-sensorer hittades.",
-			setup_hint: "Konfigurera under Inställningar → Integrationer → Zwitserleven Fondsen."
+			setup_hint: "Konfigurera under Inställningar → Integrationer → Zwitserleven Fondsen.",
+			move_up: "Flytta upp",
+			move_down: "Flytta ned",
+			remove: "Ta bort"
 		},
 		card: {
 			not_found: "Hittades inte",
 			unavailable: "Ej tillgänglig",
+			range_1T: "1D",
+			range_1W: "1V",
+			range_1M: "1M",
+			range_YTD: "YTD",
+			range_1J: "1Å",
+			range_name_1T: "1 dag",
+			range_name_1W: "1 vecka",
+			range_name_1M: "1 månad",
+			range_name_YTD: "Hittills i år",
+			range_name_1J: "1 år",
+			time_range: "Period",
 			price_history: "Kurshistorik",
 			date: "Datum",
 			price: "Kurs",
@@ -951,11 +1077,25 @@ var translations = {
 			drag_hint: "træk for at sortere",
 			add: "Tilføj",
 			no_sensors: "Ingen Zwitserleven Fondsen-sensorer fundet.",
-			setup_hint: "Opsæt under Indstillinger → Integrationer → Zwitserleven Fondsen."
+			setup_hint: "Opsæt under Indstillinger → Integrationer → Zwitserleven Fondsen.",
+			move_up: "Flyt op",
+			move_down: "Flyt ned",
+			remove: "Fjern"
 		},
 		card: {
 			not_found: "Ikke fundet",
 			unavailable: "Utilgængelig",
+			range_1T: "1D",
+			range_1W: "1U",
+			range_1M: "1M",
+			range_YTD: "ÅTD",
+			range_1J: "1Å",
+			range_name_1T: "1 dag",
+			range_name_1W: "1 uge",
+			range_name_1M: "1 måned",
+			range_name_YTD: "År til dato",
+			range_name_1J: "1 år",
+			time_range: "Periode",
 			price_history: "Kurshistorik",
 			date: "Dato",
 			price: "Kurs",
@@ -975,11 +1115,25 @@ var translations = {
 			drag_hint: "dra for å sortere",
 			add: "Legg til",
 			no_sensors: "Ingen Zwitserleven Fondsen-sensorer funnet.",
-			setup_hint: "Konfigurer under Innstillinger → Integrasjoner → Zwitserleven Fondsen."
+			setup_hint: "Konfigurer under Innstillinger → Integrasjoner → Zwitserleven Fondsen.",
+			move_up: "Flytt opp",
+			move_down: "Flytt ned",
+			remove: "Fjern"
 		},
 		card: {
 			not_found: "Ikke funnet",
 			unavailable: "Utilgjengelig",
+			range_1T: "1D",
+			range_1W: "1U",
+			range_1M: "1M",
+			range_YTD: "HIÅ",
+			range_1J: "1Å",
+			range_name_1T: "1 dag",
+			range_name_1W: "1 uke",
+			range_name_1M: "1 måned",
+			range_name_YTD: "Hittil i år",
+			range_name_1J: "1 år",
+			time_range: "Periode",
 			price_history: "Kurshistorikk",
 			date: "Dato",
 			price: "Kurs",
@@ -999,11 +1153,25 @@ var translations = {
 			drag_hint: "vedä järjestääksesi",
 			add: "Lisää",
 			no_sensors: "Zwitserleven Fondsen -antureita ei löydy.",
-			setup_hint: "Määritä kohdassa Asetukset → Integraatiot → Zwitserleven Fondsen."
+			setup_hint: "Määritä kohdassa Asetukset → Integraatiot → Zwitserleven Fondsen.",
+			move_up: "Siirrä ylös",
+			move_down: "Siirrä alas",
+			remove: "Poista"
 		},
 		card: {
 			not_found: "Ei löydy",
 			unavailable: "Ei saatavilla",
+			range_1T: "1PV",
+			range_1W: "1VK",
+			range_1M: "1KK",
+			range_YTD: "YTD",
+			range_1J: "1V",
+			range_name_1T: "1 päivä",
+			range_name_1W: "1 viikko",
+			range_name_1M: "1 kuukausi",
+			range_name_YTD: "Vuoden alusta",
+			range_name_1J: "1 vuosi",
+			time_range: "Aikaväli",
 			price_history: "Kurssihistoria",
 			date: "Päivä",
 			price: "Kurssi",
@@ -1023,11 +1191,25 @@ var translations = {
 			drag_hint: "přetáhněte pro seřazení",
 			add: "Přidat",
 			no_sensors: "Nebyly nalezeny žádné senzory Zwitserleven Fondsen.",
-			setup_hint: "Nastavte v Nastavení → Integrace → Zwitserleven Fondsen."
+			setup_hint: "Nastavte v Nastavení → Integrace → Zwitserleven Fondsen.",
+			move_up: "Posunout nahoru",
+			move_down: "Posunout dolů",
+			remove: "Odebrat"
 		},
 		card: {
 			not_found: "Nenalezeno",
 			unavailable: "Nedostupné",
+			range_1T: "1D",
+			range_1W: "1T",
+			range_1M: "1M",
+			range_YTD: "YTD",
+			range_1J: "1R",
+			range_name_1T: "1 den",
+			range_name_1W: "1 týden",
+			range_name_1M: "1 měsíc",
+			range_name_YTD: "Od začátku roku",
+			range_name_1J: "1 rok",
+			time_range: "Období",
 			price_history: "Historie cen",
 			date: "Datum",
 			price: "Cena",
@@ -1047,11 +1229,25 @@ var translations = {
 			drag_hint: "húzza a rendezéshez",
 			add: "Hozzáadás",
 			no_sensors: "Nem találhatók Zwitserleven Fondsen érzékelők.",
-			setup_hint: "Állítsa be a Beállítások → Integrációk → Zwitserleven Fondsen menüpontban."
+			setup_hint: "Állítsa be a Beállítások → Integrációk → Zwitserleven Fondsen menüpontban.",
+			move_up: "Feljebb",
+			move_down: "Lejjebb",
+			remove: "Eltávolítás"
 		},
 		card: {
 			not_found: "Nem található",
 			unavailable: "Nem elérhető",
+			range_1T: "1N",
+			range_1W: "1H",
+			range_1M: "1HÓ",
+			range_YTD: "YTD",
+			range_1J: "1É",
+			range_name_1T: "1 nap",
+			range_name_1W: "1 hét",
+			range_name_1M: "1 hónap",
+			range_name_YTD: "Év eleje óta",
+			range_name_1J: "1 év",
+			time_range: "Időszak",
 			price_history: "Árfolyam-előzmények",
 			date: "Dátum",
 			price: "Árfolyam",
@@ -1071,11 +1267,25 @@ var translations = {
 			drag_hint: "перетащите для сортировки",
 			add: "Добавить",
 			no_sensors: "Датчики Zwitserleven Fondsen не найдены.",
-			setup_hint: "Настройте в Настройки → Интеграции → Zwitserleven Fondsen."
+			setup_hint: "Настройте в Настройки → Интеграции → Zwitserleven Fondsen.",
+			move_up: "Вверх",
+			move_down: "Вниз",
+			remove: "Удалить"
 		},
 		card: {
 			not_found: "Не найдено",
 			unavailable: "Недоступно",
+			range_1T: "1Д",
+			range_1W: "1Н",
+			range_1M: "1М",
+			range_YTD: "YTD",
+			range_1J: "1Г",
+			range_name_1T: "1 день",
+			range_name_1W: "1 неделя",
+			range_name_1M: "1 месяц",
+			range_name_YTD: "С начала года",
+			range_name_1J: "1 год",
+			time_range: "Период",
 			price_history: "История цен",
 			date: "Дата",
 			price: "Цена",
@@ -1095,11 +1305,25 @@ var translations = {
 			drag_hint: "拖动以排序",
 			add: "添加",
 			no_sensors: "未找到 Zwitserleven Fondsen 传感器。",
-			setup_hint: "在设置 → 集成 → Zwitserleven Fondsen 中进行配置。"
+			setup_hint: "在设置 → 集成 → Zwitserleven Fondsen 中进行配置。",
+			move_up: "上移",
+			move_down: "下移",
+			remove: "移除"
 		},
 		card: {
 			not_found: "未找到",
 			unavailable: "不可用",
+			range_1T: "1天",
+			range_1W: "1周",
+			range_1M: "1月",
+			range_YTD: "今年",
+			range_1J: "1年",
+			range_name_1T: "1天",
+			range_name_1W: "1周",
+			range_name_1M: "1个月",
+			range_name_YTD: "年初至今",
+			range_name_1J: "1年",
+			time_range: "时间范围",
 			price_history: "价格历史",
 			date: "日期",
 			price: "价格",
@@ -1119,11 +1343,25 @@ var translations = {
 			drag_hint: "ドラッグして並び替え",
 			add: "追加",
 			no_sensors: "Zwitserleven Fondsen センサーが見つかりません。",
-			setup_hint: "設定 → インテグレーション → Zwitserleven Fondsen で設定してください。"
+			setup_hint: "設定 → インテグレーション → Zwitserleven Fondsen で設定してください。",
+			move_up: "上へ移動",
+			move_down: "下へ移動",
+			remove: "削除"
 		},
 		card: {
 			not_found: "見つかりません",
 			unavailable: "利用不可",
+			range_1T: "1日",
+			range_1W: "1週",
+			range_1M: "1か月",
+			range_YTD: "年初来",
+			range_1J: "1年",
+			range_name_1T: "1日",
+			range_name_1W: "1週間",
+			range_name_1M: "1か月",
+			range_name_YTD: "年初来",
+			range_name_1J: "1年",
+			time_range: "期間",
 			price_history: "価格履歴",
 			date: "日付",
 			price: "価格",
@@ -1143,11 +1381,25 @@ var translations = {
 			drag_hint: "드래그하여 정렬",
 			add: "추가",
 			no_sensors: "Zwitserleven Fondsen 센서를 찾을 수 없습니다.",
-			setup_hint: "설정 → 통합 → Zwitserleven Fondsen에서 설정하세요."
+			setup_hint: "설정 → 통합 → Zwitserleven Fondsen에서 설정하세요.",
+			move_up: "위로 이동",
+			move_down: "아래로 이동",
+			remove: "제거"
 		},
 		card: {
 			not_found: "찾을 수 없음",
 			unavailable: "사용할 수 없음",
+			range_1T: "1일",
+			range_1W: "1주",
+			range_1M: "1개월",
+			range_YTD: "연초",
+			range_1J: "1년",
+			range_name_1T: "1일",
+			range_name_1W: "1주",
+			range_name_1M: "1개월",
+			range_name_YTD: "연초 대비",
+			range_name_1J: "1년",
+			time_range: "기간",
 			price_history: "가격 기록",
 			date: "날짜",
 			price: "가격",
@@ -1167,11 +1419,25 @@ var translations = {
 			drag_hint: "sıralamak için sürükle",
 			add: "Ekle",
 			no_sensors: "Zwitserleven Fondsen sensörü bulunamadı.",
-			setup_hint: "Ayarlar → Entegrasyonlar → Zwitserleven Fondsen altında yapılandırın."
+			setup_hint: "Ayarlar → Entegrasyonlar → Zwitserleven Fondsen altında yapılandırın.",
+			move_up: "Yukarı taşı",
+			move_down: "Aşağı taşı",
+			remove: "Kaldır"
 		},
 		card: {
 			not_found: "Bulunamadı",
 			unavailable: "Kullanılamıyor",
+			range_1T: "1G",
+			range_1W: "1H",
+			range_1M: "1A",
+			range_YTD: "YB",
+			range_1J: "1Y",
+			range_name_1T: "1 gün",
+			range_name_1W: "1 hafta",
+			range_name_1M: "1 ay",
+			range_name_YTD: "Yılbaşından beri",
+			range_name_1J: "1 yıl",
+			time_range: "Dönem",
 			price_history: "Fiyat geçmişi",
 			date: "Tarih",
 			price: "Fiyat",
@@ -1191,11 +1457,25 @@ var translations = {
 			drag_hint: "اسحب للترتيب",
 			add: "إضافة",
 			no_sensors: "لم يتم العثور على أجهزة استشعار Zwitserleven Fondsen.",
-			setup_hint: "الإعداد في الإعدادات ← التكاملات ← Zwitserleven Fondsen."
+			setup_hint: "الإعداد في الإعدادات ← التكاملات ← Zwitserleven Fondsen.",
+			move_up: "تحريك لأعلى",
+			move_down: "تحريك لأسفل",
+			remove: "إزالة"
 		},
 		card: {
 			not_found: "غير موجود",
 			unavailable: "غير متاح",
+			range_1T: "1ي",
+			range_1W: "1أ",
+			range_1M: "1ش",
+			range_YTD: "YTD",
+			range_1J: "1س",
+			range_name_1T: "يوم واحد",
+			range_name_1W: "أسبوع واحد",
+			range_name_1M: "شهر واحد",
+			range_name_YTD: "منذ بداية العام",
+			range_name_1J: "سنة واحدة",
+			time_range: "الفترة",
 			price_history: "سجل الأسعار",
 			date: "التاريخ",
 			price: "السعر",
@@ -1345,27 +1625,19 @@ function buildChartData(input) {
 //#region src/ranges.ts
 /** The card's time ranges, also offered as its default range in the editor. */
 var RANGES = [
-	{
-		value: "1T",
-		label: "1D"
-	},
-	{
-		value: "1W",
-		label: "1W"
-	},
-	{
-		value: "1M",
-		label: "1M"
-	},
-	{
-		value: "YTD",
-		label: "YTD"
-	},
-	{
-		value: "1J",
-		label: "1Y"
-	}
+	"1T",
+	"1W",
+	"1M",
+	"YTD",
+	"1J"
 ];
+/** The short label of a range button, e.g. "1Y", and its full name, e.g. "1 year". */
+function rangeLabels(strings, range) {
+	return {
+		short: strings[`range_${range}`],
+		name: strings[`range_name_${range}`]
+	};
+}
 //#endregion
 //#region \0@oxc-project+runtime@0.153.0/helpers/esm/decorate.js
 function __decorate(decorators, target, key, desc) {
@@ -1388,6 +1660,13 @@ var ZwitserlevenFondsenCardEditor = class extends i {
 	_sensorName(fund) {
 		return fund.longName ?? fund.symbol ?? fund.entityId;
 	}
+	_move(from, to) {
+		const entities = [...this._config?.entities ?? []];
+		if (to < 0 || to >= entities.length) return;
+		const [moved] = entities.splice(from, 1);
+		entities.splice(to, 0, moved);
+		this._set("entities", entities);
+	}
 	_onDragStart(e, index) {
 		this._dragIndex = index;
 		e.dataTransfer.effectAllowed = "move";
@@ -1395,11 +1674,8 @@ var ZwitserlevenFondsenCardEditor = class extends i {
 	_onDragOver(e, index) {
 		e.preventDefault();
 		if (this._dragIndex === null || this._dragIndex === index) return;
-		const entities = [...this._config?.entities ?? []];
-		const [moved] = entities.splice(this._dragIndex, 1);
-		entities.splice(index, 0, moved);
+		this._move(this._dragIndex, index);
 		this._dragIndex = index;
-		this._set("entities", entities);
 	}
 	_onDragEnd() {
 		this._dragIndex = null;
@@ -1410,7 +1686,8 @@ var ZwitserlevenFondsenCardEditor = class extends i {
 		const all = findFundSensors(this.hass);
 		const selectedIds = entities;
 		const available = all.filter((fund) => !selectedIds.includes(fund.entityId));
-		const s = t(this.hass?.locale?.language ?? "en").editor;
+		const strings = t(this.hass?.locale?.language ?? "en");
+		const s = strings.editor;
 		return b`
       <div class="editor">
         <ha-textfield
@@ -1422,28 +1699,39 @@ var ZwitserlevenFondsenCardEditor = class extends i {
 		}}
         ></ha-textfield>
 
-        <div class="field-label">${s.default_range}</div>
-        <div class="range-picker">
-          ${RANGES.map(({ value, label }) => b`
+        <div class="field-label" id="default-range-label">${s.default_range}</div>
+        <div class="range-picker" role="group" aria-labelledby="default-range-label">
+          ${RANGES.map((range) => {
+			const { short, name } = rangeLabels(strings.card, range);
+			const active = (default_range ?? "1T") === range;
+			return b`
               <button
-                class="range-opt ${(default_range ?? "1T") === value ? "active" : ""}"
-                @click=${() => this._set("default_range", value)}
-              >${label}</button>
-            `)}
+                class="range-opt ${active ? "active" : ""}"
+                title=${name}
+                aria-label=${name}
+                aria-pressed=${active ? "true" : "false"}
+                @click=${() => this._set("default_range", range)}
+              >${short}</button>
+            `;
+		})}
         </div>
 
-        <div class="field-label">${s.tile_size}</div>
-        <div class="range-picker">
+        <div class="field-label" id="tile-size-label">${s.tile_size}</div>
+        <div class="range-picker" role="group" aria-labelledby="tile-size-label">
           ${[
 			"small",
 			"medium",
 			"large"
-		].map((size) => b`
-            <button
-              class="range-opt ${(this._config?.tile_size ?? "small") === size ? "active" : ""}"
-              @click=${() => this._set("tile_size", size)}
-            >${size === "small" ? "S" : size === "medium" ? "M" : "L"}</button>
-          `)}
+		].map((size) => {
+			const active = (this._config?.tile_size ?? "small") === size;
+			return b`
+              <button
+                class="range-opt ${active ? "active" : ""}"
+                aria-pressed=${active ? "true" : "false"}
+                @click=${() => this._set("tile_size", size)}
+              >${size === "small" ? "S" : size === "medium" ? "M" : "L"}</button>
+            `;
+		})}
         </div>
 
         ${entities.length > 0 ? b`
@@ -1466,7 +1754,26 @@ var ZwitserlevenFondsenCardEditor = class extends i {
                   >⠿</span>
                   <span class="sensor-name">${name}</span>
                   <span class="sensor-meta">${symbol}</span>
-                  <button class="remove-btn" @click=${() => this._removeEntity(entityId)}>✕</button>
+                  <button
+                    class="row-btn move-up"
+                    title=${s.move_up}
+                    aria-label="${s.move_up}: ${name}"
+                    ?disabled=${index === 0}
+                    @click=${() => this._move(index, index - 1)}
+                  >▲</button>
+                  <button
+                    class="row-btn move-down"
+                    title=${s.move_down}
+                    aria-label="${s.move_down}: ${name}"
+                    ?disabled=${index === entities.length - 1}
+                    @click=${() => this._move(index, index + 1)}
+                  >▼</button>
+                  <button
+                    class="row-btn remove-btn"
+                    title=${s.remove}
+                    aria-label="${s.remove}: ${name}"
+                    @click=${() => this._removeEntity(entityId)}
+                  >✕</button>
                 </div>
               `;
 		})}
@@ -1574,18 +1881,29 @@ var ZwitserlevenFondsenCardEditor = class extends i {
       cursor: grab;
       flex-shrink: 0;
     }
-    .remove-btn {
+    /* Big enough to tap on a touch screen. */
+    .row-btn {
       background: none;
       border: none;
       cursor: pointer;
       color: var(--secondary-text-color);
       font-size: 0.8rem;
-      padding: 2px 4px;
+      min-width: 32px;
+      min-height: 32px;
+      padding: 0;
       border-radius: 4px;
       flex-shrink: 0;
       line-height: 1;
     }
-    .remove-btn:hover {
+    .row-btn:hover:not(:disabled) {
+      color: var(--primary-text-color);
+      background: var(--divider-color);
+    }
+    .row-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+    .remove-btn:hover:not(:disabled) {
       color: var(--error-color, #f44336);
     }
     .sensor-row {
@@ -1914,25 +2232,32 @@ var ZwitserlevenFondsenCard = class extends i {
 	render() {
 		if (!this._config || !this._hass) return A;
 		const tileMinWidth = TILE_MIN_WIDTHS[this._config.tile_size ?? "small"] ?? "170px";
+		const strings = t(this._hass.locale?.language ?? "en").card;
 		return b`
       <ha-card>
         <div class="card-top">
           ${this._config.title ? b`<h1 class="card-header">${this._config.title}</h1>` : A}
-          <div class="range-selector">
-            ${RANGES.map(({ value, label }) => b`
+          <div class="range-selector" role="group" aria-label=${strings.time_range}>
+            ${RANGES.map((range) => {
+			const { short, name } = rangeLabels(strings, range);
+			return b`
                 <button
-                  class="range-btn ${this._timeRange === value ? "active" : ""}"
+                  class="range-btn ${this._timeRange === range ? "active" : ""}"
+                  title=${name}
+                  aria-label=${name}
+                  aria-pressed=${this._timeRange === range ? "true" : "false"}
                   @click=${() => {
-			this._timeRange = value;
-		}}
+				this._timeRange = range;
+			}}
                 >
-                  ${label}
+                  ${short}
                 </button>
-              `)}
+              `;
+		})}
           </div>
         </div>
         <div class="card-content">
-          ${this._config.entities.length === 0 ? b`<p class="status">${t(this._hass.locale?.language ?? "en").card.no_funds}</p>` : b`
+          ${this._config.entities.length === 0 ? b`<p class="status">${strings.no_funds}</p>` : b`
               <div class="asset-grid" style="grid-template-columns: repeat(auto-fill, minmax(${tileMinWidth}, 1fr))">
                 ${this._config.entities.map((entry) => this._renderEntity(entry))}
               </div>
@@ -1977,7 +2302,13 @@ var ZwitserlevenFondsenCard = class extends i {
 		const refPrice = chartData.length > 0 ? chartData[0][1] : null;
 		const showRef = refPrice !== null && Math.abs(refPrice - price) > 1e-4;
 		return b`
-      <div class="asset-tile" @click=${() => this._openMoreInfo(entityId)}>
+      <div
+        class="asset-tile"
+        role="button"
+        tabindex="0"
+        @click=${() => this._openMoreInfo(entityId)}
+        @keydown=${(e) => this._onTileKey(e, entityId)}
+      >
         <div class="asset-header">
           <span class="asset-name" title="${displayName}">${displayName}</span>
           <span class="asset-meta">
@@ -2014,7 +2345,13 @@ var ZwitserlevenFondsenCard = class extends i {
 	/** A dimmed tile without price, change or sparkline; it still opens more-info. */
 	_renderUnavailableTile(entityId, name, label) {
 		return b`
-      <div class="asset-tile unavailable" @click=${() => this._openMoreInfo(entityId)}>
+      <div
+        class="asset-tile unavailable"
+        role="button"
+        tabindex="0"
+        @click=${() => this._openMoreInfo(entityId)}
+        @keydown=${(e) => this._onTileKey(e, entityId)}
+      >
         <div class="asset-header">
           <span class="asset-name" title="${name}">${name}</span>
         </div>
@@ -2044,6 +2381,12 @@ var ZwitserlevenFondsenCard = class extends i {
 				this._historyEntityId = void 0;
 			}
 		});
+	}
+	/** Enter and Space open a focused tile, like a click; keys on its list button are its own. */
+	_onTileKey(e, entityId) {
+		if (e.target !== e.currentTarget || e.key !== "Enter" && e.key !== " ") return;
+		e.preventDefault();
+		this._openMoreInfo(entityId);
 	}
 	_openMoreInfo(entityId) {
 		this.dispatchEvent(new CustomEvent("hass-more-info", {
@@ -2126,6 +2469,10 @@ var ZwitserlevenFondsenCard = class extends i {
     }
     .asset-tile:hover {
       filter: brightness(1.08);
+    }
+    .asset-tile:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
     }
     .asset-header {
       display: flex;

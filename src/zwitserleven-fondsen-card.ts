@@ -8,7 +8,7 @@ import { sparklinePoints, SPARKLINE_HEIGHT, SPARKLINE_WIDTH } from "./sparkline"
 import { buildChartData } from "./chart-data";
 import { ZwitserlevenFondsenCardEditor } from "./editor";
 import { historyDialogStyles, renderHistoryDialog } from "./history-dialog";
-import { RANGES } from "./ranges";
+import { RANGES, rangeLabels } from "./ranges";
 
 const CARD_TAG = "zwitserleven-fondsen-card";
 const EDITOR_TAG = "zwitserleven-fondsen-card-editor";
@@ -155,6 +155,7 @@ export class ZwitserlevenFondsenCard extends LitElement {
     if (!this._config || !this._hass) return nothing;
 
     const tileMinWidth = TILE_MIN_WIDTHS[this._config.tile_size ?? "small"] ?? "170px";
+    const strings = t(this._hass.locale?.language ?? "en").card;
 
     return html`
       <ha-card>
@@ -162,22 +163,26 @@ export class ZwitserlevenFondsenCard extends LitElement {
           ${this._config.title
             ? html`<h1 class="card-header">${this._config.title}</h1>`
             : nothing}
-          <div class="range-selector">
-            ${RANGES.map(
-              ({ value, label }) => html`
+          <div class="range-selector" role="group" aria-label=${strings.time_range}>
+            ${RANGES.map((range) => {
+              const { short, name } = rangeLabels(strings, range);
+              return html`
                 <button
-                  class="range-btn ${this._timeRange === value ? "active" : ""}"
-                  @click=${() => { this._timeRange = value; }}
+                  class="range-btn ${this._timeRange === range ? "active" : ""}"
+                  title=${name}
+                  aria-label=${name}
+                  aria-pressed=${this._timeRange === range ? "true" : "false"}
+                  @click=${() => { this._timeRange = range; }}
                 >
-                  ${label}
+                  ${short}
                 </button>
-              `
-            )}
+              `;
+            })}
           </div>
         </div>
         <div class="card-content">
           ${this._config.entities.length === 0
-            ? html`<p class="status">${t(this._hass.locale?.language ?? "en").card.no_funds}</p>`
+            ? html`<p class="status">${strings.no_funds}</p>`
             : html`
               <div class="asset-grid" style="grid-template-columns: repeat(auto-fill, minmax(${tileMinWidth}, 1fr))">
                 ${this._config.entities.map((entry) =>
@@ -241,7 +246,13 @@ export class ZwitserlevenFondsenCard extends LitElement {
     const showRef = refPrice !== null && Math.abs(refPrice - price) > 0.0001;
 
     return html`
-      <div class="asset-tile" @click=${() => this._openMoreInfo(entityId)}>
+      <div
+        class="asset-tile"
+        role="button"
+        tabindex="0"
+        @click=${() => this._openMoreInfo(entityId)}
+        @keydown=${(e: KeyboardEvent) => this._onTileKey(e, entityId)}
+      >
         <div class="asset-header">
           <span class="asset-name" title="${displayName}">${displayName}</span>
           <span class="asset-meta">
@@ -282,7 +293,13 @@ export class ZwitserlevenFondsenCard extends LitElement {
   /** A dimmed tile without price, change or sparkline; it still opens more-info. */
   private _renderUnavailableTile(entityId: string, name: string, label: string) {
     return html`
-      <div class="asset-tile unavailable" @click=${() => this._openMoreInfo(entityId)}>
+      <div
+        class="asset-tile unavailable"
+        role="button"
+        tabindex="0"
+        @click=${() => this._openMoreInfo(entityId)}
+        @keydown=${(e: KeyboardEvent) => this._onTileKey(e, entityId)}
+      >
         <div class="asset-header">
           <span class="asset-name" title="${name}">${name}</span>
         </div>
@@ -315,6 +332,14 @@ export class ZwitserlevenFondsenCard extends LitElement {
         this._historyEntityId = undefined;
       },
     });
+  }
+
+  /** Enter and Space open a focused tile, like a click; keys on its list button are its own. */
+  private _onTileKey(e: KeyboardEvent, entityId: string): void {
+    if (e.target !== e.currentTarget || (e.key !== "Enter" && e.key !== " ")) return;
+    // Space would also scroll the page.
+    e.preventDefault();
+    this._openMoreInfo(entityId);
   }
 
   private _openMoreInfo(entityId: string): void {
@@ -404,6 +429,10 @@ export class ZwitserlevenFondsenCard extends LitElement {
     }
     .asset-tile:hover {
       filter: brightness(1.08);
+    }
+    .asset-tile:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
     }
     .asset-header {
       display: flex;
