@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { findFundSensors, readFund } from "./fund";
+import { findFundSensors, fundValue, readFund } from "./fund";
 import type { HassEntity, HomeAssistant } from "./types";
 
 function entity(entityId: string, state: string, attributes: Record<string, unknown>): HassEntity {
@@ -77,5 +77,46 @@ describe("findFundSensors", () => {
 
   it("returns nothing without hass", () => {
     expect(findFundSensors(undefined)).toEqual([]);
+  });
+});
+
+describe("fundValue", () => {
+  const registry = (entries: Array<[string, string, string | null, string?]>) =>
+    Object.fromEntries(
+      entries.map(([id, platform, device, key]) => [
+        id,
+        { entity_id: id, platform, device_id: device, translation_key: key },
+      ]),
+    );
+  const hass = {
+    states: {
+      "sensor.a": entity("sensor.a", "210", { symbol: "LTAAF" }),
+      "sensor.a_value": entity("sensor.a_value", "2100", {}),
+      "sensor.b": entity("sensor.b", "24.56", { symbol: "LTAOB" }),
+      "sensor.other_value": entity("sensor.other_value", "5", {}),
+    },
+    entities: registry([
+      ["sensor.a", "zwitserleven_fondsen", "device-a", "price"],
+      ["sensor.a_value", "zwitserleven_fondsen", "device-a", "value"],
+      ["sensor.b", "zwitserleven_fondsen", "device-b", "price"],
+      // Another integration's value sensor on the same device as b.
+      ["sensor.other_value", "other", "device-b", "value"],
+    ]),
+  } as unknown as HomeAssistant;
+
+  it("is the state of the value sensor on the fund's device", () => {
+    expect(fundValue(hass, "sensor.a")).toBe(2100);
+  });
+
+  it("is null without units held", () => {
+    expect(fundValue(hass, "sensor.b")).toBeNull();
+  });
+
+  it("is null while the value sensor is unavailable", () => {
+    const unavailable = {
+      ...hass,
+      states: { ...hass.states, "sensor.a_value": entity("sensor.a_value", "unavailable", {}) },
+    } as HomeAssistant;
+    expect(fundValue(unavailable, "sensor.a")).toBeNull();
   });
 });

@@ -723,6 +723,19 @@ function findFundSensors(hass) {
 	const registry = hass.entities ?? {};
 	return Object.values(hass.states).filter((entity) => registry[entity.entity_id]?.platform === DOMAIN).map(readFund).filter((fund) => fund.symbol !== null).sort((a, b) => a.symbol.localeCompare(b.symbol));
 }
+/**
+* What the units held of a fund are worth: the state of its Value sensor, the
+* sensor with translation key "value" on the price sensor's device. Null when
+* no units are set (then there is no such sensor) or it has no value.
+*/
+function fundValue(hass, priceEntityId) {
+	const registry = hass.entities ?? {};
+	const deviceId = registry[priceEntityId]?.device_id;
+	if (!deviceId) return null;
+	const valueEntry = Object.values(registry).find((entry) => entry.device_id === deviceId && entry.platform === "zwitserleven_fondsen" && entry.translation_key === "value");
+	const value = valueEntry ? parseFloat(hass.states[valueEntry.entity_id]?.state ?? "") : NaN;
+	return Number.isFinite(value) ? value : null;
+}
 //#endregion
 //#region src/translations.ts
 var translations = {
@@ -740,6 +753,8 @@ var translations = {
 		card: {
 			not_found: "Not found",
 			unavailable: "Unavailable",
+			total_value: "Total value",
+			value: "Value",
 			price_history: "Price history",
 			date: "Date",
 			price: "Price",
@@ -764,6 +779,8 @@ var translations = {
 		card: {
 			not_found: "Nicht gefunden",
 			unavailable: "Nicht verfügbar",
+			total_value: "Gesamtwert",
+			value: "Wert",
 			price_history: "Kursverlauf",
 			date: "Datum",
 			price: "Kurs",
@@ -788,6 +805,8 @@ var translations = {
 		card: {
 			not_found: "Introuvable",
 			unavailable: "Indisponible",
+			total_value: "Valeur totale",
+			value: "Valeur",
 			price_history: "Historique des cours",
 			date: "Date",
 			price: "Cours",
@@ -812,6 +831,8 @@ var translations = {
 		card: {
 			not_found: "Niet gevonden",
 			unavailable: "Niet beschikbaar",
+			total_value: "Totale waarde",
+			value: "Waarde",
 			price_history: "Koershistorie",
 			date: "Datum",
 			price: "Koers",
@@ -836,6 +857,8 @@ var translations = {
 		card: {
 			not_found: "No encontrado",
 			unavailable: "No disponible",
+			total_value: "Valor total",
+			value: "Valor",
 			price_history: "Historial de precios",
 			date: "Fecha",
 			price: "Precio",
@@ -860,6 +883,8 @@ var translations = {
 		card: {
 			not_found: "Non trovato",
 			unavailable: "Non disponibile",
+			total_value: "Valore totale",
+			value: "Valore",
 			price_history: "Storico prezzi",
 			date: "Data",
 			price: "Prezzo",
@@ -884,6 +909,8 @@ var translations = {
 		card: {
 			not_found: "Não encontrado",
 			unavailable: "Indisponível",
+			total_value: "Valor total",
+			value: "Valor",
 			price_history: "Histórico de preços",
 			date: "Data",
 			price: "Preço",
@@ -908,6 +935,8 @@ var translations = {
 		card: {
 			not_found: "Nie znaleziono",
 			unavailable: "Niedostępny",
+			total_value: "Wartość łączna",
+			value: "Wartość",
 			price_history: "Historia cen",
 			date: "Data",
 			price: "Cena",
@@ -932,6 +961,8 @@ var translations = {
 		card: {
 			not_found: "Hittades inte",
 			unavailable: "Ej tillgänglig",
+			total_value: "Totalt värde",
+			value: "Värde",
 			price_history: "Kurshistorik",
 			date: "Datum",
 			price: "Kurs",
@@ -956,6 +987,8 @@ var translations = {
 		card: {
 			not_found: "Ikke fundet",
 			unavailable: "Utilgængelig",
+			total_value: "Samlet værdi",
+			value: "Værdi",
 			price_history: "Kurshistorik",
 			date: "Dato",
 			price: "Kurs",
@@ -980,6 +1013,8 @@ var translations = {
 		card: {
 			not_found: "Ikke funnet",
 			unavailable: "Utilgjengelig",
+			total_value: "Total verdi",
+			value: "Verdi",
 			price_history: "Kurshistorikk",
 			date: "Dato",
 			price: "Kurs",
@@ -1004,6 +1039,8 @@ var translations = {
 		card: {
 			not_found: "Ei löydy",
 			unavailable: "Ei saatavilla",
+			total_value: "Kokonaisarvo",
+			value: "Arvo",
 			price_history: "Kurssihistoria",
 			date: "Päivä",
 			price: "Kurssi",
@@ -1028,6 +1065,8 @@ var translations = {
 		card: {
 			not_found: "Nenalezeno",
 			unavailable: "Nedostupné",
+			total_value: "Celková hodnota",
+			value: "Hodnota",
 			price_history: "Historie cen",
 			date: "Datum",
 			price: "Cena",
@@ -1052,6 +1091,8 @@ var translations = {
 		card: {
 			not_found: "Nem található",
 			unavailable: "Nem elérhető",
+			total_value: "Teljes érték",
+			value: "Érték",
 			price_history: "Árfolyam-előzmények",
 			date: "Dátum",
 			price: "Árfolyam",
@@ -1076,6 +1117,8 @@ var translations = {
 		card: {
 			not_found: "Не найдено",
 			unavailable: "Недоступно",
+			total_value: "Общая стоимость",
+			value: "Стоимость",
 			price_history: "История цен",
 			date: "Дата",
 			price: "Цена",
@@ -1100,6 +1143,8 @@ var translations = {
 		card: {
 			not_found: "未找到",
 			unavailable: "不可用",
+			total_value: "总价值",
+			value: "价值",
 			price_history: "价格历史",
 			date: "日期",
 			price: "价格",
@@ -1124,6 +1169,8 @@ var translations = {
 		card: {
 			not_found: "見つかりません",
 			unavailable: "利用不可",
+			total_value: "評価額合計",
+			value: "評価額",
 			price_history: "価格履歴",
 			date: "日付",
 			price: "価格",
@@ -1148,6 +1195,8 @@ var translations = {
 		card: {
 			not_found: "찾을 수 없음",
 			unavailable: "사용할 수 없음",
+			total_value: "총 평가액",
+			value: "평가액",
 			price_history: "가격 기록",
 			date: "날짜",
 			price: "가격",
@@ -1172,6 +1221,8 @@ var translations = {
 		card: {
 			not_found: "Bulunamadı",
 			unavailable: "Kullanılamıyor",
+			total_value: "Toplam değer",
+			value: "Değer",
 			price_history: "Fiyat geçmişi",
 			date: "Tarih",
 			price: "Fiyat",
@@ -1196,6 +1247,8 @@ var translations = {
 		card: {
 			not_found: "غير موجود",
 			unavailable: "غير متاح",
+			total_value: "القيمة الإجمالية",
+			value: "القيمة",
 			price_history: "سجل الأسعار",
 			date: "التاريخ",
 			price: "السعر",
@@ -1849,6 +1902,16 @@ var TILE_MIN_WIDTHS = {
 	large: "280px"
 };
 var DAILY_HISTORY_TTL = 36e5;
+/** Colour and arrow for a change in percent; no change counts as up. */
+function trend(change) {
+	return change >= 0 ? {
+		color: "var(--success-color, #4caf50)",
+		arrow: "▲"
+	} : {
+		color: "var(--error-color, #f44336)",
+		arrow: "▼"
+	};
+}
 var ZwitserlevenFondsenCard = class extends i {
 	constructor(..._args) {
 		super(..._args);
@@ -1905,19 +1968,70 @@ var ZwitserlevenFondsenCard = class extends i {
 			this._fetchingDaily.delete(symbol);
 		}
 	}
+	/** The fund's prices over the selected range, from the cached stored prices. */
+	_chartData(fund) {
+		return buildChartData({
+			dailyHistory: this._cachedDailyHistory(fund.symbol) ?? [],
+			range: this._timeRange,
+			livePrice: fund.price,
+			priceDate: fund.priceDate
+		});
+	}
 	_calcPeriodChange(chartData) {
 		if (chartData.length < 2) return 0;
 		const oldest = chartData[0][1];
 		const newest = chartData[chartData.length - 1][1];
 		return oldest !== 0 ? (newest - oldest) / oldest * 100 : 0;
 	}
+	/**
+	* The value of the funds on the card that have units held, now and at the
+	* start of the selected range; null when none has. The units are the value
+	* over the price, so the start value is those units at the range's first price.
+	*/
+	_totalValue() {
+		let now = 0;
+		let start = 0;
+		let found = false;
+		for (const entityId of this._config?.entities ?? []) {
+			const raw = this._hass?.states[entityId];
+			const value = raw ? fundValue(this._hass, entityId) : null;
+			if (!raw || value === null) continue;
+			const fund = readFund(raw);
+			if (!fund.available || fund.price === 0) continue;
+			const chartData = this._chartData(fund);
+			const startPrice = chartData.length > 0 ? chartData[0][1] : fund.price;
+			now += value;
+			start += value / fund.price * startPrice;
+			found = true;
+		}
+		return found ? {
+			now,
+			start
+		} : null;
+	}
+	_renderTotal(total, locale) {
+		const change = total.start !== 0 ? (total.now - total.start) / total.start * 100 : 0;
+		const { color, arrow } = trend(change);
+		const label = t(locale ?? "en").card.total_value;
+		return b`
+      <div class="total-value ${this._config?.title ? "" : "grow"}" title=${label}>
+        <span class="total" aria-label=${label}>${formatPrice(total.now, locale)}</span>
+        <span class="change" style="color:${color}">
+          <span class="arrow">${arrow}</span>${Math.abs(change).toFixed(2)}%
+        </span>
+      </div>
+    `;
+	}
 	render() {
 		if (!this._config || !this._hass) return A;
 		const tileMinWidth = TILE_MIN_WIDTHS[this._config.tile_size ?? "small"] ?? "170px";
+		const locale = this._hass.locale?.language;
+		const total = this._totalValue();
 		return b`
       <ha-card>
         <div class="card-top">
           ${this._config.title ? b`<h1 class="card-header">${this._config.title}</h1>` : A}
+          ${total === null ? A : this._renderTotal(total, locale)}
           <div class="range-selector">
             ${RANGES.map(({ value, label }) => b`
                 <button
@@ -1963,19 +2077,13 @@ var ZwitserlevenFondsenCard = class extends i {
 		if (!fund.available) return this._renderUnavailableTile(entityId, displayName, strings.unavailable);
 		const { symbol, price } = fund;
 		this._fetchDailyHistory(symbol);
-		const chartData = buildChartData({
-			dailyHistory: this._cachedDailyHistory(symbol) ?? [],
-			range: this._timeRange,
-			livePrice: price,
-			priceDate: fund.priceDate
-		});
+		const chartData = this._chartData(fund);
 		const periodChange = this._calcPeriodChange(chartData);
 		const priceDate = formatPriceDate(fund.priceDate, locale);
-		const isPositive = periodChange >= 0;
-		const trendColor = isPositive ? "var(--success-color, #4caf50)" : "var(--error-color, #f44336)";
-		const arrow = isPositive ? "▲" : "▼";
+		const { color: trendColor, arrow } = trend(periodChange);
 		const refPrice = chartData.length > 0 ? chartData[0][1] : null;
 		const showRef = refPrice !== null && Math.abs(refPrice - price) > 1e-4;
+		const value = fundValue(this._hass, entityId);
 		return b`
       <div class="asset-tile" @click=${() => this._openMoreInfo(entityId)}>
         <div class="asset-header">
@@ -2005,6 +2113,12 @@ var ZwitserlevenFondsenCard = class extends i {
             <span class="arrow">${arrow}</span>${Math.abs(periodChange).toFixed(2)}%
           </span>
         </div>
+        ${value === null ? A : b`
+              <div class="asset-value">
+                <span>${strings.value}</span>
+                <span class="value">${formatPrice(value, locale)}</span>
+              </div>
+            `}
         <div class="sparkline-wrap">
           ${this._renderSparkline(chartData, trendColor)}
         </div>
@@ -2073,10 +2187,39 @@ var ZwitserlevenFondsenCard = class extends i {
 
     .card-top {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       padding: 12px 16px 0;
       gap: 8px;
+    }
+    .total-value {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    /* Without a title the total takes the title's place on the left. */
+    .total-value.grow {
+      flex: 1 1 auto;
+    }
+    .total {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--primary-text-color);
+    }
+    .asset-value {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 4px;
+      font-size: 0.75rem;
+      color: var(--secondary-text-color);
+    }
+    .asset-value .value {
+      font-weight: 500;
+      color: var(--primary-text-color);
+      white-space: nowrap;
     }
     .card-header {
       font-size: 1.1rem;

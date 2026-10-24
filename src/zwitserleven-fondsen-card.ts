@@ -1,7 +1,7 @@
 import { LitElement, html, css, nothing, svg } from "lit";
 import { query, state } from "lit/decorators.js";
 import type { HomeAssistant, ZwitserlevenFondsenCardConfig, TimeRange } from "./types";
-import { DOMAIN, findFundSensors, readFund } from "./fund";
+import { DOMAIN, findFundSensors, fundValue, readFund, type AvailableFund } from "./fund";
 import { t } from "./translations";
 import { formatPrice, formatPriceDate, formatPriceDateLong } from "./format";
 import { sparklinePoints, SPARKLINE_HEIGHT, SPARKLINE_WIDTH } from "./sparkline";
@@ -56,6 +56,13 @@ const TILE_MIN_WIDTHS: Record<string, string> = {
 // ---------------------------------------------------------------------------
 
 const DAILY_HISTORY_TTL = 60 * 60 * 1000; // 1 h — prices change once a day
+
+/** Colour and arrow for a change in percent; no change counts as up. */
+function trend(change: number): { color: string; arrow: string } {
+  return change >= 0
+    ? { color: "var(--success-color, #4caf50)", arrow: "▲" }
+    : { color: "var(--error-color, #f44336)", arrow: "▼" };
+}
 
 export class ZwitserlevenFondsenCard extends LitElement {
   private _hass?: HomeAssistant;
@@ -139,12 +146,60 @@ export class ZwitserlevenFondsenCard extends LitElement {
   // Chart data helpers
   // -------------------------------------------------------------------------
 
+  /** The fund's prices over the selected range, from the cached stored prices. */
+  private _chartData(fund: AvailableFund): [string, number][] {
+    return buildChartData({
+      dailyHistory: this._cachedDailyHistory(fund.symbol) ?? [],
+      range: this._timeRange,
+      livePrice: fund.price,
+      priceDate: fund.priceDate,
+    });
+  }
+
   private _calcPeriodChange(chartData: [string, number][]): number {
     if (chartData.length < 2) return 0;
     const oldest = chartData[0][1];
     const newest = chartData[chartData.length - 1][1];
 
     return oldest !== 0 ? ((newest - oldest) / oldest) * 100 : 0;
+  }
+
+  /**
+   * The value of the funds on the card that have units held, now and at the
+   * start of the selected range; null when none has. The units are the value
+   * over the price, so the start value is those units at the range's first price.
+   */
+  private _totalValue(): { now: number; start: number } | null {
+    let now = 0;
+    let start = 0;
+    let found = false;
+    for (const entityId of this._config?.entities ?? []) {
+      const raw = this._hass?.states[entityId];
+      const value = raw ? fundValue(this._hass!, entityId) : null;
+      if (!raw || value === null) continue;
+      const fund = readFund(raw);
+      if (!fund.available || fund.price === 0) continue;
+      const chartData = this._chartData(fund);
+      const startPrice = chartData.length > 0 ? chartData[0][1] : fund.price;
+      now += value;
+      start += (value / fund.price) * startPrice;
+      found = true;
+    }
+    return found ? { now, start } : null;
+  }
+
+  private _renderTotal(total: { now: number; start: number }, locale: string | undefined) {
+    const change = total.start !== 0 ? ((total.now - total.start) / total.start) * 100 : 0;
+    const { color, arrow } = trend(change);
+    const label = t(locale ?? "en").card.total_value;
+    return html`
+      <div class="total-value ${this._config?.title ? "" : "grow"}" title=${label}>
+        <span class="total" aria-label=${label}>${formatPrice(total.now, locale)}</span>
+        <span class="change" style="color:${color}">
+          <span class="arrow">${arrow}</span>${Math.abs(change).toFixed(2)}%
+        </span>
+      </div>
+    `;
   }
 
   // -------------------------------------------------------------------------
@@ -155,6 +210,8 @@ export class ZwitserlevenFondsenCard extends LitElement {
     if (!this._config || !this._hass) return nothing;
 
     const tileMinWidth = TILE_MIN_WIDTHS[this._config.tile_size ?? "small"] ?? "170px";
+    const locale = this._hass.locale?.language;
+    const total = this._totalValue();
 
     return html`
       <ha-card>
@@ -162,6 +219,7 @@ export class ZwitserlevenFondsenCard extends LitElement {
           ${this._config.title
             ? html`<h1 class="card-header">${this._config.title}</h1>`
             : nothing}
+          ${total === null ? nothing : this._renderTotal(total, locale)}
           <div class="range-selector">
             ${RANGES.map(
               ({ value, label }) => html`
@@ -223,22 +281,14 @@ export class ZwitserlevenFondsenCard extends LitElement {
     // Fetch the stored daily prices (no-op if cached or already in flight)
     void this._fetchDailyHistory(symbol);
 
-    const chartData = buildChartData({
-      dailyHistory: this._cachedDailyHistory(symbol) ?? [],
-      range: this._timeRange,
-      livePrice: price,
-      priceDate: fund.priceDate,
-    });
+    const chartData = this._chartData(fund);
     const periodChange = this._calcPeriodChange(chartData);
     const priceDate = formatPriceDate(fund.priceDate, locale);
-    const isPositive = periodChange >= 0;
-    const trendColor = isPositive
-      ? "var(--success-color, #4caf50)"
-      : "var(--error-color, #f44336)";
-    const arrow = isPositive ? "▲" : "▼";
+    const { color: trendColor, arrow } = trend(periodChange);
 
     const refPrice = chartData.length > 0 ? chartData[0][1] : null;
     const showRef = refPrice !== null && Math.abs(refPrice - price) > 0.0001;
+    const value = fundValue(this._hass!, entityId);
 
     return html`
       <div class="asset-tile" @click=${() => this._openMoreInfo(entityId)}>
@@ -272,6 +322,14 @@ export class ZwitserlevenFondsenCard extends LitElement {
             <span class="arrow">${arrow}</span>${Math.abs(periodChange).toFixed(2)}%
           </span>
         </div>
+        ${value === null
+          ? nothing
+          : html`
+              <div class="asset-value">
+                <span>${strings.value}</span>
+                <span class="value">${formatPrice(value, locale)}</span>
+              </div>
+            `}
         <div class="sparkline-wrap">
           ${this._renderSparkline(chartData, trendColor)}
         </div>
@@ -351,10 +409,39 @@ export class ZwitserlevenFondsenCard extends LitElement {
 
     .card-top {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       padding: 12px 16px 0;
       gap: 8px;
+    }
+    .total-value {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    /* Without a title the total takes the title's place on the left. */
+    .total-value.grow {
+      flex: 1 1 auto;
+    }
+    .total {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--primary-text-color);
+    }
+    .asset-value {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 4px;
+      font-size: 0.75rem;
+      color: var(--secondary-text-color);
+    }
+    .asset-value .value {
+      font-weight: 500;
+      color: var(--primary-text-color);
+      white-space: nowrap;
     }
     .card-header {
       font-size: 1.1rem;

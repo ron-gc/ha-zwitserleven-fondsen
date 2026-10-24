@@ -11,6 +11,9 @@ All notable changes to this integration are listed here. The format follows
 - **Units held** option per fund. When set, the fund gets a **Value** sensor:
   the price times the units, in EUR, with long-term statistics. Clearing the
   option removes the sensor. Diagnostics leave the units out.
+- The card shows the value of the units held on each fund's tile, and the
+  total value of those funds in its header, with the change over the selected
+  time range.
 
 ### Changed
 

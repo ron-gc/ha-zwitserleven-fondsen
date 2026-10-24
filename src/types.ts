@@ -12,6 +12,8 @@ export type HassEntities = Record<string, HassEntity>;
 export interface EntityRegistryDisplayEntry {
   entity_id: string;
   platform: string;
+  device_id?: string | null;
+  translation_key?: string;
 }
 
 export interface HomeAssistant {

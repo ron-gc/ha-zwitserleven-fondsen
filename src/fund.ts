@@ -29,6 +29,8 @@ export type Fund = FundState &
     | { available: false; symbol: string | null }
   );
 
+export type AvailableFund = Extract<Fund, { available: true }>;
+
 /** A non-empty string attribute, or undefined. */
 function text(value: unknown): string | undefined {
   return typeof value === "string" && value !== "" ? value : undefined;
@@ -65,4 +67,23 @@ export function findFundSensors(hass: HomeAssistant | undefined): Fund[] {
     .map(readFund)
     .filter((fund): fund is Fund & { symbol: string } => fund.symbol !== null)
     .sort((a, b) => a.symbol.localeCompare(b.symbol));
+}
+
+/**
+ * What the units held of a fund are worth: the state of its Value sensor, the
+ * sensor with translation key "value" on the price sensor's device. Null when
+ * no units are set (then there is no such sensor) or it has no value.
+ */
+export function fundValue(hass: HomeAssistant, priceEntityId: string): number | null {
+  const registry = hass.entities ?? {};
+  const deviceId = registry[priceEntityId]?.device_id;
+  if (!deviceId) return null;
+  const valueEntry = Object.values(registry).find(
+    (entry) =>
+      entry.device_id === deviceId &&
+      entry.platform === DOMAIN &&
+      entry.translation_key === "value",
+  );
+  const value = valueEntry ? parseFloat(hass.states[valueEntry.entity_id]?.state ?? "") : NaN;
+  return Number.isFinite(value) ? value : null;
 }

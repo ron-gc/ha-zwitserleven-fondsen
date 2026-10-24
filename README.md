@@ -238,6 +238,10 @@ template:
 The card is automatically registered when the integration loads — no manual resource
 configuration needed.
 
+For a fund with **Units held** set in its options, the tile also shows the value of those units,
+and the header shows the total value of all such funds on the card with its change over the
+selected time range.
+
 ### Add to dashboard
 
 1. Edit your dashboard → **Add Card** → search for **Zwitserleven Fondsen Card**
