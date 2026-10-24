@@ -50,7 +50,7 @@ body:
     attributes:
       label: Zwitserleven Fondsen version
       description: Found in custom_components/zwitserleven_fondsen/manifest.json
-      placeholder: "0.2.0"
+      placeholder: "0.2.1"
     validations:
       required: true
 
