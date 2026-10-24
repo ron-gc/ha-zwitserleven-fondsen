@@ -1,16 +1,11 @@
-"""Diagnostics for a Zwitserleven fund.
-
-Prices are public. Only the units the user holds are redacted: diagnostics end
-up in public bug reports, and the units tell what someone owns.
-"""
+"""Diagnostics for a Zwitserleven fund. Nothing here is secret, so nothing is redacted."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from homeassistant.components.diagnostics import async_redact_data
 from homeassistant.core import HomeAssistant
 
-from .const import CONF_SYMBOL, CONF_UNITS
+from .const import CONF_SYMBOL
 
 if TYPE_CHECKING:
     from . import ZwitserlevenConfigEntry
@@ -28,7 +23,7 @@ async def async_get_config_entry_diagnostics(
         "entry": {
             "title": entry.title,
             "data": dict(entry.data),
-            "options": async_redact_data(entry.options, {CONF_UNITS}),
+            "options": dict(entry.options),
         },
         # The coordinator is shared, so this covers every configured fund.
         "coordinator": {

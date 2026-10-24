@@ -4,8 +4,6 @@ DOMAIN = "zwitserleven_fondsen"
 
 CONF_SYMBOL = "symbol"
 CONF_NAME = "name"
-# Units of the fund the user holds, an option; see the value sensor.
-CONF_UNITS = "units"
 
 # Zwitserleven publishes at most one price per day, so the page is fetched at
 # startup and once every night. Each installation gets its own time in the

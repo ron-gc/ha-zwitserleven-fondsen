@@ -6,11 +6,10 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.const import PERCENTAGE, EntityCategory
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, CONF_SYMBOL, CONF_UNITS
+from .const import DOMAIN, CONF_SYMBOL
 from .coordinator import ZwitserlevenDataCoordinator
 
 if TYPE_CHECKING:
@@ -28,25 +27,13 @@ async def async_setup_entry(
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     coordinator = entry.runtime_data
-    entities: list[ZwitserlevenEntity] = [
-        ZwitserlevenSensor(coordinator, entry),
-        ZwitserlevenChangeSensor(coordinator, entry),
-        ZwitserlevenPriceDateSensor(coordinator, entry),
-    ]
-    if units := entry.options.get(CONF_UNITS):
-        entities.append(ZwitserlevenValueSensor(coordinator, entry, units))
-    else:
-        # The units were cleared in the options: remove the value sensor
-        # rather than leave it behind as unavailable.
-        registry = er.async_get(hass)
-        value_id = _unique_id(entry.data[CONF_SYMBOL], ZwitserlevenValueSensor._unique_id_suffix)
-        if entity_id := registry.async_get_entity_id("sensor", DOMAIN, value_id):
-            registry.async_remove(entity_id)
-    async_add_entities(entities)
-
-
-def _unique_id(symbol: str, suffix: str) -> str:
-    return f"zwitserleven_fondsen_{symbol}{suffix}"
+    async_add_entities(
+        [
+            ZwitserlevenSensor(coordinator, entry),
+            ZwitserlevenChangeSensor(coordinator, entry),
+            ZwitserlevenPriceDateSensor(coordinator, entry),
+        ]
+    )
 
 
 class ZwitserlevenEntity(CoordinatorEntity[ZwitserlevenDataCoordinator], SensorEntity):
@@ -61,7 +48,7 @@ class ZwitserlevenEntity(CoordinatorEntity[ZwitserlevenDataCoordinator], SensorE
     ) -> None:
         super().__init__(coordinator)
         symbol = self._symbol = entry.data[CONF_SYMBOL]
-        self._attr_unique_id = _unique_id(symbol, self._unique_id_suffix)
+        self._attr_unique_id = f"zwitserleven_fondsen_{symbol}{self._unique_id_suffix}"
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, symbol)},
             # The entry title is the display name, see the options flow.
@@ -142,31 +129,3 @@ class ZwitserlevenPriceDateSensor(ZwitserlevenEntity):
     @property
     def native_value(self) -> date | None:
         return date.fromisoformat(self._fund["price_date"]) if self._fund else None
-
-
-class ZwitserlevenValueSensor(ZwitserlevenEntity):
-    """What the units the user holds are worth: the price times the units.
-
-    Only added when the units are set in the options.
-    """
-
-    _attr_device_class = SensorDeviceClass.MONETARY
-    # Monetary sensors only allow the total state class.
-    _attr_state_class = SensorStateClass.TOTAL
-    _attr_native_unit_of_measurement = "EUR"
-    _attr_suggested_display_precision = 2
-    _attr_translation_key = "value"
-    _unique_id_suffix = "_value"
-
-    def __init__(
-        self,
-        coordinator: ZwitserlevenDataCoordinator,
-        entry: ZwitserlevenConfigEntry,
-        units: float,
-    ) -> None:
-        super().__init__(coordinator, entry)
-        self._units = units
-
-    @property
-    def native_value(self) -> float | None:
-        return round(self._fund["current_price"] * self._units, 2) if self._fund else None
