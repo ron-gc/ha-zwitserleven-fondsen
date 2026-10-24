@@ -6,12 +6,6 @@ All notable changes to this integration are listed here. The format follows
 
 ## [Unreleased]
 
-### Added
-
-- **Units held** option per fund. When set, the fund gets a **Value** sensor:
-  the price times the units, in EUR, with long-term statistics. Clearing the
-  option removes the sensor. Diagnostics leave the units out.
-
 ### Changed
 
 - The price sensor is always shown with 2 decimals, as Zwitserleven publishes
