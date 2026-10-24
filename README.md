@@ -144,8 +144,8 @@ Deleting a fund also deletes the daily prices stored for it.
 | **Fund** | The fund to track, chosen from the funds currently listed on the Zwitserleven website |
 | **Name** | Display name shown in the card (optional — falls back to the fund name if left empty) |
 
-Repeat for each fund you want to track. Each fund becomes a device with one price sensor. Funds
-you have already added are left out of the list.
+Repeat for each fund you want to track. Each fund becomes a device with its sensors, see
+[Sensors](#sensors). Funds you have already added are left out of the list.
 
 ### Options
 
@@ -154,13 +154,25 @@ Fondsen**, select the fund and choose **Configure**.
 
 | Option | Description |
 |---|---|
-| **Name** | Display name of the fund's device and sensor. Leave empty to use the fund name from Zwitserleven |
+| **Name** | Display name of the fund's device and sensors. Leave empty to use the fund name from Zwitserleven |
 
-## Sensor attributes
+## Sensors
 
-The sensor **state** is the current price (numeric), and the **unit of measurement** is `EUR`.
+Each fund is a device with these sensors. The entity IDs follow the fund's display name, for
+example for "ASN Duurzaam Aandelenfonds":
 
-Each sensor additionally exposes the following state attributes:
+| Sensor | Entity ID | Description |
+|---|---|---|
+| Price | `sensor.asn_duurzaam_aandelenfonds` | Price of one unit in `EUR`, with the attributes below |
+| Change | `sensor.asn_duurzaam_aandelenfonds_change` | Change from the previous stored price, in `%` |
+| Price date | `sensor.asn_duurzaam_aandelenfonds_price_date` | Date the price is for. Diagnostic, disabled by default: enable it under the device when you need it |
+
+The change sensor holds the same value as the `change_pct` attribute. Unlike the attribute, it
+gets long-term statistics, so it can be shown in a history graph or statistics card.
+
+### Price attributes
+
+The price sensor additionally exposes the following state attributes:
 
 | Attribute | Type | Description |
 |---|---|---|

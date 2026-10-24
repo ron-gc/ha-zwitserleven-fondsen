@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from datetime import date
 from typing import TYPE_CHECKING, Any
 
-from homeassistant.components.sensor import SensorEntity, SensorStateClass
+from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
+from homeassistant.const import PERCENTAGE, EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -24,25 +26,29 @@ async def async_setup_entry(
     entry: ZwitserlevenConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    async_add_entities([ZwitserlevenSensor(entry.runtime_data, entry)])
+    coordinator = entry.runtime_data
+    async_add_entities(
+        [
+            ZwitserlevenSensor(coordinator, entry),
+            ZwitserlevenChangeSensor(coordinator, entry),
+            ZwitserlevenPriceDateSensor(coordinator, entry),
+        ]
+    )
 
 
-class ZwitserlevenSensor(CoordinatorEntity[ZwitserlevenDataCoordinator], SensorEntity):
-    _attr_state_class = SensorStateClass.MEASUREMENT
-    # Its icon is in icons.json.
-    _attr_translation_key = "price"
-    _attr_native_unit_of_measurement = "EUR"
-    # The fund is the device and the price its only sensor, so the sensor
-    # takes the device's name.
+class ZwitserlevenEntity(CoordinatorEntity[ZwitserlevenDataCoordinator], SensorEntity):
+    """A sensor of one fund. The fund is the device; its icons are in icons.json."""
+
     _attr_has_entity_name = True
-    _attr_name = None
+    # Appended to the unique ID of the fund; the price sensor has none.
+    _unique_id_suffix = ""
 
     def __init__(
         self, coordinator: ZwitserlevenDataCoordinator, entry: ZwitserlevenConfigEntry
     ) -> None:
         super().__init__(coordinator)
         symbol = self._symbol = entry.data[CONF_SYMBOL]
-        self._attr_unique_id = f"zwitserleven_fondsen_{symbol}"
+        self._attr_unique_id = f"zwitserleven_fondsen_{symbol}{self._unique_id_suffix}"
         name = (
             entry.options.get(CONF_NAME)
             or entry.data.get(CONF_NAME)
@@ -65,6 +71,16 @@ class ZwitserlevenSensor(CoordinatorEntity[ZwitserlevenDataCoordinator], SensorE
     def available(self) -> bool:
         return super().available and self._fund is not None
 
+
+class ZwitserlevenSensor(ZwitserlevenEntity):
+    """The price of one unit of the fund."""
+
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_translation_key = "price"
+    _attr_native_unit_of_measurement = "EUR"
+    # The price is the fund's main sensor, so it takes the device's name.
+    _attr_name = None
+
     @property
     def native_value(self) -> float | None:
         return self._fund["current_price"] if self._fund else None
@@ -82,3 +98,36 @@ class ZwitserlevenSensor(CoordinatorEntity[ZwitserlevenDataCoordinator], SensorE
             "change_pct": d["change_pct"],
             "previous_close": d["previous_close"],
         }
+
+
+class ZwitserlevenChangeSensor(ZwitserlevenEntity):
+    """The change from the previous stored price, in percent.
+
+    The same value as the price sensor's change_pct attribute, but a sensor
+    gets long-term statistics and works in a numeric state trigger.
+    """
+
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_translation_key = "change_pct"
+    _attr_native_unit_of_measurement = PERCENTAGE
+    _attr_suggested_display_precision = 2
+    _unique_id_suffix = "_change_pct"
+
+    @property
+    def native_value(self) -> float | None:
+        return self._fund["change_pct"] if self._fund else None
+
+
+class ZwitserlevenPriceDateSensor(ZwitserlevenEntity):
+    """The day the price is for; Zwitserleven publishes it a day or two later."""
+
+    _attr_device_class = SensorDeviceClass.DATE
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    # Mostly useful for spotting a price that no longer changes.
+    _attr_entity_registry_enabled_default = False
+    _attr_translation_key = "price_date"
+    _unique_id_suffix = "_price_date"
+
+    @property
+    def native_value(self) -> date | None:
+        return date.fromisoformat(self._fund["price_date"]) if self._fund else None

@@ -6,6 +6,13 @@ All notable changes to this integration are listed here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Two more sensors per fund. **Change** is the change from the previous stored
+  price in percent, the same value as the `change_pct` attribute but with
+  long-term statistics, so it can be graphed. **Price date** is the date the
+  price is for; it is a diagnostic sensor and disabled by default.
+
 ## [0.1.1] - 2026-10-24
 
 ### Added

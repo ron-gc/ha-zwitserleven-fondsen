@@ -10,7 +10,7 @@
         },
         "data_description": {
           "symbol": "Funds you have already added are not listed.",
-          "name": "Name for the fund's device and sensor. Leave empty to use the fund name from Zwitserleven."
+          "name": "Name for the fund's device and sensors. Leave empty to use the fund name from Zwitserleven."
         }
       }
     },
@@ -28,8 +28,18 @@
           "name": "Display name (optional)"
         },
         "data_description": {
-          "name": "Name for the fund's device and sensor. Leave empty to use the fund name from Zwitserleven."
+          "name": "Name for the fund's device and sensors. Leave empty to use the fund name from Zwitserleven."
         }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "change_pct": {
+        "name": "Change"
+      },
+      "price_date": {
+        "name": "Price date"
       }
     }
   },
@@ -45,7 +55,7 @@
         "step": {
           "confirm": {
             "title": "Delete fund {symbol}?",
-            "description": "The Zwitserleven fund overview page no longer lists fund {symbol}, so its price sensor is unavailable.\n\nIf Zwitserleven has closed or renamed the fund, select **Delete fund** to delete it with its device, sensor and stored prices. If you expect the fund to come back, close this dialog instead: the issue goes away by itself when the fund is listed again.",
+            "description": "The Zwitserleven fund overview page no longer lists fund {symbol}, so its price sensor is unavailable.\n\nIf Zwitserleven has closed or renamed the fund, select **Delete fund** to delete it with its device, sensors and stored prices. If you expect the fund to come back, close this dialog instead: the issue goes away by itself when the fund is listed again.",
             "submit": "Delete fund"
           }
         }

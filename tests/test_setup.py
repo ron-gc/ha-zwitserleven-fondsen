@@ -6,6 +6,7 @@ from unittest.mock import patch
 import pytest
 from homeassistant.components.repairs import repairs_flow_manager
 from homeassistant.config_entries import ConfigEntryState
+from homeassistant.const import EntityCategory
 from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.helpers import issue_registry as ir
@@ -97,6 +98,46 @@ async def test_the_sensor_icon_comes_from_icons_json(hass, entry, hass_storage):
     assert er.async_get(hass).async_get(_entity_id(hass)).translation_key == "price"
     icons = await async_get_icons(hass, "entity", integrations={DOMAIN})
     assert icons[DOMAIN]["sensor"]["price"]["default"] == "mdi:chart-line"
+
+
+async def test_each_fund_also_has_a_change_and_a_price_date_sensor(
+    hass, entry, hass_storage
+):
+    await _set_up(hass, entry, hass_storage, history=[["2026-10-01", 220.0]])
+    registry = er.async_get(hass)
+
+    change_id = registry.async_get_entity_id("sensor", DOMAIN, f"{UNIQUE_ID}_change_pct")
+    assert change_id == "sensor.asn_duurzaam_aandelenfonds_change"
+    change = hass.states.get(change_id)
+    assert float(change.state) == 2.67
+    assert change.attributes["unit_of_measurement"] == "%"
+    assert change.attributes["state_class"] == "measurement"
+
+    # A diagnostic sensor, disabled until the user enables it.
+    date_id = registry.async_get_entity_id("sensor", DOMAIN, f"{UNIQUE_ID}_price_date")
+    date_entry = registry.async_get(date_id)
+    assert date_entry.disabled_by is er.RegistryEntryDisabler.INTEGRATION
+    assert date_entry.entity_category is EntityCategory.DIAGNOSTIC
+    assert hass.states.get(date_id) is None
+
+    # All three belong to the fund's device.
+    devices = {registry.async_get(e).device_id for e in (_entity_id(hass), change_id, date_id)}
+    assert len(devices) == 1
+
+
+async def test_the_enabled_price_date_sensor_is_the_price_date(hass, entry, hass_storage):
+    er.async_get(hass).async_get_or_create(
+        "sensor",
+        DOMAIN,
+        f"{UNIQUE_ID}_price_date",
+        suggested_object_id="asn_duurzaam_aandelenfonds_price_date",
+        disabled_by=None,
+    )
+    await _set_up(hass, entry, hass_storage)
+
+    state = hass.states.get("sensor.asn_duurzaam_aandelenfonds_price_date")
+    assert state.state == "2026-10-02"
+    assert state.attributes["device_class"] == "date"
 
 
 async def _wait(hass, freezer, delta):

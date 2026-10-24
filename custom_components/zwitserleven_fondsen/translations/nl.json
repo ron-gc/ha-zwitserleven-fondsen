@@ -10,7 +10,7 @@
         },
         "data_description": {
           "symbol": "Fondsen die je al hebt toegevoegd, staan niet in de lijst.",
-          "name": "Naam voor het apparaat en de sensor van het fonds. Laat dit leeg om de fondsnaam van Zwitserleven te gebruiken."
+          "name": "Naam voor het apparaat en de sensoren van het fonds. Laat dit leeg om de fondsnaam van Zwitserleven te gebruiken."
         }
       }
     },
@@ -28,8 +28,18 @@
           "name": "Weergavenaam (optioneel)"
         },
         "data_description": {
-          "name": "Naam voor het apparaat en de sensor van het fonds. Laat dit leeg om de fondsnaam van Zwitserleven te gebruiken."
+          "name": "Naam voor het apparaat en de sensoren van het fonds. Laat dit leeg om de fondsnaam van Zwitserleven te gebruiken."
         }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "change_pct": {
+        "name": "Verandering"
+      },
+      "price_date": {
+        "name": "Koersdatum"
       }
     }
   },
@@ -45,7 +55,7 @@
         "step": {
           "confirm": {
             "title": "Fonds {symbol} verwijderen?",
-            "description": "De fondsenpagina van Zwitserleven vermeldt fonds {symbol} niet meer, daarom is de koerssensor van dit fonds niet beschikbaar.\n\nAls Zwitserleven het fonds heeft gesloten of hernoemd, kies dan **Fonds verwijderen** om het te verwijderen, samen met het apparaat, de sensor en de opgeslagen koersen. Verwacht je dat het fonds terugkomt, sluit dan dit venster: de melding verdwijnt vanzelf zodra het fonds weer op de pagina staat.",
+            "description": "De fondsenpagina van Zwitserleven vermeldt fonds {symbol} niet meer, daarom is de koerssensor van dit fonds niet beschikbaar.\n\nAls Zwitserleven het fonds heeft gesloten of hernoemd, kies dan **Fonds verwijderen** om het te verwijderen, samen met het apparaat, de sensoren en de opgeslagen koersen. Verwacht je dat het fonds terugkomt, sluit dan dit venster: de melding verdwijnt vanzelf zodra het fonds weer op de pagina staat.",
             "submit": "Fonds verwijderen"
           }
         }
