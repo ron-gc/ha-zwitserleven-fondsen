@@ -109,6 +109,10 @@ async def test_sets_up_with_an_unavailable_sensor_when_the_site_is_down(
     hass, entry, freezer, issue_registry
 ):
     """No ConfigEntryNotReady: its retries would request the page every ~80 s."""
+    # The daily update falls somewhere in 20:00-06:00 UTC, depending on the
+    # random installation ID. Starting at noon keeps it out of the hour below,
+    # where it would add a download of its own.
+    freezer.move_to("2026-10-15 12:00:00+00:00")
     page = make_page(error=FondsenPageError("Zwitserleven returned HTTP 503"))
     with patch("custom_components.zwitserleven_fondsen.coordinator.get_page", return_value=page):
         assert await hass.config_entries.async_setup(entry.entry_id)
