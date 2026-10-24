@@ -705,6 +705,7 @@ var translations = {
 			change: "Change",
 			loading: "Loading…",
 			no_history: "No prices stored yet.",
+			no_funds: "No funds selected. Edit the card to choose them.",
 			close: "Close"
 		}
 	},
@@ -727,6 +728,7 @@ var translations = {
 			change: "Änderung",
 			loading: "Wird geladen…",
 			no_history: "Noch keine Kurse gespeichert.",
+			no_funds: "Keine Fonds ausgewählt. Bearbeite die Karte, um sie auszuwählen.",
 			close: "Schließen"
 		}
 	},
@@ -749,6 +751,7 @@ var translations = {
 			change: "Variation",
 			loading: "Chargement…",
 			no_history: "Aucun cours enregistré pour l'instant.",
+			no_funds: "Aucun fonds sélectionné. Modifiez la carte pour les choisir.",
 			close: "Fermer"
 		}
 	},
@@ -771,6 +774,7 @@ var translations = {
 			change: "Verandering",
 			loading: "Laden…",
 			no_history: "Nog geen koersen opgeslagen.",
+			no_funds: "Geen fondsen gekozen. Bewerk de kaart om ze te kiezen.",
 			close: "Sluiten"
 		}
 	},
@@ -793,6 +797,7 @@ var translations = {
 			change: "Variación",
 			loading: "Cargando…",
 			no_history: "Aún no hay precios guardados.",
+			no_funds: "No hay fondos seleccionados. Edita la tarjeta para elegirlos.",
 			close: "Cerrar"
 		}
 	},
@@ -815,6 +820,7 @@ var translations = {
 			change: "Variazione",
 			loading: "Caricamento…",
 			no_history: "Nessun prezzo salvato finora.",
+			no_funds: "Nessun fondo selezionato. Modifica la scheda per sceglierli.",
 			close: "Chiudi"
 		}
 	},
@@ -837,6 +843,7 @@ var translations = {
 			change: "Variação",
 			loading: "A carregar…",
 			no_history: "Ainda não há preços guardados.",
+			no_funds: "Nenhum fundo selecionado. Edite o cartão para os escolher.",
 			close: "Fechar"
 		}
 	},
@@ -859,6 +866,7 @@ var translations = {
 			change: "Zmiana",
 			loading: "Ładowanie…",
 			no_history: "Brak zapisanych cen.",
+			no_funds: "Nie wybrano funduszy. Edytuj kartę, aby je wybrać.",
 			close: "Zamknij"
 		}
 	},
@@ -881,6 +889,7 @@ var translations = {
 			change: "Förändring",
 			loading: "Laddar…",
 			no_history: "Inga kurser sparade än.",
+			no_funds: "Inga fonder valda. Redigera kortet för att välja dem.",
 			close: "Stäng"
 		}
 	},
@@ -903,6 +912,7 @@ var translations = {
 			change: "Ændring",
 			loading: "Indlæser…",
 			no_history: "Ingen kurser gemt endnu.",
+			no_funds: "Ingen fonde valgt. Rediger kortet for at vælge dem.",
 			close: "Luk"
 		}
 	},
@@ -925,6 +935,7 @@ var translations = {
 			change: "Endring",
 			loading: "Laster…",
 			no_history: "Ingen kurser lagret ennå.",
+			no_funds: "Ingen fond valgt. Rediger kortet for å velge dem.",
 			close: "Lukk"
 		}
 	},
@@ -947,6 +958,7 @@ var translations = {
 			change: "Muutos",
 			loading: "Ladataan…",
 			no_history: "Kursseja ei ole vielä tallennettu.",
+			no_funds: "Rahastoja ei ole valittu. Valitse ne muokkaamalla korttia.",
 			close: "Sulje"
 		}
 	},
@@ -969,6 +981,7 @@ var translations = {
 			change: "Změna",
 			loading: "Načítání…",
 			no_history: "Zatím nejsou uloženy žádné ceny.",
+			no_funds: "Nejsou vybrány žádné fondy. Vyberte je úpravou karty.",
 			close: "Zavřít"
 		}
 	},
@@ -991,6 +1004,7 @@ var translations = {
 			change: "Változás",
 			loading: "Betöltés…",
 			no_history: "Még nincsenek mentett árfolyamok.",
+			no_funds: "Nincs kiválasztott alap. Szerkeszd a kártyát a kiválasztásukhoz.",
 			close: "Bezárás"
 		}
 	},
@@ -1013,6 +1027,7 @@ var translations = {
 			change: "Изменение",
 			loading: "Загрузка…",
 			no_history: "Цены ещё не сохранены.",
+			no_funds: "Фонды не выбраны. Измените карточку, чтобы выбрать их.",
 			close: "Закрыть"
 		}
 	},
@@ -1035,6 +1050,7 @@ var translations = {
 			change: "变动",
 			loading: "加载中…",
 			no_history: "尚未保存任何价格。",
+			no_funds: "未选择基金。编辑卡片以选择基金。",
 			close: "关闭"
 		}
 	},
@@ -1057,6 +1073,7 @@ var translations = {
 			change: "変動",
 			loading: "読み込み中…",
 			no_history: "保存された価格はまだありません。",
+			no_funds: "ファンドが選択されていません。カードを編集して選択してください。",
 			close: "閉じる"
 		}
 	},
@@ -1079,6 +1096,7 @@ var translations = {
 			change: "변동",
 			loading: "불러오는 중…",
 			no_history: "아직 저장된 가격이 없습니다.",
+			no_funds: "선택된 펀드가 없습니다. 카드를 편집하여 선택하세요.",
 			close: "닫기"
 		}
 	},
@@ -1101,6 +1119,7 @@ var translations = {
 			change: "Değişim",
 			loading: "Yükleniyor…",
 			no_history: "Henüz kayıtlı fiyat yok.",
+			no_funds: "Fon seçilmedi. Seçmek için kartı düzenleyin.",
 			close: "Kapat"
 		}
 	},
@@ -1123,6 +1142,7 @@ var translations = {
 			change: "التغير",
 			loading: "جارٍ التحميل…",
 			no_history: "لا توجد أسعار محفوظة بعد.",
+			no_funds: "لم يتم اختيار أي صناديق. عدّل البطاقة لاختيارها.",
 			close: "إغلاق"
 		}
 	}
@@ -1330,6 +1350,12 @@ var RANGES = [
 		label: "1Y"
 	}
 ];
+/** Sensors of this integration only, even if another one also exposes a `symbol`. */
+function findFundSensors(hass) {
+	if (!hass) return [];
+	const registry = hass.entities ?? {};
+	return Object.values(hass.states).filter((e) => registry[e.entity_id]?.platform === DOMAIN && typeof e.attributes["symbol"] === "string").sort((a, b) => a.attributes["symbol"].localeCompare(b.attributes["symbol"]));
+}
 var ZwitserlevenFondsenCardEditor = class extends i {
 	constructor(..._args) {
 		super(..._args);
@@ -1337,12 +1363,6 @@ var ZwitserlevenFondsenCardEditor = class extends i {
 	}
 	setConfig(config) {
 		this._config = config;
-	}
-	/** Sensors of this integration only, even if another one also exposes a `symbol`. */
-	_detectFundSensors() {
-		if (!this.hass) return [];
-		const registry = this.hass.entities ?? {};
-		return Object.values(this.hass.states).filter((e) => registry[e.entity_id]?.platform === DOMAIN && typeof e.attributes["symbol"] === "string").sort((a, b) => a.attributes["symbol"].localeCompare(b.attributes["symbol"]));
 	}
 	_sensorName(sensor) {
 		return sensor.attributes.long_name || sensor.attributes.symbol;
@@ -1366,7 +1386,7 @@ var ZwitserlevenFondsenCardEditor = class extends i {
 	render() {
 		if (!this._config) return A;
 		const { title, default_range, entities = [] } = this._config;
-		const all = this._detectFundSensors();
+		const all = findFundSensors(this.hass);
 		const selectedIds = entities;
 		const available = all.filter((s) => !selectedIds.includes(s.entity_id));
 		const s = t(this.hass?.locale?.language ?? "en").editor;
@@ -1604,18 +1624,19 @@ var ZwitserlevenFondsenCard = class extends i {
 		return this._hass;
 	}
 	setConfig(config) {
-		if (!Array.isArray(config.entities) || config.entities.length === 0) throw new Error(`${CARD_TAG}: 'entities' must be a non-empty list.`);
+		if (!Array.isArray(config.entities)) throw new Error(`${CARD_TAG}: 'entities' must be a list.`);
 		this._config = config;
 		this._timeRange = config.default_range ?? "1T";
 	}
 	getCardSize() {
 		return Math.ceil((this._config?.entities.length ?? 1) / 3) * 3 + 1;
 	}
-	static getStubConfig() {
+	/** The card picker passes `hass`, so a new card starts with every fund already set up. */
+	static getStubConfig(hass) {
 		return {
 			type: `custom:${CARD_TAG}`,
 			title: "Zwitserleven",
-			entities: [],
+			entities: findFundSensors(hass).map((sensor) => sensor.entity_id),
 			default_range: "1T"
 		};
 	}
@@ -1671,9 +1692,11 @@ var ZwitserlevenFondsenCard = class extends i {
           </div>
         </div>
         <div class="card-content">
-          <div class="asset-grid" style="grid-template-columns: repeat(auto-fill, minmax(${tileMinWidth}, 1fr))">
-            ${this._config.entities.map((entry) => this._renderEntity(entry))}
-          </div>
+          ${this._config.entities.length === 0 ? b`<p class="status">${t(this._hass.locale?.language ?? "en").card.no_funds}</p>` : b`
+              <div class="asset-grid" style="grid-template-columns: repeat(auto-fill, minmax(${tileMinWidth}, 1fr))">
+                ${this._config.entities.map((entry) => this._renderEntity(entry))}
+              </div>
+            `}
         </div>
         ${this._renderHistoryDialog()}
       </ha-card>
@@ -2127,6 +2150,6 @@ function defineOnce(tag, ctor) {
 defineOnce(EDITOR_TAG, ZwitserlevenFondsenCardEditor);
 defineOnce(CARD_TAG, ZwitserlevenFondsenCard);
 //#endregion
-export { ZwitserlevenFondsenCard, ZwitserlevenFondsenCardEditor };
+export { ZwitserlevenFondsenCard, ZwitserlevenFondsenCardEditor, findFundSensors };
 
 //# sourceMappingURL=zwitserleven-fondsen-card.js.map
