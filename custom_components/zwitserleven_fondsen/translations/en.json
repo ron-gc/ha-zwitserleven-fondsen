@@ -45,7 +45,8 @@
         "step": {
           "confirm": {
             "title": "Delete fund {symbol}?",
-            "description": "The Zwitserleven fund overview page no longer lists fund {symbol}, so its price sensor is unavailable.\n\nIf Zwitserleven has closed or renamed the fund, select **Submit** to delete the fund with its device, sensor and stored prices. If you expect the fund to come back, close this dialog instead: the issue goes away by itself when the fund is listed again."
+            "description": "The Zwitserleven fund overview page no longer lists fund {symbol}, so its price sensor is unavailable.\n\nIf Zwitserleven has closed or renamed the fund, select **Delete fund** to delete it with its device, sensor and stored prices. If you expect the fund to come back, close this dialog instead: the issue goes away by itself when the fund is listed again.",
+            "submit": "Delete fund"
           }
         }
       }

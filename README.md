@@ -291,8 +291,8 @@ charts, and the list goes back to the day you added the fund.
 
 **Repair: "Fund … is no longer listed by Zwitserleven"**
 - The fund overview page no longer lists the fund, so its sensor is unavailable. If Zwitserleven
-  closed or renamed the fund, open the repair under **Settings → Repairs** and select **Submit**
-  to delete the fund. If you expect the fund to come back, leave the repair: it goes away by
+  closed or renamed the fund, open the repair under **Settings → Repairs** and select **Delete fund**
+  to delete it. If you expect the fund to come back, leave the repair: it goes away by
   itself at the next update after the fund is listed again.
 - If the page changes so that no fund can be read at all, the integration does not raise this
   repair for every fund. All fund sensors become unavailable and the log says the page could
