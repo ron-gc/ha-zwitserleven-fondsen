@@ -69,6 +69,23 @@ const RANGES: { value: TimeRange; label: string }[] = [
   { value: "1J", label: "1Y" },
 ];
 
+/** Sensors of this integration only, even if another one also exposes a `symbol`. */
+export function findFundSensors(hass: HomeAssistant | undefined): StockEntity[] {
+  if (!hass) return [];
+  const registry = hass.entities ?? {};
+  return Object.values(hass.states)
+    .filter(
+      (e) =>
+        registry[e.entity_id]?.platform === DOMAIN &&
+        typeof e.attributes["symbol"] === "string"
+    )
+    .sort((a, b) =>
+      (a.attributes["symbol"] as string).localeCompare(
+        b.attributes["symbol"] as string
+      )
+    ) as unknown as StockEntity[];
+}
+
 // ---------------------------------------------------------------------------
 // Editor
 // ---------------------------------------------------------------------------
@@ -80,23 +97,6 @@ export class ZwitserlevenFondsenCardEditor extends LitElement {
 
   setConfig(config: ZwitserlevenFondsenCardConfig): void {
     this._config = config;
-  }
-
-  /** Sensors of this integration only, even if another one also exposes a `symbol`. */
-  private _detectFundSensors(): StockEntity[] {
-    if (!this.hass) return [];
-    const registry = this.hass.entities ?? {};
-    return Object.values(this.hass.states)
-      .filter(
-        (e) =>
-          registry[e.entity_id]?.platform === DOMAIN &&
-          typeof e.attributes["symbol"] === "string"
-      )
-      .sort((a, b) =>
-        (a.attributes["symbol"] as string).localeCompare(
-          b.attributes["symbol"] as string
-        )
-      ) as unknown as StockEntity[];
   }
 
   private _sensorName(sensor: StockEntity): string {
@@ -129,7 +129,7 @@ export class ZwitserlevenFondsenCardEditor extends LitElement {
   protected render() {
     if (!this._config) return nothing;
     const { title, default_range, entities = [] } = this._config;
-    const all = this._detectFundSensors();
+    const all = findFundSensors(this.hass);
     const selectedIds = entities;
     const available = all.filter((s) => !selectedIds.includes(s.entity_id));
     const s = t(this.hass?.locale?.language ?? "en").editor;
@@ -376,8 +376,10 @@ export class ZwitserlevenFondsenCard extends LitElement {
   }
 
   public setConfig(config: ZwitserlevenFondsenCardConfig): void {
-    if (!Array.isArray(config.entities) || config.entities.length === 0) {
-      throw new Error(`${CARD_TAG}: 'entities' must be a non-empty list.`);
+    // An empty list is allowed: the card picker adds the card with no funds
+    // when none are set up yet, and the card then says how to choose them.
+    if (!Array.isArray(config.entities)) {
+      throw new Error(`${CARD_TAG}: 'entities' must be a list.`);
     }
     this._config = config;
     this._timeRange = config.default_range ?? "1T";
@@ -388,11 +390,12 @@ export class ZwitserlevenFondsenCard extends LitElement {
     return rows * 3 + 1;
   }
 
-  public static getStubConfig(): ZwitserlevenFondsenCardConfig {
+  /** The card picker passes `hass`, so a new card starts with every fund already set up. */
+  public static getStubConfig(hass?: HomeAssistant): ZwitserlevenFondsenCardConfig {
     return {
       type: `custom:${CARD_TAG}`,
       title: "Zwitserleven",
-      entities: [],
+      entities: findFundSensors(hass).map((sensor) => sensor.entity_id),
       default_range: "1T",
     };
   }
@@ -471,11 +474,15 @@ export class ZwitserlevenFondsenCard extends LitElement {
           </div>
         </div>
         <div class="card-content">
-          <div class="asset-grid" style="grid-template-columns: repeat(auto-fill, minmax(${tileMinWidth}, 1fr))">
-            ${this._config.entities.map((entry) =>
-              this._renderEntity(entry)
-            )}
-          </div>
+          ${this._config.entities.length === 0
+            ? html`<p class="status">${t(this._hass.locale?.language ?? "en").card.no_funds}</p>`
+            : html`
+              <div class="asset-grid" style="grid-template-columns: repeat(auto-fill, minmax(${tileMinWidth}, 1fr))">
+                ${this._config.entities.map((entry) =>
+                  this._renderEntity(entry)
+                )}
+              </div>
+            `}
         </div>
         ${this._renderHistoryDialog()}
       </ha-card>

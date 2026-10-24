@@ -6,6 +6,12 @@ All notable changes to this integration are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Adding the card from the dashboard card picker no longer shows the error
+  "'entities' must be a non-empty list". A new card now starts with every fund
+  that is set up, and a card without funds says how to choose them.
+
 ## [0.1.0] - 2026-10-17
 
 ### Added
