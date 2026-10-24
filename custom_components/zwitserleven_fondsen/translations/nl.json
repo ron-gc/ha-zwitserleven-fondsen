@@ -1,0 +1,55 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Fonds toevoegen",
+        "description": "Kies het Zwitserleven-fonds dat je wilt volgen.",
+        "data": {
+          "symbol": "Fonds",
+          "name": "Weergavenaam (optioneel)"
+        },
+        "data_description": {
+          "symbol": "Fondsen die je al hebt toegevoegd, staan niet in de lijst.",
+          "name": "Naam voor het apparaat en de sensor van het fonds. Laat dit leeg om de fondsnaam van Zwitserleven te gebruiken."
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Dit fonds is al ingesteld.",
+      "cannot_connect": "De fondsenlijst kon niet worden geladen van de website van Zwitserleven. Probeer het later opnieuw.",
+      "no_funds_left": "Alle fondsen van Zwitserleven zijn al ingesteld."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Fondsopties",
+        "data": {
+          "name": "Weergavenaam (optioneel)"
+        },
+        "data_description": {
+          "name": "Naam voor het apparaat en de sensor van het fonds. Laat dit leeg om de fondsnaam van Zwitserleven te gebruiken."
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "update_failed": {
+      "message": "De fondskoersen konden niet worden gelezen van de pagina van Zwitserleven: {error}"
+    }
+  },
+  "issues": {
+    "fund_missing": {
+      "title": "Zwitserleven vermeldt fonds {symbol} niet meer",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Fonds {symbol} verwijderen?",
+            "description": "De fondsenpagina van Zwitserleven vermeldt fonds {symbol} niet meer, daarom is de koerssensor van dit fonds niet beschikbaar.\n\nAls Zwitserleven het fonds heeft gesloten of hernoemd, kies dan **Fonds verwijderen** om het te verwijderen, samen met het apparaat, de sensor en de opgeslagen koersen. Verwacht je dat het fonds terugkomt, sluit dan dit venster: de melding verdwijnt vanzelf zodra het fonds weer op de pagina staat.",
+            "submit": "Fonds verwijderen"
+          }
+        }
+      }
+    }
+  }
+}
