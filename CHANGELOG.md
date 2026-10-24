@@ -6,6 +6,12 @@ All notable changes to this integration are listed here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Dutch translation of the integration: the setup and options dialogs, the
+  repair issue for a delisted fund, and the update error message now follow a
+  Dutch Home Assistant. The card already had a Dutch translation.
+
 ### Fixed
 
 - Adding the card from the dashboard card picker no longer shows the error
