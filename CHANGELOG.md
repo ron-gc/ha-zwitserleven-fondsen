@@ -6,6 +6,12 @@ All notable changes to this integration are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The price sensor is always shown with 2 decimals, as Zwitserleven publishes
+  it, so a price of 55,00 shows as 55.00 instead of 55. The display precision
+  can be changed in the sensor's settings.
+
 ## [0.2.0] - 2026-10-24
 
 ### Added
