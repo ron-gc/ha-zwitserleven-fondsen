@@ -9,6 +9,9 @@
       },
       "price_date": {
         "default": "mdi:calendar"
+      },
+      "value": {
+        "default": "mdi:cash"
       }
     }
   }

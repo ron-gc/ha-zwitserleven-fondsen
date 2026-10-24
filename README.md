@@ -50,7 +50,7 @@ a separate integration with its own domain (`zwitserleven_fondsen`), card
 - See the funds of your Zwitserleven pension or savings plan on a dashboard, next to the rest of
   your home.
 - Get a notification when a fund rises or drops sharply, see [Automation examples](#automation-examples).
-- Track what your holdings are worth by multiplying a price by the number of units you own.
+- Track what your holdings are worth: enter the units you own and get a Value sensor per fund.
 - Look up a fund's daily prices in a list on the card, see [Price history list](#price-history-list).
 - Keep a long-term price history in the Home Assistant recorder and long-term statistics.
 
@@ -155,6 +155,7 @@ Fondsen**, select the fund and choose **Configure**.
 | Option | Description |
 |---|---|
 | **Name** | Display name of the fund's device and sensors. Leave empty to use the fund name from Zwitserleven |
+| **Units held** | How many units of the fund you own. Adds a **Value** sensor, see [Sensors](#sensors). Leave empty for none |
 
 The display name is the name of the fund's entry under Devices & Services, so renaming the entry
 there (three-dot menu → **Rename**) changes it too.
@@ -169,6 +170,7 @@ example for "ASN Duurzaam Aandelenfonds":
 | Price | `sensor.asn_duurzaam_aandelenfonds` | Price of one unit in `EUR`, with the attributes below |
 | Change | `sensor.asn_duurzaam_aandelenfonds_change` | Change from the previous stored price, in `%` |
 | Price date | `sensor.asn_duurzaam_aandelenfonds_price_date` | Date the price is for. Diagnostic, disabled by default: enable it under the device when you need it |
+| Value | `sensor.asn_duurzaam_aandelenfonds_value` | Price times the **Units held** option, in `EUR`. Only there when you set the units |
 
 The change sensor holds the same value as the `change_pct` attribute. Unlike the attribute, it
 gets long-term statistics, so it can be shown in a history graph or statistics card.
@@ -215,18 +217,20 @@ automation:
 
 ### The value of your holdings
 
-The integration knows the price of one unit, not how many units you own. A template sensor can
-multiply the two; replace `123.4567` with your number of units:
+Set **Units held** in each fund's options to get its **Value** sensor. A template sensor can add
+those up to the value of all your funds:
 
 ```yaml
 template:
   - sensor:
-      - name: "ASN Duurzaam Aandelenfonds value"
+      - name: "Zwitserleven total value"
         unit_of_measurement: "EUR"
         device_class: monetary
         state_class: total
-        availability: "{{ has_value('sensor.asn_duurzaam_aandelenfonds') }}"
-        state: "{{ (states('sensor.asn_duurzaam_aandelenfonds') | float * 123.4567) | round(2) }}"
+        state: >
+          {{ integration_entities('zwitserleven_fondsen')
+             | select('match', 'sensor\..*_value$')
+             | map('states') | map('float', 0) | sum | round(2) }}
 ```
 
 ## Lovelace card
@@ -290,7 +294,8 @@ charts, and the list goes back to the day you added the fund.
   call `homeassistant.update_entity` on a fund sensor.
 - **History starts when you add a fund.** Zwitserleven only shows the current price, so earlier
   prices cannot be loaded.
-- **Prices per unit only.** The integration does not know your holdings; see
+- **Units are entered by hand.** The integration cannot read your Zwitserleven account, so update
+  **Units held** after you buy or sell units; see
   [The value of your holdings](#the-value-of-your-holdings).
 
 ## Troubleshooting

@@ -25,10 +25,12 @@
       "init": {
         "title": "Fund options",
         "data": {
-          "name": "Display name (optional)"
+          "name": "Display name (optional)",
+          "units": "Units held (optional)"
         },
         "data_description": {
-          "name": "Name for the fund's device and sensors. Leave empty to use the fund name from Zwitserleven."
+          "name": "Name for the fund's device and sensors. Leave empty to use the fund name from Zwitserleven.",
+          "units": "How many units of this fund you own. Adds a Value sensor with what they are worth. Leave empty for none."
         }
       }
     }
@@ -40,6 +42,9 @@
       },
       "price_date": {
         "name": "Price date"
+      },
+      "value": {
+        "name": "Value"
       }
     }
   },

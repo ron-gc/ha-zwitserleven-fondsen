@@ -7,13 +7,16 @@ from homeassistant import config_entries
 from homeassistant.config_entries import ConfigFlowResult
 from homeassistant.core import callback
 from homeassistant.helpers.selector import (
+    NumberSelector,
+    NumberSelectorConfig,
+    NumberSelectorMode,
     SelectOptionDict,
     SelectSelector,
     SelectSelectorConfig,
     SelectSelectorMode,
 )
 
-from .const import DOMAIN, CONF_SYMBOL, CONF_NAME
+from .const import DOMAIN, CONF_SYMBOL, CONF_NAME, CONF_UNITS
 from .fondsen_page import FondsenPageError, get_page
 
 
@@ -71,10 +74,10 @@ class ZwitserlevenConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 class ZwitserlevenOptionsFlow(config_entries.OptionsFlow):
-    """Rename the fund.
+    """Rename the fund and set the units held.
 
     The name is the entry title, so renaming the entry under Devices &
-    services does the same. Nothing is stored in the options.
+    services does the same. The units are the only option.
     """
 
     # Home Assistant sets self.config_entry on the flow itself.
@@ -84,16 +87,30 @@ class ZwitserlevenOptionsFlow(config_entries.OptionsFlow):
     ) -> ConfigFlowResult:
         if user_input is not None:
             name = user_input.get(CONF_NAME, "").strip() or await self._async_fund_name()
-            # A new title reloads the entry through its update listener, which
-            # renames the device.
-            self.hass.config_entries.async_update_entry(self.config_entry, title=name)
-            return self.async_create_entry(data={})
+            units = user_input.get(CONF_UNITS)
+            options = {CONF_UNITS: float(units)} if units else {}
+            # One update for both, so the update listener reloads the entry
+            # once; create_entry then finds the options unchanged.
+            self.hass.config_entries.async_update_entry(
+                self.config_entry, title=name, options=options
+            )
+            return self.async_create_entry(data=options)
 
-        # A suggested value rather than a default: a field the user clears is
-        # left out of user_input, and a default would put the old name back.
+        # Suggested values rather than defaults: a field the user clears is
+        # left out of user_input, and a default would put the old value back.
         schema = self.add_suggested_values_to_schema(
-            probatio.Schema({probatio.Optional(CONF_NAME): str}),
-            {CONF_NAME: self.config_entry.title},
+            probatio.Schema(
+                {
+                    probatio.Optional(CONF_NAME): str,
+                    probatio.Optional(CONF_UNITS): NumberSelector(
+                        NumberSelectorConfig(min=0, step="any", mode=NumberSelectorMode.BOX)
+                    ),
+                }
+            ),
+            {
+                CONF_NAME: self.config_entry.title,
+                CONF_UNITS: self.config_entry.options.get(CONF_UNITS),
+            },
         )
         return self.async_show_form(step_id="init", data_schema=schema)
 
