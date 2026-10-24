@@ -510,10 +510,17 @@ export class ZwitserlevenFondsenCard extends LitElement {
 
     const entity = raw as unknown as { state: string; attributes: StockAttributes };
     const attr = entity.attributes;
-    const displayName = (raw.attributes["friendly_name"] as string) || attr.long_name || attr.symbol;
+    const displayName =
+      (raw.attributes["friendly_name"] as string) || attr.long_name || attr.symbol || entityId;
     const locale = this._hass?.locale?.language;
     const strings = t(locale ?? "en").card;
     const price = parseFloat(entity.state);
+    // An unavailable sensor has no price and no attributes, so no symbol to
+    // fetch the stored prices for. Showing those would pass old numbers off
+    // as current.
+    if (!Number.isFinite(price) || !attr.symbol) {
+      return this._renderUnavailableTile(entityId, displayName, strings.unavailable);
+    }
     // Fetch the stored daily prices (no-op if cached or already in flight)
     void this._fetchDailyHistory(attr.symbol);
 
@@ -568,6 +575,24 @@ export class ZwitserlevenFondsenCard extends LitElement {
         </div>
         <div class="sparkline-wrap">
           ${this._renderSparkline(chartData, trendColor)}
+        </div>
+      </div>
+    `;
+  }
+
+  /** A dimmed tile without price, change or sparkline; it still opens more-info. */
+  private _renderUnavailableTile(entityId: string, name: string, label: string) {
+    return html`
+      <div class="asset-tile unavailable" @click=${() => this._openMoreInfo(entityId)}>
+        <div class="asset-header">
+          <span class="asset-name" title="${name}">${name}</span>
+        </div>
+        <div class="asset-price">
+          <span class="price">–</span>
+          <span class="change">${label}</span>
+        </div>
+        <div class="sparkline-wrap">
+          <div class="sparkline-placeholder"></div>
         </div>
       </div>
     `;
@@ -832,10 +857,18 @@ export class ZwitserlevenFondsenCard extends LitElement {
     }
     .arrow { font-size: 0.7rem; }
     .sparkline-wrap { margin-top: 5px; }
-    .sparkline-svg {
+    .sparkline-svg,
+    .sparkline-placeholder {
       width: 100%;
       height: 40px;
       display: block;
+    }
+    .asset-tile.unavailable {
+      opacity: 0.6;
+    }
+    .asset-tile.unavailable .change {
+      color: var(--secondary-text-color);
+      font-weight: 500;
     }
     .status {
       font-size: 0.78rem;
