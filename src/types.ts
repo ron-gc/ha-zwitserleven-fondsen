@@ -35,18 +35,3 @@ export interface ZwitserlevenFondsenCardConfig extends LovelaceCardConfig {
   default_range?: TimeRange;
   tile_size?: "small" | "medium" | "large";
 }
-
-export interface StockAttributes {
-  symbol: string;
-  long_name: string;
-  price_date: string; // "YYYY-MM-DD" the fund price was published for
-  change: number;
-  change_pct: number;
-  previous_close: number;
-}
-
-export interface StockEntity {
-  entity_id: string;
-  state: string;
-  attributes: StockAttributes;
-}

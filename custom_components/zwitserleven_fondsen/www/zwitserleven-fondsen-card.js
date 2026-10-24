@@ -684,6 +684,46 @@ var e$1 = (e, t, c) => (c.configurable = !0, c.enumerable = !0, Reflect.decorate
 	};
 }
 //#endregion
+//#region src/fund.ts
+var DOMAIN = "zwitserleven_fondsen";
+/** A non-empty string attribute, or undefined. */
+function text(value) {
+	return typeof value === "string" && value !== "" ? value : void 0;
+}
+/** Read a fund price sensor's state once, with checked types. */
+function readFund(entity) {
+	const attributes = entity.attributes;
+	const symbol = text(attributes["symbol"]) ?? null;
+	const longName = text(attributes["long_name"]) ?? null;
+	const price = parseFloat(entity.state);
+	const state = {
+		entityId: entity.entity_id,
+		longName,
+		name: text(attributes["friendly_name"]) ?? longName ?? symbol ?? entity.entity_id,
+		priceDate: text(attributes["price_date"]),
+		price
+	};
+	return Number.isFinite(price) && symbol !== null ? {
+		...state,
+		available: true,
+		symbol
+	} : {
+		...state,
+		available: false,
+		symbol
+	};
+}
+/**
+* The price sensors of this integration, by symbol. Sensors of other
+* integrations that also have a `symbol`, and this integration's own change
+* and price date sensors (which have none), are left out.
+*/
+function findFundSensors(hass) {
+	if (!hass) return [];
+	const registry = hass.entities ?? {};
+	return Object.values(hass.states).filter((entity) => registry[entity.entity_id]?.platform === DOMAIN).map(readFund).filter((fund) => fund.symbol !== null).sort((a, b) => a.symbol.localeCompare(b.symbol));
+}
+//#endregion
 //#region src/translations.ts
 var translations = {
 	en: {
@@ -1331,7 +1371,6 @@ function __decorate(decorators, target, key, desc) {
 }
 //#endregion
 //#region src/zwitserleven-fondsen-card.ts
-var DOMAIN = "zwitserleven_fondsen";
 var CARD_TAG = "zwitserleven-fondsen-card";
 var EDITOR_TAG = "zwitserleven-fondsen-card-editor";
 var LOG_PREFIX = `[${CARD_TAG}]`;
@@ -1370,12 +1409,6 @@ var RANGES = [
 		label: "1Y"
 	}
 ];
-/** Sensors of this integration only, even if another one also exposes a `symbol`. */
-function findFundSensors(hass) {
-	if (!hass) return [];
-	const registry = hass.entities ?? {};
-	return Object.values(hass.states).filter((e) => registry[e.entity_id]?.platform === DOMAIN && typeof e.attributes["symbol"] === "string").sort((a, b) => a.attributes["symbol"].localeCompare(b.attributes["symbol"]));
-}
 var ZwitserlevenFondsenCardEditor = class extends i {
 	constructor(..._args) {
 		super(..._args);
@@ -1384,8 +1417,9 @@ var ZwitserlevenFondsenCardEditor = class extends i {
 	setConfig(config) {
 		this._config = config;
 	}
-	_sensorName(sensor) {
-		return sensor.attributes.long_name || sensor.attributes.symbol;
+	/** The fund name from Zwitserleven, else its ID. */
+	_sensorName(fund) {
+		return fund.longName ?? fund.symbol ?? fund.entityId;
 	}
 	_onDragStart(e, index) {
 		this._dragIndex = index;
@@ -1408,7 +1442,7 @@ var ZwitserlevenFondsenCardEditor = class extends i {
 		const { title, default_range, entities = [] } = this._config;
 		const all = findFundSensors(this.hass);
 		const selectedIds = entities;
-		const available = all.filter((s) => !selectedIds.includes(s.entity_id));
+		const available = all.filter((fund) => !selectedIds.includes(fund.entityId));
 		const s = t(this.hass?.locale?.language ?? "en").editor;
 		return b`
       <div class="editor">
@@ -1449,9 +1483,9 @@ var ZwitserlevenFondsenCardEditor = class extends i {
           <div class="section-label">${s.selected} <span class="hint-inline">— ${s.drag_hint}</span></div>
           <div class="selected-list">
             ${entities.map((entityId, index) => {
-			const sensor = all.find((s) => s.entity_id === entityId);
-			const name = sensor ? this._sensorName(sensor) : entityId;
-			const symbol = sensor?.attributes.symbol ?? "";
+			const fund = all.find((f) => f.entityId === entityId);
+			const name = fund ? this._sensorName(fund) : entityId;
+			const symbol = fund?.symbol ?? "";
 			return b`
                 <div
                   class="selected-row ${this._dragIndex === index ? "dragging" : ""}"
@@ -1474,11 +1508,11 @@ var ZwitserlevenFondsenCardEditor = class extends i {
 
         ${all.length === 0 ? b`<p class="hint">${s.no_sensors}<br />${s.setup_hint}</p>` : available.length > 0 ? b`
               <div class="section-label">${s.add}</div>
-              ${available.map((sensor) => b`
+              ${available.map((fund) => b`
                 <label class="sensor-row">
-                  <input type="checkbox" .checked=${false} @change=${() => this._addEntity(sensor.entity_id)} />
-                  <span class="sensor-name">${this._sensorName(sensor)}</span>
-                  <span class="sensor-meta">${sensor.attributes.symbol} · ${sensor.entity_id}</span>
+                  <input type="checkbox" .checked=${false} @change=${() => this._addEntity(fund.entityId)} />
+                  <span class="sensor-name">${this._sensorName(fund)}</span>
+                  <span class="sensor-meta">${fund.symbol} · ${fund.entityId}</span>
                 </label>
               `)}
             ` : A}
@@ -1656,7 +1690,7 @@ var ZwitserlevenFondsenCard = class extends i {
 		return {
 			type: `custom:${CARD_TAG}`,
 			title: "Zwitserleven",
-			entities: findFundSensors(hass).map((sensor) => sensor.entity_id),
+			entities: findFundSensors(hass).map((fund) => fund.entityId),
 			default_range: "1T"
 		};
 	}
@@ -1736,22 +1770,21 @@ var ZwitserlevenFondsenCard = class extends i {
           <div class="status error">${t(this._hass?.locale?.language ?? "en").card.not_found}</div>
         </div>
       `;
-		const entity = raw;
-		const attr = entity.attributes;
-		const displayName = raw.attributes["friendly_name"] || attr.long_name || attr.symbol || entityId;
+		const fund = readFund(raw);
+		const displayName = fund.name;
 		const locale = this._hass?.locale?.language;
 		const strings = t(locale ?? "en").card;
-		const price = parseFloat(entity.state);
-		if (!Number.isFinite(price) || !attr.symbol) return this._renderUnavailableTile(entityId, displayName, strings.unavailable);
-		this._fetchDailyHistory(attr.symbol);
+		if (!fund.available) return this._renderUnavailableTile(entityId, displayName, strings.unavailable);
+		const { symbol, price } = fund;
+		this._fetchDailyHistory(symbol);
 		const chartData = buildChartData({
-			dailyHistory: this._cachedDailyHistory(attr.symbol) ?? [],
+			dailyHistory: this._cachedDailyHistory(symbol) ?? [],
 			range: this._timeRange,
 			livePrice: price,
-			priceDate: attr.price_date
+			priceDate: fund.priceDate
 		});
 		const periodChange = this._calcPeriodChange(chartData);
-		const priceDate = formatPriceDate(attr.price_date, locale);
+		const priceDate = formatPriceDate(fund.priceDate, locale);
 		const isPositive = periodChange >= 0;
 		const trendColor = isPositive ? "var(--success-color, #4caf50)" : "var(--error-color, #f44336)";
 		const arrow = isPositive ? "▲" : "▼";
@@ -1762,8 +1795,8 @@ var ZwitserlevenFondsenCard = class extends i {
         <div class="asset-header">
           <span class="asset-name" title="${displayName}">${displayName}</span>
           <span class="asset-meta">
-            <span class="asset-symbol">${attr.symbol}</span>
-            ${priceDate ? b` · <span title=${formatPriceDateLong(attr.price_date, locale)}>${priceDate}</span>` : A}
+            <span class="asset-symbol">${symbol}</span>
+            ${priceDate ? b` · <span title=${formatPriceDateLong(fund.priceDate, locale)}>${priceDate}</span>` : A}
           </span>
           <button
             class="history-btn"
@@ -1814,18 +1847,18 @@ var ZwitserlevenFondsenCard = class extends i {
 		const entityId = this._historyEntityId;
 		const raw = entityId ? this._hass?.states[entityId] : void 0;
 		if (!raw) return A;
-		const attr = raw.attributes;
-		const name = raw.attributes["friendly_name"] || attr.long_name || attr.symbol;
+		const fund = readFund(raw);
+		const { name, symbol } = fund;
 		const locale = this._hass?.locale?.language;
 		const strings = t(locale ?? "en").card;
-		const history = this._cachedDailyHistory(attr.symbol);
+		const history = symbol === null ? null : this._cachedDailyHistory(symbol);
 		const rows = history ? historyRows(withLivePrice({
 			dailyHistory: history,
-			livePrice: parseFloat(raw.state),
-			priceDate: attr.price_date
+			livePrice: fund.price,
+			priceDate: fund.priceDate
 		})) : null;
 		let body;
-		if (rows === null && this._fetchingDaily.has(attr.symbol)) body = b`<p class="status">${strings.loading}</p>`;
+		if (rows === null && symbol !== null && this._fetchingDaily.has(symbol)) body = b`<p class="status">${strings.loading}</p>`;
 		else if (!rows?.length) body = b`<p class="status">${strings.no_history}</p>`;
 		else body = b`
         <table>
@@ -1870,7 +1903,7 @@ var ZwitserlevenFondsenCard = class extends i {
             <div class="dialog-heading">
               <h2 id="history-title">${strings.price_history}</h2>
               <div class="dialog-subtitle">
-                ${name} · <span class="asset-symbol">${attr.symbol}</span>
+                ${name}${symbol === null ? A : b` · <span class="asset-symbol">${symbol}</span>`}
               </div>
             </div>
             <button
@@ -2196,6 +2229,6 @@ function defineOnce(tag, ctor) {
 defineOnce(EDITOR_TAG, ZwitserlevenFondsenCardEditor);
 defineOnce(CARD_TAG, ZwitserlevenFondsenCard);
 //#endregion
-export { ZwitserlevenFondsenCard, ZwitserlevenFondsenCardEditor, findFundSensors };
+export { ZwitserlevenFondsenCard, ZwitserlevenFondsenCardEditor };
 
 //# sourceMappingURL=zwitserleven-fondsen-card.js.map

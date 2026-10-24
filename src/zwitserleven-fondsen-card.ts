@@ -1,12 +1,7 @@
 import { LitElement, html, css, nothing, svg } from "lit";
 import { property, query, state } from "lit/decorators.js";
-import type {
-  HomeAssistant,
-  ZwitserlevenFondsenCardConfig,
-  StockAttributes,
-  StockEntity,
-  TimeRange,
-} from "./types";
+import type { HomeAssistant, ZwitserlevenFondsenCardConfig, TimeRange } from "./types";
+import { DOMAIN, findFundSensors, readFund, type Fund } from "./fund";
 import { t } from "./translations";
 import {
   formatPercentChange,
@@ -19,7 +14,6 @@ import { sparklinePoints, SPARKLINE_HEIGHT, SPARKLINE_WIDTH } from "./sparkline"
 import { buildChartData, withLivePrice } from "./chart-data";
 import { historyRows } from "./history-list";
 
-const DOMAIN = "zwitserleven_fondsen";
 const CARD_TAG = "zwitserleven-fondsen-card";
 const EDITOR_TAG = "zwitserleven-fondsen-card-editor";
 const LOG_PREFIX = `[${CARD_TAG}]`;
@@ -69,23 +63,6 @@ const RANGES: { value: TimeRange; label: string }[] = [
   { value: "1J", label: "1Y" },
 ];
 
-/** Sensors of this integration only, even if another one also exposes a `symbol`. */
-export function findFundSensors(hass: HomeAssistant | undefined): StockEntity[] {
-  if (!hass) return [];
-  const registry = hass.entities ?? {};
-  return Object.values(hass.states)
-    .filter(
-      (e) =>
-        registry[e.entity_id]?.platform === DOMAIN &&
-        typeof e.attributes["symbol"] === "string"
-    )
-    .sort((a, b) =>
-      (a.attributes["symbol"] as string).localeCompare(
-        b.attributes["symbol"] as string
-      )
-    ) as unknown as StockEntity[];
-}
-
 // ---------------------------------------------------------------------------
 // Editor
 // ---------------------------------------------------------------------------
@@ -99,8 +76,9 @@ export class ZwitserlevenFondsenCardEditor extends LitElement {
     this._config = config;
   }
 
-  private _sensorName(sensor: StockEntity): string {
-    return (sensor.attributes.long_name as string) || (sensor.attributes.symbol as string);
+  /** The fund name from Zwitserleven, else its ID. */
+  private _sensorName(fund: Fund): string {
+    return fund.longName ?? fund.symbol ?? fund.entityId;
   }
 
   // ---- Drag & Drop --------------------------------------------------------
@@ -131,7 +109,7 @@ export class ZwitserlevenFondsenCardEditor extends LitElement {
     const { title, default_range, entities = [] } = this._config;
     const all = findFundSensors(this.hass);
     const selectedIds = entities;
-    const available = all.filter((s) => !selectedIds.includes(s.entity_id));
+    const available = all.filter((fund) => !selectedIds.includes(fund.entityId));
     const s = t(this.hass?.locale?.language ?? "en").editor;
 
     return html`
@@ -171,9 +149,9 @@ export class ZwitserlevenFondsenCardEditor extends LitElement {
           <div class="section-label">${s.selected} <span class="hint-inline">— ${s.drag_hint}</span></div>
           <div class="selected-list">
             ${entities.map((entityId, index) => {
-              const sensor = all.find((s) => s.entity_id === entityId);
-              const name = sensor ? this._sensorName(sensor) : entityId;
-              const symbol = sensor?.attributes.symbol ?? "";
+              const fund = all.find((f) => f.entityId === entityId);
+              const name = fund ? this._sensorName(fund) : entityId;
+              const symbol = fund?.symbol ?? "";
               return html`
                 <div
                   class="selected-row ${this._dragIndex === index ? "dragging" : ""}"
@@ -198,11 +176,11 @@ export class ZwitserlevenFondsenCardEditor extends LitElement {
           ? html`<p class="hint">${s.no_sensors}<br />${s.setup_hint}</p>`
           : available.length > 0 ? html`
               <div class="section-label">${s.add}</div>
-              ${available.map((sensor) => html`
+              ${available.map((fund) => html`
                 <label class="sensor-row">
-                  <input type="checkbox" .checked=${false} @change=${() => this._addEntity(sensor.entity_id)} />
-                  <span class="sensor-name">${this._sensorName(sensor)}</span>
-                  <span class="sensor-meta">${sensor.attributes.symbol} · ${sensor.entity_id}</span>
+                  <input type="checkbox" .checked=${false} @change=${() => this._addEntity(fund.entityId)} />
+                  <span class="sensor-name">${this._sensorName(fund)}</span>
+                  <span class="sensor-meta">${fund.symbol} · ${fund.entityId}</span>
                 </label>
               `)}
             ` : nothing}
@@ -395,7 +373,7 @@ export class ZwitserlevenFondsenCard extends LitElement {
     return {
       type: `custom:${CARD_TAG}`,
       title: "Zwitserleven",
-      entities: findFundSensors(hass).map((sensor) => sensor.entity_id),
+      entities: findFundSensors(hass).map((fund) => fund.entityId),
       default_range: "1T",
     };
   }
@@ -508,30 +486,27 @@ export class ZwitserlevenFondsenCard extends LitElement {
       `;
     }
 
-    const entity = raw as unknown as { state: string; attributes: StockAttributes };
-    const attr = entity.attributes;
-    const displayName =
-      (raw.attributes["friendly_name"] as string) || attr.long_name || attr.symbol || entityId;
+    const fund = readFund(raw);
+    const displayName = fund.name;
     const locale = this._hass?.locale?.language;
     const strings = t(locale ?? "en").card;
-    const price = parseFloat(entity.state);
-    // An unavailable sensor has no price and no attributes, so no symbol to
-    // fetch the stored prices for. Showing those would pass old numbers off
-    // as current.
-    if (!Number.isFinite(price) || !attr.symbol) {
+    // Showing the stored prices of an unavailable fund would pass old numbers
+    // off as current.
+    if (!fund.available) {
       return this._renderUnavailableTile(entityId, displayName, strings.unavailable);
     }
+    const { symbol, price } = fund;
     // Fetch the stored daily prices (no-op if cached or already in flight)
-    void this._fetchDailyHistory(attr.symbol);
+    void this._fetchDailyHistory(symbol);
 
     const chartData = buildChartData({
-      dailyHistory: this._cachedDailyHistory(attr.symbol) ?? [],
+      dailyHistory: this._cachedDailyHistory(symbol) ?? [],
       range: this._timeRange,
       livePrice: price,
-      priceDate: attr.price_date,
+      priceDate: fund.priceDate,
     });
     const periodChange = this._calcPeriodChange(chartData);
-    const priceDate = formatPriceDate(attr.price_date, locale);
+    const priceDate = formatPriceDate(fund.priceDate, locale);
     const isPositive = periodChange >= 0;
     const trendColor = isPositive
       ? "var(--success-color, #4caf50)"
@@ -546,9 +521,9 @@ export class ZwitserlevenFondsenCard extends LitElement {
         <div class="asset-header">
           <span class="asset-name" title="${displayName}">${displayName}</span>
           <span class="asset-meta">
-            <span class="asset-symbol">${attr.symbol}</span>
+            <span class="asset-symbol">${symbol}</span>
             ${priceDate
-              ? html` · <span title=${formatPriceDateLong(attr.price_date, locale)}>${priceDate}</span>`
+              ? html` · <span title=${formatPriceDateLong(fund.priceDate, locale)}>${priceDate}</span>`
               : nothing}
           </span>
           <button
@@ -604,23 +579,24 @@ export class ZwitserlevenFondsenCard extends LitElement {
     const raw = entityId ? this._hass?.states[entityId] : undefined;
     if (!raw) return nothing;
 
-    const attr = raw.attributes as unknown as StockAttributes;
-    const name = (raw.attributes["friendly_name"] as string) || attr.long_name || attr.symbol;
+    const fund = readFund(raw);
+    const { name, symbol } = fund;
     const locale = this._hass?.locale?.language;
     const strings = t(locale ?? "en").card;
-    const history = this._cachedDailyHistory(attr.symbol);
+    // Without a symbol (the fund became unavailable) there is nothing to look up.
+    const history = symbol === null ? null : this._cachedDailyHistory(symbol);
     const rows = history
       ? historyRows(
           withLivePrice({
             dailyHistory: history,
-            livePrice: parseFloat(raw.state),
-            priceDate: attr.price_date,
+            livePrice: fund.price,
+            priceDate: fund.priceDate,
           }),
         )
       : null;
 
     let body;
-    if (rows === null && this._fetchingDaily.has(attr.symbol)) {
+    if (rows === null && symbol !== null && this._fetchingDaily.has(symbol)) {
       body = html`<p class="status">${strings.loading}</p>`;
     } else if (!rows?.length) {
       body = html`<p class="status">${strings.no_history}</p>`;
@@ -675,7 +651,9 @@ export class ZwitserlevenFondsenCard extends LitElement {
             <div class="dialog-heading">
               <h2 id="history-title">${strings.price_history}</h2>
               <div class="dialog-subtitle">
-                ${name} · <span class="asset-symbol">${attr.symbol}</span>
+                ${name}${symbol === null
+                  ? nothing
+                  : html` · <span class="asset-symbol">${symbol}</span>`}
               </div>
             </div>
             <button
