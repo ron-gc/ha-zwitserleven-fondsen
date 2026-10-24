@@ -1315,7 +1315,7 @@ var DOMAIN = "zwitserleven_fondsen";
 var CARD_TAG = "zwitserleven-fondsen-card";
 var EDITOR_TAG = "zwitserleven-fondsen-card-editor";
 var LOG_PREFIX = `[${CARD_TAG}]`;
-console.info(`${LOG_PREFIX} v0.1.1 loaded from ${import.meta.url}`);
+console.info(`${LOG_PREFIX} v0.2.0-dev loaded from ${import.meta.url}`);
 window.customCards = window.customCards || [];
 if (!window.customCards.some((c) => c.type === CARD_TAG)) window.customCards.push({
 	type: CARD_TAG,
