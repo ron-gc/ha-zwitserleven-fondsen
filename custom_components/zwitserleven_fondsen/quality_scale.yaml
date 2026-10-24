@@ -75,13 +75,12 @@ rules:
       themselves. New funds on the page show up in the setup dialog.
   entity-category: done
   entity-device-class:
-    status: exempt
+    status: done
     comment: >
-      The monetary device class only allows the total state class, and a fund
+      The price date sensor has the date device class. The price has none: the
+      monetary device class only allows the total state class, and a fund
       price is a measurement that goes up and down.
-  entity-disabled-by-default:
-    status: exempt
-    comment: Each fund has one entity, its price.
+  entity-disabled-by-default: done
   entity-translations: done
   exception-translations: done
   icon-translations: done

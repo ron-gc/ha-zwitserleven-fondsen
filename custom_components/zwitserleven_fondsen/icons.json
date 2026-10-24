@@ -3,6 +3,12 @@
     "sensor": {
       "price": {
         "default": "mdi:chart-line"
+      },
+      "change_pct": {
+        "default": "mdi:percent-outline"
+      },
+      "price_date": {
+        "default": "mdi:calendar"
       }
     }
   }

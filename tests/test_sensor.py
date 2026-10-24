@@ -1,7 +1,12 @@
-"""Unit tests for ZwitserlevenSensor's exposed attributes."""
+"""Unit tests for the fund sensors."""
+from datetime import date
 from types import SimpleNamespace
 
-from custom_components.zwitserleven_fondsen.sensor import ZwitserlevenSensor
+from custom_components.zwitserleven_fondsen.sensor import (
+    ZwitserlevenChangeSensor,
+    ZwitserlevenPriceDateSensor,
+    ZwitserlevenSensor,
+)
 from custom_components.zwitserleven_fondsen.const import CONF_SYMBOL
 
 from .conftest import SYMBOL
@@ -17,7 +22,7 @@ COORDINATOR_DATA = {
 }
 
 
-def _sensor(data=COORDINATOR_DATA):
+def _parts(data=COORDINATOR_DATA):
     coordinator = SimpleNamespace(
         data=None if data is None else {SYMBOL: data},
         last_update_success=True,
@@ -28,7 +33,11 @@ def _sensor(data=COORDINATOR_DATA):
         options={},
         title="Test Fund",
     )
-    return ZwitserlevenSensor(coordinator, entry)
+    return coordinator, entry
+
+
+def _sensor(data=COORDINATOR_DATA):
+    return ZwitserlevenSensor(*_parts(data))
 
 
 def test_exposes_symbol_and_name_attributes():
@@ -56,3 +65,21 @@ def test_has_no_market_session_attributes():
 
 def test_returns_no_attributes_without_coordinator_data():
     assert _sensor(data=None).extra_state_attributes == {}
+
+
+def test_change_sensor_is_the_change_in_percent():
+    sensor = ZwitserlevenChangeSensor(*_parts())
+    assert sensor.native_value == 2.67
+    assert sensor.native_unit_of_measurement == "%"
+    assert sensor.unique_id == f"zwitserleven_fondsen_{SYMBOL}_change_pct"
+
+
+def test_price_date_sensor_is_the_date_the_price_is_for():
+    sensor = ZwitserlevenPriceDateSensor(*_parts())
+    assert sensor.native_value == date(2026, 10, 2)
+    assert sensor.unique_id == f"zwitserleven_fondsen_{SYMBOL}_price_date"
+
+
+def test_every_sensor_has_no_value_without_coordinator_data():
+    for cls in (ZwitserlevenSensor, ZwitserlevenChangeSensor, ZwitserlevenPriceDateSensor):
+        assert cls(*_parts(data=None)).native_value is None, cls.__name__
