@@ -1342,51 +1342,8 @@ function buildChartData(input) {
 	}
 }
 //#endregion
-//#region src/history-list.ts
-/** One row per stored daily price, newest first, from prices oldest first. */
-function historyRows(prices) {
-	return prices.map(([date, price], i) => {
-		if (i === 0) return {
-			date,
-			price,
-			change: null,
-			changePct: null
-		};
-		const previous = prices[i - 1][1];
-		return {
-			date,
-			price,
-			change: price - previous,
-			changePct: previous !== 0 ? (price - previous) / previous * 100 : null
-		};
-	}).reverse();
-}
-//#endregion
-//#region \0@oxc-project+runtime@0.153.0/helpers/esm/decorate.js
-function __decorate(decorators, target, key, desc) {
-	var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	return c > 3 && r && Object.defineProperty(target, key, r), r;
-}
-//#endregion
-//#region src/zwitserleven-fondsen-card.ts
-var CARD_TAG = "zwitserleven-fondsen-card";
-var EDITOR_TAG = "zwitserleven-fondsen-card-editor";
-var LOG_PREFIX = `[${CARD_TAG}]`;
-console.info(`${LOG_PREFIX} v0.2.1-dev loaded from ${import.meta.url}`);
-window.customCards = window.customCards || [];
-if (!window.customCards.some((c) => c.type === CARD_TAG)) window.customCards.push({
-	type: CARD_TAG,
-	name: "Zwitserleven Fondsen Card",
-	description: "Displays Zwitserleven fund prices with sparkline charts.",
-	preview: true
-});
-var TILE_MIN_WIDTHS = {
-	small: "170px",
-	medium: "220px",
-	large: "280px"
-};
+//#region src/ranges.ts
+/** The card's time ranges, also offered as its default range in the editor. */
 var RANGES = [
 	{
 		value: "1T",
@@ -1409,6 +1366,16 @@ var RANGES = [
 		label: "1Y"
 	}
 ];
+//#endregion
+//#region \0@oxc-project+runtime@0.153.0/helpers/esm/decorate.js
+function __decorate(decorators, target, key, desc) {
+	var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+//#endregion
+//#region src/editor.ts
 var ZwitserlevenFondsenCardEditor = class extends i {
 	constructor(..._args) {
 		super(..._args);
@@ -1662,10 +1629,229 @@ var ZwitserlevenFondsenCardEditor = class extends i {
 __decorate([n({ attribute: false })], ZwitserlevenFondsenCardEditor.prototype, "hass", void 0);
 __decorate([r()], ZwitserlevenFondsenCardEditor.prototype, "_config", void 0);
 __decorate([r()], ZwitserlevenFondsenCardEditor.prototype, "_dragIndex", void 0);
+//#endregion
+//#region src/history-list.ts
+/** One row per stored daily price, newest first, from prices oldest first. */
+function historyRows(prices) {
+	return prices.map(([date, price], i) => {
+		if (i === 0) return {
+			date,
+			price,
+			change: null,
+			changePct: null
+		};
+		const previous = prices[i - 1][1];
+		return {
+			date,
+			price,
+			change: price - previous,
+			changePct: previous !== 0 ? (price - previous) / previous * 100 : null
+		};
+	}).reverse();
+}
+//#endregion
+//#region src/history-dialog.ts
+/**
+* The stored daily prices of a fund, newest first, in a <dialog>. The card
+* opens it modally once it is rendered; Escape, the close button and a click
+* on the backdrop close it.
+*/
+function renderHistoryDialog({ fund, history, loading, locale, onClosed }) {
+	const { name, symbol } = fund;
+	const strings = t(locale ?? "en").card;
+	const rows = history ? historyRows(withLivePrice({
+		dailyHistory: history,
+		livePrice: fund.price,
+		priceDate: fund.priceDate
+	})) : null;
+	let body;
+	if (rows === null && loading) body = b`<p class="status">${strings.loading}</p>`;
+	else if (!rows?.length) body = b`<p class="status">${strings.no_history}</p>`;
+	else body = b`
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">${strings.date}</th>
+            <th scope="col" class="num">${strings.price}</th>
+            <th scope="col" class="num">${strings.change}</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map((row) => {
+		const trend = !row.change ? "" : row.change > 0 ? "up" : "down";
+		return b`
+              <tr>
+                <td title=${formatPriceDateLong(row.date, locale)}>
+                  ${formatPriceDate(row.date, locale)}
+                </td>
+                <td class="num">${formatPrice(row.price, locale)}</td>
+                <td class="num ${trend}">
+                  ${row.change === null ? "–" : b`${formatPriceChange(row.change, locale)}${row.changePct === null ? A : b` <span class="pct">${formatPercentChange(row.changePct, locale)}</span>`}`}
+                </td>
+              </tr>
+            `;
+	})}
+        </tbody>
+      </table>
+    `;
+	return b`
+    <dialog
+      class="history-dialog"
+      aria-labelledby="history-title"
+      @close=${onClosed}
+      @click=${(e) => {
+		if (e.target === e.currentTarget) e.currentTarget.close();
+	}}
+    >
+      <div class="dialog-content">
+        <div class="dialog-header">
+          <div class="dialog-heading">
+            <h2 id="history-title">${strings.price_history}</h2>
+            <div class="dialog-subtitle">
+              ${name}${symbol === null ? A : b` · <span class="asset-symbol">${symbol}</span>`}
+            </div>
+          </div>
+          <button
+            class="close-btn"
+            title=${strings.close}
+            aria-label=${strings.close}
+            @click=${(e) => e.currentTarget.closest("dialog")?.close()}
+          >✕</button>
+        </div>
+        <div class="dialog-body">${body}</div>
+      </div>
+    </dialog>
+  `;
+}
+var historyDialogStyles = i$3`
+    .history-dialog {
+      width: min(460px, calc(100vw - 32px));
+      max-height: min(640px, calc(100vh - 64px));
+      padding: 0;
+      border: none;
+      border-radius: var(--ha-card-border-radius, 12px);
+      background: var(--card-background-color, #fff);
+      color: var(--primary-text-color);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    .history-dialog[open] {
+      display: flex;
+    }
+    .history-dialog::backdrop {
+      background: rgba(0, 0, 0, 0.4);
+    }
+    .dialog-content {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      min-height: 0;
+    }
+    .dialog-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 16px 16px 8px;
+    }
+    .dialog-heading {
+      min-width: 0;
+    }
+    .dialog-heading h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+    .dialog-subtitle {
+      font-size: 0.8rem;
+      color: var(--secondary-text-color);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .close-btn {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 50%;
+      background: none;
+      cursor: pointer;
+      color: var(--secondary-text-color);
+      font-size: 1rem;
+    }
+    .close-btn:hover,
+    .close-btn:focus-visible {
+      background: var(--divider-color);
+      color: var(--primary-text-color);
+    }
+    .dialog-body {
+      overflow-y: auto;
+      padding: 0 16px 12px;
+    }
+    .dialog-body .status {
+      margin: 0;
+      padding: 16px 0;
+      color: var(--secondary-text-color);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      font-variant-numeric: tabular-nums;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      background: var(--card-background-color, #fff);
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--secondary-text-color);
+      padding: 8px 4px 6px;
+      border-bottom: 1px solid var(--divider-color);
+    }
+    td {
+      padding: 6px 4px;
+      border-bottom: 1px solid var(--divider-color);
+      white-space: nowrap;
+    }
+    .num {
+      text-align: right;
+    }
+    td.up {
+      color: var(--success-color, #4caf50);
+    }
+    td.down {
+      color: var(--error-color, #f44336);
+    }
+    .pct {
+      display: inline-block;
+      min-width: 4.5em;
+      margin-left: 4px;
+    }
+`;
+//#endregion
+//#region src/zwitserleven-fondsen-card.ts
+var CARD_TAG = "zwitserleven-fondsen-card";
+var EDITOR_TAG = "zwitserleven-fondsen-card-editor";
+var LOG_PREFIX = `[${CARD_TAG}]`;
+console.info(`${LOG_PREFIX} v0.2.1-dev loaded from ${import.meta.url}`);
+window.customCards = window.customCards || [];
+if (!window.customCards.some((c) => c.type === CARD_TAG)) window.customCards.push({
+	type: CARD_TAG,
+	name: "Zwitserleven Fondsen Card",
+	description: "Displays Zwitserleven fund prices with sparkline charts.",
+	preview: true
+});
+var TILE_MIN_WIDTHS = {
+	small: "170px",
+	medium: "220px",
+	large: "280px"
+};
 var DAILY_HISTORY_TTL = 36e5;
 var ZwitserlevenFondsenCard = class extends i {
-	constructor(..._args2) {
-		super(..._args2);
+	constructor(..._args) {
+		super(..._args);
 		this._timeRange = "1T";
 		this._dailyHistoryCache = /* @__PURE__ */ new Map();
 		this._fetchingDaily = /* @__PURE__ */ new Set();
@@ -1842,81 +2028,22 @@ var ZwitserlevenFondsenCard = class extends i {
       </div>
     `;
 	}
-	/** The stored daily prices of the open fund, newest first, in a modal dialog. */
+	/** The price history dialog of the fund whose list button was clicked, if any. */
 	_renderHistoryDialog() {
 		const entityId = this._historyEntityId;
 		const raw = entityId ? this._hass?.states[entityId] : void 0;
 		if (!raw) return A;
 		const fund = readFund(raw);
-		const { name, symbol } = fund;
-		const locale = this._hass?.locale?.language;
-		const strings = t(locale ?? "en").card;
-		const history = symbol === null ? null : this._cachedDailyHistory(symbol);
-		const rows = history ? historyRows(withLivePrice({
-			dailyHistory: history,
-			livePrice: fund.price,
-			priceDate: fund.priceDate
-		})) : null;
-		let body;
-		if (rows === null && symbol !== null && this._fetchingDaily.has(symbol)) body = b`<p class="status">${strings.loading}</p>`;
-		else if (!rows?.length) body = b`<p class="status">${strings.no_history}</p>`;
-		else body = b`
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">${strings.date}</th>
-              <th scope="col" class="num">${strings.price}</th>
-              <th scope="col" class="num">${strings.change}</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rows.map((row) => {
-			const trend = !row.change ? "" : row.change > 0 ? "up" : "down";
-			return b`
-                <tr>
-                  <td title=${formatPriceDateLong(row.date, locale)}>
-                    ${formatPriceDate(row.date, locale)}
-                  </td>
-                  <td class="num">${formatPrice(row.price, locale)}</td>
-                  <td class="num ${trend}">
-                    ${row.change === null ? "–" : b`${formatPriceChange(row.change, locale)}${row.changePct === null ? A : b` <span class="pct">${formatPercentChange(row.changePct, locale)}</span>`}`}
-                  </td>
-                </tr>
-              `;
-		})}
-          </tbody>
-        </table>
-      `;
-		return b`
-      <dialog
-        class="history-dialog"
-        aria-labelledby="history-title"
-        @close=${() => {
-			this._historyEntityId = void 0;
-		}}
-        @click=${(e) => {
-			if (e.target === e.currentTarget) this._historyDialog?.close();
-		}}
-      >
-        <div class="dialog-content">
-          <div class="dialog-header">
-            <div class="dialog-heading">
-              <h2 id="history-title">${strings.price_history}</h2>
-              <div class="dialog-subtitle">
-                ${name}${symbol === null ? A : b` · <span class="asset-symbol">${symbol}</span>`}
-              </div>
-            </div>
-            <button
-              class="close-btn"
-              title=${strings.close}
-              aria-label=${strings.close}
-              @click=${() => this._historyDialog?.close()}
-            >✕</button>
-          </div>
-          <div class="dialog-body">${body}</div>
-        </div>
-      </dialog>
-    `;
+		const symbol = fund.symbol;
+		return renderHistoryDialog({
+			fund,
+			history: symbol === null ? null : this._cachedDailyHistory(symbol),
+			loading: symbol !== null && this._fetchingDaily.has(symbol),
+			locale: this._hass?.locale?.language,
+			onClosed: () => {
+				this._historyEntityId = void 0;
+			}
+		});
 	}
 	_openMoreInfo(entityId) {
 		this.dispatchEvent(new CustomEvent("hass-more-info", {
@@ -1941,7 +2068,7 @@ var ZwitserlevenFondsenCard = class extends i {
     `;
 	}
 	static {
-		this.styles = i$3`
+		this.styles = [historyDialogStyles, i$3`
     ha-card { height: 100%; }
 
     .card-top {
@@ -2096,113 +2223,7 @@ var ZwitserlevenFondsenCard = class extends i {
       padding: 6px 0;
     }
     .error { color: var(--error-color, #f44336); }
-
-    .history-dialog {
-      width: min(460px, calc(100vw - 32px));
-      max-height: min(640px, calc(100vh - 64px));
-      padding: 0;
-      border: none;
-      border-radius: var(--ha-card-border-radius, 12px);
-      background: var(--card-background-color, #fff);
-      color: var(--primary-text-color);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    }
-    .history-dialog[open] {
-      display: flex;
-    }
-    .history-dialog::backdrop {
-      background: rgba(0, 0, 0, 0.4);
-    }
-    .dialog-content {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      min-height: 0;
-    }
-    .dialog-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 8px;
-      padding: 16px 16px 8px;
-    }
-    .dialog-heading {
-      min-width: 0;
-    }
-    .dialog-heading h2 {
-      margin: 0;
-      font-size: 1.1rem;
-      font-weight: 500;
-    }
-    .dialog-subtitle {
-      font-size: 0.8rem;
-      color: var(--secondary-text-color);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .close-btn {
-      flex-shrink: 0;
-      width: 32px;
-      height: 32px;
-      border: none;
-      border-radius: 50%;
-      background: none;
-      cursor: pointer;
-      color: var(--secondary-text-color);
-      font-size: 1rem;
-    }
-    .close-btn:hover,
-    .close-btn:focus-visible {
-      background: var(--divider-color);
-      color: var(--primary-text-color);
-    }
-    .dialog-body {
-      overflow-y: auto;
-      padding: 0 16px 12px;
-    }
-    .dialog-body .status {
-      margin: 0;
-      padding: 16px 0;
-      color: var(--secondary-text-color);
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-      font-variant-numeric: tabular-nums;
-    }
-    th {
-      position: sticky;
-      top: 0;
-      background: var(--card-background-color, #fff);
-      text-align: left;
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: var(--secondary-text-color);
-      padding: 8px 4px 6px;
-      border-bottom: 1px solid var(--divider-color);
-    }
-    td {
-      padding: 6px 4px;
-      border-bottom: 1px solid var(--divider-color);
-      white-space: nowrap;
-    }
-    .num {
-      text-align: right;
-    }
-    td.up {
-      color: var(--success-color, #4caf50);
-    }
-    td.down {
-      color: var(--error-color, #f44336);
-    }
-    .pct {
-      display: inline-block;
-      min-width: 4.5em;
-      margin-left: 4px;
-    }
-  `;
+  `];
 	}
 };
 __decorate([r()], ZwitserlevenFondsenCard.prototype, "_config", void 0);
@@ -2229,6 +2250,6 @@ function defineOnce(tag, ctor) {
 defineOnce(EDITOR_TAG, ZwitserlevenFondsenCardEditor);
 defineOnce(CARD_TAG, ZwitserlevenFondsenCard);
 //#endregion
-export { ZwitserlevenFondsenCard, ZwitserlevenFondsenCardEditor };
+export { ZwitserlevenFondsenCard };
 
 //# sourceMappingURL=zwitserleven-fondsen-card.js.map
