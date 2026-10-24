@@ -30,15 +30,17 @@ a separate integration with its own domain (`zwitserleven_fondsen`), card
 - **One request per update** — a single download of the overview page updates every configured fund
 - **History recording** — works with the HA recorder out of the box (`SensorStateClass.MEASUREMENT`)
 - **Built-in Lovelace card** — auto-registered, no manual resource setup required
-  - Sparkline charts for 5 time ranges: **1D · 1W · 1M · YTD · 1Y**
+  - Sparkline charts for 5 time ranges: **1D · 1W · 1M · YTD · 1Y**, labelled in your
+    language
   - Charts use the daily prices the integration stores, dated by the day each price is for
   - **Price date** — the date of the current price, shown after the fund ID
   - **Reference price** — period baseline shown below the current price
-  - **Click any tile** to open the HA sensor detail dialog
+  - **Click any tile**, or focus it with Tab and press Enter, to open the HA sensor detail dialog
   - **Price history list** — the list button on a tile shows every stored daily price with its
     change, newest first
   - **Tile size** — choose S / M / L in the visual editor to control how many tiles fit per row
-  - **Visual card editor** with drag & drop to reorder funds
+  - **Visual card editor** to reorder funds with drag & drop, or with the ▲ ▼ buttons on a touch
+    screen
 - **Daily updates** — prices change at most once a day, so the page is checked when Home Assistant
   starts and once every night. Each installation checks at its own fixed time between 20:00 and
   06:00 UTC, so the Zwitserleven website doesn't get every request at once; the time is logged

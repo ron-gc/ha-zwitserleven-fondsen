@@ -1,10 +1,10 @@
+import type { Strings } from "./translations";
 import type { TimeRange } from "./types";
 
 /** The card's time ranges, also offered as its default range in the editor. */
-export const RANGES: { value: TimeRange; label: string }[] = [
-  { value: "1T", label: "1D" },
-  { value: "1W", label: "1W" },
-  { value: "1M", label: "1M" },
-  { value: "YTD", label: "YTD" },
-  { value: "1J", label: "1Y" },
-];
+export const RANGES: TimeRange[] = ["1T", "1W", "1M", "YTD", "1J"];
+
+/** The short label of a range button, e.g. "1Y", and its full name, e.g. "1 year". */
+export function rangeLabels(strings: Strings["card"], range: TimeRange): { short: string; name: string } {
+  return { short: strings[`range_${range}`], name: strings[`range_name_${range}`] };
+}
