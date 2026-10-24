@@ -7,7 +7,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.http import KEY_HASS, HomeAssistantView
 from homeassistant.helpers.storage import Store
 
-from .const import CONF_SYMBOL, DATA_COORDINATOR, DOMAIN
+from .const import CONF_NAME, CONF_SYMBOL, DATA_COORDINATOR, DOMAIN
 from .coordinator import (
     History,
     ZwitserlevenDataCoordinator,
@@ -81,6 +81,30 @@ async def async_setup(hass: HomeAssistant, config: dict[str, Any]) -> bool:
     """Register the card and the history endpoint."""
     await _async_register_card_safely(hass)
     hass.http.register_view(ZwitserlevenHistoryView())
+    return True
+
+
+async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    if entry.version > 1:
+        # A newer release made this entry; this one cannot read it.
+        return False
+    if entry.minor_version < 2:
+        # 1.1 kept a display name in the data and in the options, and the
+        # options one won, so clearing it there brought the data one back.
+        # 1.2 keeps only the title. Keep the name the device shows now.
+        name = (
+            entry.options.get(CONF_NAME)
+            or entry.data.get(CONF_NAME)
+            or entry.title
+            or entry.data[CONF_SYMBOL]
+        ).strip()
+        hass.config_entries.async_update_entry(
+            entry,
+            title=name,
+            data={CONF_SYMBOL: entry.data[CONF_SYMBOL]},
+            options={},
+            minor_version=2,
+        )
     return True
 
 

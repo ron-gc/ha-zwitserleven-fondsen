@@ -2,7 +2,7 @@
 from types import SimpleNamespace
 
 from custom_components.zwitserleven_fondsen.sensor import ZwitserlevenSensor
-from custom_components.zwitserleven_fondsen.const import CONF_SYMBOL, CONF_NAME
+from custom_components.zwitserleven_fondsen.const import CONF_SYMBOL
 
 from .conftest import SYMBOL
 
@@ -24,7 +24,7 @@ def _sensor(data=COORDINATOR_DATA):
         async_add_listener=lambda *a, **k: None,
     )
     entry = SimpleNamespace(
-        data={CONF_SYMBOL: SYMBOL, CONF_NAME: "Test Fund"},
+        data={CONF_SYMBOL: SYMBOL},
         options={},
         title="Test Fund",
     )

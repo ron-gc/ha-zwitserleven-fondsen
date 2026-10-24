@@ -76,9 +76,9 @@ async def test_config_flow_creates_entry(hass):
         )
 
     assert result["type"] == FlowResultType.CREATE_ENTRY
+    # The name is the title only, so there is one place to change it.
     assert result["title"] == "Aandelen"
-    assert result["data"][CONF_SYMBOL] == "LTAAF"
-    assert result["data"][CONF_NAME] == "Aandelen"
+    assert result["data"] == {CONF_SYMBOL: "LTAAF"}
 
 
 async def test_title_defaults_to_the_fund_name(hass):
@@ -134,34 +134,51 @@ async def test_aborts_when_the_fund_list_cannot_be_loaded(hass):
 # ---------------------------------------------------------------------------
 
 
-async def test_options_flow_shows_form(hass):
-    """Options flow init step shows a form pre-filled with current values."""
+@pytest.fixture
+def entry(hass):
     entry = MockConfigEntry(
         domain=DOMAIN,
-        data={CONF_SYMBOL: "LTAOB", CONF_NAME: "Obligaties"},
-        options={},
+        title="Obligaties",
+        data={CONF_SYMBOL: "LTAOB"},
+        minor_version=2,
     )
     entry.add_to_hass(hass)
+    return entry
 
+
+async def _rename(hass, entry, user_input):
     result = await hass.config_entries.options.async_init(entry.entry_id)
+    return await hass.config_entries.options.async_configure(result["flow_id"], user_input)
+
+
+async def test_options_flow_suggests_the_current_name(hass, entry):
+    result = await hass.config_entries.options.async_init(entry.entry_id)
+
     assert result["type"] == FlowResultType.FORM
     assert result["step_id"] == "init"
+    # Suggested, not a default: a default would come back when the field is cleared.
+    (key,) = result["data_schema"].schema
+    assert key.description == {"suggested_value": "Obligaties"}
 
 
-async def test_options_flow_saves_new_values(hass):
-    """Submitting the options form saves the new name."""
-    entry = MockConfigEntry(
-        domain=DOMAIN,
-        data={CONF_SYMBOL: "LTAOB", CONF_NAME: "Obligaties"},
-        options={},
-    )
-    entry.add_to_hass(hass)
-
-    result = await hass.config_entries.options.async_init(entry.entry_id)
-    result = await hass.config_entries.options.async_configure(
-        result["flow_id"],
-        {CONF_NAME: "Obligatiefonds"},
-    )
+async def test_options_flow_renames_the_entry(hass, entry):
+    result = await _rename(hass, entry, {CONF_NAME: " Obligatiefonds "})
 
     assert result["type"] == FlowResultType.CREATE_ENTRY
-    assert entry.options[CONF_NAME] == "Obligatiefonds"
+    assert entry.title == "Obligatiefonds"
+    assert entry.options == {}
+
+
+async def test_clearing_the_name_restores_the_fund_name(hass, entry):
+    # A cleared field is left out of the input altogether.
+    with _serve(OBLIGATIES):
+        await _rename(hass, entry, {})
+
+    assert entry.title == "ASN Duurzaam Obligatiefonds"
+
+
+async def test_clearing_the_name_falls_back_to_the_fund_id_without_the_page(hass, entry):
+    with _serve(error=FondsenPageError("Zwitserleven returned HTTP 503")):
+        await _rename(hass, entry, {CONF_NAME: ""})
+
+    assert entry.title == "LTAOB"
