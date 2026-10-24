@@ -13,6 +13,18 @@ All notable changes to this integration are listed here. The format follows
   long-term statistics, so it can be graphed. **Price date** is the date the
   price is for; it is a diagnostic sensor and disabled by default.
 
+### Fixed
+
+- The card shows an unavailable fund as a dimmed tile that says
+  "Unavailable", instead of a "–" price next to a change and sparkline from
+  older prices. It also no longer requests the stored prices of such a fund
+  over and over.
+- A fund's display name is now kept in one place, the name of its entry under
+  Devices & services. Renaming it in the options now also renames the entry,
+  renaming the entry renames the device, and clearing the name in the options
+  restores the fund name from Zwitserleven instead of the name given when the
+  fund was added. Existing funds keep the name they show now.
+
 ## [0.1.1] - 2026-10-24
 
 ### Added

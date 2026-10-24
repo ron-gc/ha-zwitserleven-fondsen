@@ -156,6 +156,9 @@ Fondsen**, select the fund and choose **Configure**.
 |---|---|
 | **Name** | Display name of the fund's device and sensors. Leave empty to use the fund name from Zwitserleven |
 
+The display name is the name of the fund's entry under Devices & Services, so renaming the entry
+there (three-dot menu → **Rename**) changes it too.
+
 ## Sensors
 
 Each fund is a device with these sensors. The entity IDs follow the fund's display name, for

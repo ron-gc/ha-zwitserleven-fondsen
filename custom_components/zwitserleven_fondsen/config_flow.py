@@ -19,6 +19,8 @@ from .fondsen_page import FondsenPageError, get_page
 
 class ZwitserlevenConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
+    # 1.2: the display name is the entry title only, see async_migrate_entry.
+    MINOR_VERSION = 2
 
     @staticmethod
     @callback
@@ -41,12 +43,10 @@ class ZwitserlevenConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             self._abort_if_unique_id_configured()
 
             fund = funds.get(symbol)
+            # The title is the display name of the fund's device and sensor.
             return self.async_create_entry(
-                title=user_input.get(CONF_NAME) or (fund.name if fund else symbol),
-                data={
-                    CONF_SYMBOL: symbol,
-                    CONF_NAME: user_input.get(CONF_NAME, ""),
-                },
+                title=user_input.get(CONF_NAME, "").strip() or (fund.name if fund else symbol),
+                data={CONF_SYMBOL: symbol},
             )
 
         configured = {entry.data[CONF_SYMBOL] for entry in self._async_current_entries()}
@@ -71,18 +71,37 @@ class ZwitserlevenConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 class ZwitserlevenOptionsFlow(config_entries.OptionsFlow):
+    """Rename the fund.
+
+    The name is the entry title, so renaming the entry under Devices &
+    services does the same. Nothing is stored in the options.
+    """
+
     # Home Assistant sets self.config_entry on the flow itself.
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         if user_input is not None:
-            return self.async_create_entry(title="", data=user_input)
+            name = user_input.get(CONF_NAME, "").strip() or await self._async_fund_name()
+            # A new title reloads the entry through its update listener, which
+            # renames the device.
+            self.hass.config_entries.async_update_entry(self.config_entry, title=name)
+            return self.async_create_entry(data={})
 
-        current_name = self.config_entry.options.get(
-            CONF_NAME, self.config_entry.data.get(CONF_NAME, "")
+        # A suggested value rather than a default: a field the user clears is
+        # left out of user_input, and a default would put the old name back.
+        schema = self.add_suggested_values_to_schema(
+            probatio.Schema({probatio.Optional(CONF_NAME): str}),
+            {CONF_NAME: self.config_entry.title},
         )
-
-        schema = probatio.Schema({probatio.Optional(CONF_NAME, default=current_name): str})
-
         return self.async_show_form(step_id="init", data_schema=schema)
+
+    async def _async_fund_name(self) -> str:
+        """The fund's name on the Zwitserleven page, or its ID if that is unavailable."""
+        symbol: str = self.config_entry.data[CONF_SYMBOL]
+        try:
+            fund = (await get_page(self.hass).async_get_funds()).get(symbol)
+        except FondsenPageError:
+            return symbol
+        return fund.name if fund else symbol

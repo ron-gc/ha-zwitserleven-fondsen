@@ -9,7 +9,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, CONF_SYMBOL, CONF_NAME
+from .const import DOMAIN, CONF_SYMBOL
 from .coordinator import ZwitserlevenDataCoordinator
 
 if TYPE_CHECKING:
@@ -49,15 +49,10 @@ class ZwitserlevenEntity(CoordinatorEntity[ZwitserlevenDataCoordinator], SensorE
         super().__init__(coordinator)
         symbol = self._symbol = entry.data[CONF_SYMBOL]
         self._attr_unique_id = f"zwitserleven_fondsen_{symbol}{self._unique_id_suffix}"
-        name = (
-            entry.options.get(CONF_NAME)
-            or entry.data.get(CONF_NAME)
-            or entry.title
-            or symbol
-        )
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, symbol)},
-            name=name.strip(),
+            # The entry title is the display name, see the options flow.
+            name=entry.title or symbol,
             manufacturer="Zwitserleven",
             model=symbol,
             entry_type=DeviceEntryType.SERVICE,
