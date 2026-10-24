@@ -156,6 +156,9 @@ Fondsen**, select the fund and choose **Configure**.
 |---|---|
 | **Name** | Display name of the fund's device and sensor. Leave empty to use the fund name from Zwitserleven |
 
+The display name is the name of the fund's entry under Devices & Services, so renaming the entry
+there (three-dot menu → **Rename**) changes it too.
+
 ## Sensor attributes
 
 The sensor **state** is the current price (numeric), and the **unit of measurement** is `EUR`.

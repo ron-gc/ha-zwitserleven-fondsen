@@ -40,7 +40,8 @@ def entry(hass):
         domain=DOMAIN,
         title="ASN Duurzaam Aandelenfonds",
         unique_id=UNIQUE_ID,
-        data={CONF_SYMBOL: SYMBOL, CONF_NAME: ""},
+        data={CONF_SYMBOL: SYMBOL},
+        minor_version=2,
     )
     entry.add_to_hass(hass)
     return entry
@@ -134,20 +135,61 @@ async def test_sets_up_with_an_unavailable_sensor_when_the_site_is_down(
     assert float(hass.states.get(_entity_id(hass)).state) == 225.87
 
 
-async def test_renaming_in_the_options_renames_the_device(hass, entry, hass_storage):
+def _device(hass, entry):
+    return dr.async_get(hass).async_get_device_by_identifier((DOMAIN, SYMBOL), entry.entry_id)
+
+
+async def test_renaming_the_entry_renames_the_device(hass, entry, hass_storage):
+    """The options flow renames the entry; so does Rename under Devices & services."""
     await _set_up(hass, entry, hass_storage)
 
     with _serve(quote()):
-        hass.config_entries.async_update_entry(
-            entry, options={CONF_NAME: "Aandelen"}
-        )
+        hass.config_entries.async_update_entry(entry, title="Aandelen")
         await hass.async_block_till_done()
 
-    device = dr.async_get(hass).async_get_device_by_identifier(
-        (DOMAIN, SYMBOL), entry.entry_id
-    )
-    assert device.name == "Aandelen"
+    assert _device(hass, entry).name == "Aandelen"
     assert entry.state is ConfigEntryState.LOADED
+
+
+@pytest.mark.parametrize(
+    ("title", "data", "options", "name"),
+    [
+        # Named in the options: that name won.
+        ("Aandelen", {CONF_NAME: "Aandelen"}, {CONF_NAME: "Mijn aandelen"}, "Mijn aandelen"),
+        # Cleared in the options: the name given when adding the fund came back.
+        ("Aandelen", {CONF_NAME: "Aandelen"}, {CONF_NAME: ""}, "Aandelen"),
+        # Never named: the title is the fund name.
+        ("ASN Duurzaam Aandelenfonds", {CONF_NAME: ""}, {}, "ASN Duurzaam Aandelenfonds"),
+    ],
+)
+async def test_migration_keeps_the_name_the_device_shows(
+    hass, hass_storage, title, data, options, name
+):
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        title=title,
+        unique_id=UNIQUE_ID,
+        data={CONF_SYMBOL: SYMBOL, **data},
+        options=options,
+        minor_version=1,
+    )
+    entry.add_to_hass(hass)
+
+    await _set_up(hass, entry, hass_storage)
+
+    assert entry.minor_version == 2
+    assert entry.title == name
+    assert entry.data == {CONF_SYMBOL: SYMBOL}
+    assert entry.options == {}
+    assert _device(hass, entry).name == name
+
+
+async def test_an_entry_from_a_newer_release_does_not_set_up(hass):
+    entry = MockConfigEntry(domain=DOMAIN, data={CONF_SYMBOL: SYMBOL}, version=2)
+    entry.add_to_hass(hass)
+
+    assert not await hass.config_entries.async_setup(entry.entry_id)
+    assert entry.state is ConfigEntryState.MIGRATION_ERROR
 
 
 async def test_unload(hass, entry, hass_storage):
@@ -166,7 +208,8 @@ async def test_funds_added_at_different_times_share_one_download(hass, entry, ha
         domain=DOMAIN,
         title="Obligaties",
         unique_id="zwitserleven_fondsen_LTAOB",
-        data={CONF_SYMBOL: "LTAOB", CONF_NAME: ""},
+        data={CONF_SYMBOL: "LTAOB"},
+        minor_version=2,
     )
     second.add_to_hass(hass)
 
@@ -296,7 +339,8 @@ async def test_the_repair_leaves_other_funds_alone(hass, entry, hass_storage):
         domain=DOMAIN,
         title="Obligaties",
         unique_id="zwitserleven_fondsen_LTAOB",
-        data={CONF_SYMBOL: "LTAOB", CONF_NAME: ""},
+        data={CONF_SYMBOL: "LTAOB"},
+        minor_version=2,
     )
     second.add_to_hass(hass)
     page = make_page(quote(), quote(symbol="LTAOB"))
@@ -377,7 +421,7 @@ async def test_diagnostics(hass, entry, hass_storage):
     assert await async_get_config_entry_diagnostics(hass, entry) == {
         "entry": {
             "title": "ASN Duurzaam Aandelenfonds",
-            "data": {CONF_SYMBOL: SYMBOL, CONF_NAME: ""},
+            "data": {CONF_SYMBOL: SYMBOL},
             "options": {},
         },
         "coordinator": {
