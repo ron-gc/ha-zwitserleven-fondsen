@@ -73,6 +73,9 @@ class ZwitserlevenSensor(ZwitserlevenEntity):
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_translation_key = "price"
     _attr_native_unit_of_measurement = "EUR"
+    # Zwitserleven publishes prices in cents; without this a price like 55,00
+    # is shown as 55.
+    _attr_suggested_display_precision = 2
     # The price is the fund's main sensor, so it takes the device's name.
     _attr_name = None
 

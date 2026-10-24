@@ -55,6 +55,8 @@ def test_state_is_the_price_in_euro():
     sensor = _sensor()
     assert sensor.native_value == 225.87
     assert sensor.native_unit_of_measurement == "EUR"
+    # Shown in cents, as Zwitserleven publishes it.
+    assert sensor.suggested_display_precision == 2
 
 
 def test_has_no_market_session_attributes():
