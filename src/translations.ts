@@ -11,6 +11,7 @@ export interface Strings {
   };
   card: {
     not_found: string;
+    unavailable: string;
     price_history: string;
     date: string;
     price: string;
@@ -36,6 +37,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "Not found",
+      unavailable: "Unavailable",
       price_history: "Price history",
       date: "Date",
       price: "Price",
@@ -59,6 +61,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "Nicht gefunden",
+      unavailable: "Nicht verfügbar",
       price_history: "Kursverlauf",
       date: "Datum",
       price: "Kurs",
@@ -82,6 +85,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "Introuvable",
+      unavailable: "Indisponible",
       price_history: "Historique des cours",
       date: "Date",
       price: "Cours",
@@ -105,6 +109,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "Niet gevonden",
+      unavailable: "Niet beschikbaar",
       price_history: "Koershistorie",
       date: "Datum",
       price: "Koers",
@@ -128,6 +133,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "No encontrado",
+      unavailable: "No disponible",
       price_history: "Historial de precios",
       date: "Fecha",
       price: "Precio",
@@ -151,6 +157,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "Non trovato",
+      unavailable: "Non disponibile",
       price_history: "Storico prezzi",
       date: "Data",
       price: "Prezzo",
@@ -174,6 +181,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "Não encontrado",
+      unavailable: "Indisponível",
       price_history: "Histórico de preços",
       date: "Data",
       price: "Preço",
@@ -197,6 +205,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "Nie znaleziono",
+      unavailable: "Niedostępny",
       price_history: "Historia cen",
       date: "Data",
       price: "Cena",
@@ -220,6 +229,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "Hittades inte",
+      unavailable: "Ej tillgänglig",
       price_history: "Kurshistorik",
       date: "Datum",
       price: "Kurs",
@@ -243,6 +253,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "Ikke fundet",
+      unavailable: "Utilgængelig",
       price_history: "Kurshistorik",
       date: "Dato",
       price: "Kurs",
@@ -266,6 +277,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "Ikke funnet",
+      unavailable: "Utilgjengelig",
       price_history: "Kurshistorikk",
       date: "Dato",
       price: "Kurs",
@@ -289,6 +301,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "Ei löydy",
+      unavailable: "Ei saatavilla",
       price_history: "Kurssihistoria",
       date: "Päivä",
       price: "Kurssi",
@@ -312,6 +325,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "Nenalezeno",
+      unavailable: "Nedostupné",
       price_history: "Historie cen",
       date: "Datum",
       price: "Cena",
@@ -335,6 +349,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "Nem található",
+      unavailable: "Nem elérhető",
       price_history: "Árfolyam-előzmények",
       date: "Dátum",
       price: "Árfolyam",
@@ -358,6 +373,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "Не найдено",
+      unavailable: "Недоступно",
       price_history: "История цен",
       date: "Дата",
       price: "Цена",
@@ -381,6 +397,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "未找到",
+      unavailable: "不可用",
       price_history: "价格历史",
       date: "日期",
       price: "价格",
@@ -404,6 +421,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "見つかりません",
+      unavailable: "利用不可",
       price_history: "価格履歴",
       date: "日付",
       price: "価格",
@@ -427,6 +445,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "찾을 수 없음",
+      unavailable: "사용할 수 없음",
       price_history: "가격 기록",
       date: "날짜",
       price: "가격",
@@ -450,6 +469,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "Bulunamadı",
+      unavailable: "Kullanılamıyor",
       price_history: "Fiyat geçmişi",
       date: "Tarih",
       price: "Fiyat",
@@ -473,6 +493,7 @@ const translations: Record<string, Strings> = {
     },
     card: {
       not_found: "غير موجود",
+      unavailable: "غير متاح",
       price_history: "سجل الأسعار",
       date: "التاريخ",
       price: "السعر",

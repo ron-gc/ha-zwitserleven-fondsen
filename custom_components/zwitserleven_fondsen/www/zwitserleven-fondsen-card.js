@@ -699,6 +699,7 @@ var translations = {
 		},
 		card: {
 			not_found: "Not found",
+			unavailable: "Unavailable",
 			price_history: "Price history",
 			date: "Date",
 			price: "Price",
@@ -722,6 +723,7 @@ var translations = {
 		},
 		card: {
 			not_found: "Nicht gefunden",
+			unavailable: "Nicht verfügbar",
 			price_history: "Kursverlauf",
 			date: "Datum",
 			price: "Kurs",
@@ -745,6 +747,7 @@ var translations = {
 		},
 		card: {
 			not_found: "Introuvable",
+			unavailable: "Indisponible",
 			price_history: "Historique des cours",
 			date: "Date",
 			price: "Cours",
@@ -768,6 +771,7 @@ var translations = {
 		},
 		card: {
 			not_found: "Niet gevonden",
+			unavailable: "Niet beschikbaar",
 			price_history: "Koershistorie",
 			date: "Datum",
 			price: "Koers",
@@ -791,6 +795,7 @@ var translations = {
 		},
 		card: {
 			not_found: "No encontrado",
+			unavailable: "No disponible",
 			price_history: "Historial de precios",
 			date: "Fecha",
 			price: "Precio",
@@ -814,6 +819,7 @@ var translations = {
 		},
 		card: {
 			not_found: "Non trovato",
+			unavailable: "Non disponibile",
 			price_history: "Storico prezzi",
 			date: "Data",
 			price: "Prezzo",
@@ -837,6 +843,7 @@ var translations = {
 		},
 		card: {
 			not_found: "Não encontrado",
+			unavailable: "Indisponível",
 			price_history: "Histórico de preços",
 			date: "Data",
 			price: "Preço",
@@ -860,6 +867,7 @@ var translations = {
 		},
 		card: {
 			not_found: "Nie znaleziono",
+			unavailable: "Niedostępny",
 			price_history: "Historia cen",
 			date: "Data",
 			price: "Cena",
@@ -883,6 +891,7 @@ var translations = {
 		},
 		card: {
 			not_found: "Hittades inte",
+			unavailable: "Ej tillgänglig",
 			price_history: "Kurshistorik",
 			date: "Datum",
 			price: "Kurs",
@@ -906,6 +915,7 @@ var translations = {
 		},
 		card: {
 			not_found: "Ikke fundet",
+			unavailable: "Utilgængelig",
 			price_history: "Kurshistorik",
 			date: "Dato",
 			price: "Kurs",
@@ -929,6 +939,7 @@ var translations = {
 		},
 		card: {
 			not_found: "Ikke funnet",
+			unavailable: "Utilgjengelig",
 			price_history: "Kurshistorikk",
 			date: "Dato",
 			price: "Kurs",
@@ -952,6 +963,7 @@ var translations = {
 		},
 		card: {
 			not_found: "Ei löydy",
+			unavailable: "Ei saatavilla",
 			price_history: "Kurssihistoria",
 			date: "Päivä",
 			price: "Kurssi",
@@ -975,6 +987,7 @@ var translations = {
 		},
 		card: {
 			not_found: "Nenalezeno",
+			unavailable: "Nedostupné",
 			price_history: "Historie cen",
 			date: "Datum",
 			price: "Cena",
@@ -998,6 +1011,7 @@ var translations = {
 		},
 		card: {
 			not_found: "Nem található",
+			unavailable: "Nem elérhető",
 			price_history: "Árfolyam-előzmények",
 			date: "Dátum",
 			price: "Árfolyam",
@@ -1021,6 +1035,7 @@ var translations = {
 		},
 		card: {
 			not_found: "Не найдено",
+			unavailable: "Недоступно",
 			price_history: "История цен",
 			date: "Дата",
 			price: "Цена",
@@ -1044,6 +1059,7 @@ var translations = {
 		},
 		card: {
 			not_found: "未找到",
+			unavailable: "不可用",
 			price_history: "价格历史",
 			date: "日期",
 			price: "价格",
@@ -1067,6 +1083,7 @@ var translations = {
 		},
 		card: {
 			not_found: "見つかりません",
+			unavailable: "利用不可",
 			price_history: "価格履歴",
 			date: "日付",
 			price: "価格",
@@ -1090,6 +1107,7 @@ var translations = {
 		},
 		card: {
 			not_found: "찾을 수 없음",
+			unavailable: "사용할 수 없음",
 			price_history: "가격 기록",
 			date: "날짜",
 			price: "가격",
@@ -1113,6 +1131,7 @@ var translations = {
 		},
 		card: {
 			not_found: "Bulunamadı",
+			unavailable: "Kullanılamıyor",
 			price_history: "Fiyat geçmişi",
 			date: "Tarih",
 			price: "Fiyat",
@@ -1136,6 +1155,7 @@ var translations = {
 		},
 		card: {
 			not_found: "غير موجود",
+			unavailable: "غير متاح",
 			price_history: "سجل الأسعار",
 			date: "التاريخ",
 			price: "السعر",
@@ -1718,10 +1738,11 @@ var ZwitserlevenFondsenCard = class extends i {
       `;
 		const entity = raw;
 		const attr = entity.attributes;
-		const displayName = raw.attributes["friendly_name"] || attr.long_name || attr.symbol;
+		const displayName = raw.attributes["friendly_name"] || attr.long_name || attr.symbol || entityId;
 		const locale = this._hass?.locale?.language;
 		const strings = t(locale ?? "en").card;
 		const price = parseFloat(entity.state);
+		if (!Number.isFinite(price) || !attr.symbol) return this._renderUnavailableTile(entityId, displayName, strings.unavailable);
 		this._fetchDailyHistory(attr.symbol);
 		const chartData = buildChartData({
 			dailyHistory: this._cachedDailyHistory(attr.symbol) ?? [],
@@ -1767,6 +1788,23 @@ var ZwitserlevenFondsenCard = class extends i {
         </div>
         <div class="sparkline-wrap">
           ${this._renderSparkline(chartData, trendColor)}
+        </div>
+      </div>
+    `;
+	}
+	/** A dimmed tile without price, change or sparkline; it still opens more-info. */
+	_renderUnavailableTile(entityId, name, label) {
+		return b`
+      <div class="asset-tile unavailable" @click=${() => this._openMoreInfo(entityId)}>
+        <div class="asset-header">
+          <span class="asset-name" title="${name}">${name}</span>
+        </div>
+        <div class="asset-price">
+          <span class="price">–</span>
+          <span class="change">${label}</span>
+        </div>
+        <div class="sparkline-wrap">
+          <div class="sparkline-placeholder"></div>
         </div>
       </div>
     `;
@@ -2007,10 +2045,18 @@ var ZwitserlevenFondsenCard = class extends i {
     }
     .arrow { font-size: 0.7rem; }
     .sparkline-wrap { margin-top: 5px; }
-    .sparkline-svg {
+    .sparkline-svg,
+    .sparkline-placeholder {
       width: 100%;
       height: 40px;
       display: block;
+    }
+    .asset-tile.unavailable {
+      opacity: 0.6;
+    }
+    .asset-tile.unavailable .change {
+      color: var(--secondary-text-color);
+      font-weight: 500;
     }
     .status {
       font-size: 0.78rem;
