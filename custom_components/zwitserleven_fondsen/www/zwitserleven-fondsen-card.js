@@ -1,4 +1,4 @@
-//#region node_modules/@lit/reactive-element/css-tag.js
+// node_modules/@lit/reactive-element/css-tag.js
 /**
 * @license
 * Copyright 2019 Google LLC
@@ -46,8 +46,7 @@ var c$2 = e$4 ? (t) => t : (t) => t instanceof CSSStyleSheet ? ((t) => {
 	for (const s of t.cssRules) e += s.cssText;
 	return r$4(e);
 })(t) : t;
-//#endregion
-//#region node_modules/@lit/reactive-element/reactive-element.js
+// node_modules/@lit/reactive-element/reactive-element.js
 /**
 * @license
 * Copyright 2017 Google LLC
@@ -276,8 +275,7 @@ var y$1 = class extends HTMLElement {
 	firstUpdated(t) {}
 };
 y$1.elementStyles = [], y$1.shadowRootOptions = { mode: "open" }, y$1[d$1("elementProperties")] = /* @__PURE__ */ new Map(), y$1[d$1("finalized")] = /* @__PURE__ */ new Map(), p$1?.({ ReactiveElement: y$1 }), (a$1.reactiveElementVersions ??= []).push("2.1.2");
-//#endregion
-//#region node_modules/lit-html/lit-html.js
+// node_modules/lit-html/lit-html.js
 /**
 * @license
 * Copyright 2017 Google LLC
@@ -555,8 +553,7 @@ var D = (t, i, s) => {
 	}
 	return h._$AI(t), h;
 };
-//#endregion
-//#region node_modules/lit-element/lit-element.js
+// node_modules/lit-element/lit-element.js
 /**
 * @license
 * Copyright 2017 Google LLC
@@ -588,8 +585,7 @@ i._$litElement$ = !0, i["finalized"] = !0, s.litElementHydrateSupport?.({ LitEle
 var o$1 = s.litElementPolyfillSupport;
 o$1?.({ LitElement: i });
 (s.litElementVersions ??= []).push("4.2.2");
-//#endregion
-//#region node_modules/@lit/reactive-element/decorators/property.js
+// node_modules/@lit/reactive-element/decorators/property.js
 /**
 * @license
 * Copyright 2017 Google LLC
@@ -631,8 +627,7 @@ function n(t) {
 		return e.constructor.createProperty(o, t), r ? Object.getOwnPropertyDescriptor(e, o) : void 0;
 	})(t, e, o);
 }
-//#endregion
-//#region node_modules/@lit/reactive-element/decorators/state.js
+// node_modules/@lit/reactive-element/decorators/state.js
 /**
 * @license
 * Copyright 2017 Google LLC
@@ -644,16 +639,14 @@ function n(t) {
 		attribute: !1
 	});
 }
-//#endregion
-//#region node_modules/@lit/reactive-element/decorators/base.js
+// node_modules/@lit/reactive-element/decorators/base.js
 /**
 * @license
 * Copyright 2017 Google LLC
 * SPDX-License-Identifier: BSD-3-Clause
 */
 var e$1 = (e, t, c) => (c.configurable = !0, c.enumerable = !0, Reflect.decorate && "object" != typeof t && Object.defineProperty(e, t, c), c);
-//#endregion
-//#region node_modules/@lit/reactive-element/decorators/query.js
+// node_modules/@lit/reactive-element/decorators/query.js
 /**
 * @license
 * Copyright 2017 Google LLC
@@ -683,8 +676,7 @@ var e$1 = (e, t, c) => (c.configurable = !0, c.enumerable = !0, Reflect.decorate
 		} });
 	};
 }
-//#endregion
-//#region src/fund.ts
+// src/fund.ts
 var DOMAIN = "zwitserleven_fondsen";
 /** A non-empty string attribute, or undefined. */
 function text(value) {
@@ -723,8 +715,7 @@ function findFundSensors(hass) {
 	const registry = hass.entities ?? {};
 	return Object.values(hass.states).filter((entity) => registry[entity.entity_id]?.platform === DOMAIN).map(readFund).filter((fund) => fund.symbol !== null).sort((a, b) => a.symbol.localeCompare(b.symbol));
 }
-//#endregion
-//#region src/translations.ts
+// src/translations.ts
 var translations = {
 	en: {
 		editor: {
@@ -1566,8 +1557,7 @@ function sparklinePoints(history) {
 		};
 	});
 }
-//#endregion
-//#region src/chart-data.ts
+// src/chart-data.ts
 /** Local "YYYY-MM-DD" for `d`. */
 function dayStr(d) {
 	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -1621,8 +1611,7 @@ function buildChartData(input) {
 		case "1J": return since(daysBefore(latest, 0, 1));
 	}
 }
-//#endregion
-//#region src/ranges.ts
+// src/ranges.ts
 /** The card's time ranges, also offered as its default range in the editor. */
 var RANGES = [
 	"1T",
@@ -1638,16 +1627,14 @@ function rangeLabels(strings, range) {
 		name: strings[`range_name_${range}`]
 	};
 }
-//#endregion
-//#region \0@oxc-project+runtime@0.153.0/helpers/esm/decorate.js
+// \0@oxc-project+runtime@0.155.0/helpers/esm/decorate.js
 function __decorate(decorators, target, key, desc) {
 	var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
 	if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
 	else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
 	return c > 3 && r && Object.defineProperty(target, key, r), r;
 }
-//#endregion
-//#region src/editor.ts
+// src/editor.ts
 var ZwitserlevenFondsenCardEditor = class extends i {
 	constructor(..._args) {
 		super(..._args);
@@ -1947,8 +1934,7 @@ var ZwitserlevenFondsenCardEditor = class extends i {
 __decorate([n({ attribute: false })], ZwitserlevenFondsenCardEditor.prototype, "hass", void 0);
 __decorate([r()], ZwitserlevenFondsenCardEditor.prototype, "_config", void 0);
 __decorate([r()], ZwitserlevenFondsenCardEditor.prototype, "_dragIndex", void 0);
-//#endregion
-//#region src/history-list.ts
+// src/history-list.ts
 /** One row per stored daily price, newest first, from prices oldest first. */
 function historyRows(prices) {
 	return prices.map(([date, price], i) => {
@@ -1967,8 +1953,7 @@ function historyRows(prices) {
 		};
 	}).reverse();
 }
-//#endregion
-//#region src/history-dialog.ts
+// src/history-dialog.ts
 /**
 * The stored daily prices of a fund, newest first, in a <dialog>. The card
 * opens it modally once it is rendered; Escape, the close button and a click
@@ -2148,8 +2133,7 @@ var historyDialogStyles = i$3`
       margin-left: 4px;
     }
 `;
-//#endregion
-//#region src/zwitserleven-fondsen-card.ts
+// src/zwitserleven-fondsen-card.ts
 var CARD_TAG = "zwitserleven-fondsen-card";
 var EDITOR_TAG = "zwitserleven-fondsen-card-editor";
 var LOG_PREFIX = `[${CARD_TAG}]`;
@@ -2596,7 +2580,6 @@ function defineOnce(tag, ctor) {
 }
 defineOnce(EDITOR_TAG, ZwitserlevenFondsenCardEditor);
 defineOnce(CARD_TAG, ZwitserlevenFondsenCard);
-//#endregion
 export { ZwitserlevenFondsenCard };
 
 //# sourceMappingURL=zwitserleven-fondsen-card.js.map
