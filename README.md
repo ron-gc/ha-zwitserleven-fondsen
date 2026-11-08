@@ -71,7 +71,33 @@ Mijn Zwitserleven, are not supported.
 
 ## Installation
 
-This integration is not available in HACS. Install it manually:
+This integration is not in the Marketplace (HACS) catalog, but you can add it as a custom
+repository. You then get updates in Home Assistant like any other Marketplace item.
+
+### Marketplace (Home Assistant 2026.11 or newer)
+
+[![Open your Home Assistant instance and add this repository to the Marketplace.](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=ron-gc&repository=ha-zwitserleven-fondsen&category=integration)
+
+Or add it by hand:
+
+1. Go to **Settings → Marketplace**.
+2. In the upper-right corner, select **Add from link**.
+3. Under **GitHub link**, enter `ron-gc/ha-zwitserleven-fondsen` and select **Add**. If asked for
+   a type, choose **Integration** and select **Add** again.
+4. Open **Zwitserleven Fondsen** in the Marketplace and download it.
+5. Restart Home Assistant, then add the integration under **Settings → Devices & Services**.
+
+Adding a custom repository needs a GitHub connection; the Marketplace asks you to connect when you
+add one.
+
+### HACS (Home Assistant 2026.10)
+
+[![Open your Home Assistant instance and add this repository to HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=ron-gc&repository=ha-zwitserleven-fondsen&category=integration)
+
+Or in HACS, open **⋮ → Custom repositories**, add `https://github.com/ron-gc/ha-zwitserleven-fondsen`
+with type **Integration**, then download it and restart Home Assistant.
+
+### Manual
 
 1. Download or clone this repository
 2. Copy the `custom_components/zwitserleven_fondsen/` folder into your HA config directory:

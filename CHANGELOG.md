@@ -6,6 +6,12 @@ All notable changes to this integration are listed here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- The repository can be added as a custom repository in the Home Assistant
+  Marketplace (2026.11 or newer) or in HACS, so updates show up in Home
+  Assistant. It is not in the Marketplace catalog.
+
 ### Changed
 
 - The card is easier to use on a touch screen and with a keyboard or screen
